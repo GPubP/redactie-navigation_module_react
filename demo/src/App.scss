@@ -1,0 +1,8 @@
+@import-normalize;
+
+// 3rd party
+// ------------------------------------------------------------------------ /
+@import '~@a-ui/core/dist/main.css';
+@import '~@a-ui/flexboxgrid/dist/flexboxgrid.css';
+// This will import all variables (including colors), mixins and functions
+@import '~@a-ui/core/dist/assets/styles/quarks';

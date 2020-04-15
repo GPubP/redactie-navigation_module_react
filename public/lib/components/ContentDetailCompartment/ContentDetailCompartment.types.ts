@@ -5,7 +5,7 @@ export interface ContentDetailCompartmentProps {
 	value?: any; // the value of the navigation module
 	isValid?: boolean;
 
-	onChange?: (e: any) => boolean; // Boolean for validation result (maybe?)
+	onChange: (e: any) => boolean; // Boolean for validation result (maybe?)
 	updateContent?: (e: any) => boolean; // For edge cases where content item must be changed. Boolean for validation result (maybe?)
 	setValidity?: (isValid: boolean) => void;
 }
