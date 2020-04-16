@@ -9,7 +9,7 @@
     "build:types": "tsc --emitDeclarationOnly",
     "build": "npm run build:types && webpack --env.prod",
     "build:w": "npm run build:types && webpack -w --env.prod",
-    "build:demo": "npm run build:types && webpack --env.dev",
+    "build:demo": "npm run build:types && webpack -w --env.dev",
     "build:analyse": "npm run build:types && webpack --env.analyse",
     "start": "concurrently --kill-others \"npm run build:demo\" \"cd demo && npm run start\"",
     "lint:scss": "stylelint public/**/*.scss --allow-empty-input",
@@ -53,6 +53,7 @@
     "@types/yup": "0.26.33",
     "@typescript-eslint/eslint-plugin": "2.17.0",
     "@typescript-eslint/parser": "2.17.0",
+    "@types/lodash.debounce": "4.0.6",
     "babel-jest": "25.1.0",
     "clean-webpack-plugin": "3.0.0",
     "concurrently": "5.1.0",
@@ -87,10 +88,11 @@
     "webpack-cli": "3.3.10"
   },
   "dependencies": {
-    "formik": "2.1.4",
+    "lodash.debounce": "4.0.8",
     "ky": "0.17.0",
     "ramda": "0.27.0",
-    "yup": "0.28.3"
+    "yup": "0.28.3",
+    "formik": "2.1.4"
   },
   "author": "Glenn verschooren",
   "license": "ISC"
