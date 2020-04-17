@@ -1,11 +1,16 @@
-import { RadioGroup, Select } from '@acpaas-ui/react-components';
+import { Button, RadioGroup, Select } from '@acpaas-ui/react-components';
+import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { Field, Formik } from 'formik';
 import React, { FC, useMemo } from 'react';
 
 import { IS_ACTIVE_TREE_OPTIONS } from './ContentTypeDetailTab.const';
 import { ContentTypeDetailTabProps } from './ContentTypeDetailTab.types';
 
-const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({ value = {}, onChange }) => {
+const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({
+	value = {},
+	onSubmit,
+	onCancel,
+}) => {
 	const initialValues = useMemo(
 		() => ({
 			activateTree: value.activateTree || 'false',
@@ -15,7 +20,7 @@ const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({ value = {}, onCha
 	);
 
 	const onFormSubmit = (values: any): void => {
-		onChange(values);
+		onSubmit({ config: values });
 	};
 
 	const navigationTreeOptions = [
@@ -27,7 +32,7 @@ const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({ value = {}, onCha
 
 	return (
 		<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-			{() => (
+			{({ submitForm }) => (
 				<>
 					<p>
 						Bepaal of er voor dit content type een navigatie-item gemaakt kan worden
@@ -59,6 +64,23 @@ const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({ value = {}, onCha
 							</div>
 						</div>
 					</div>
+					<ActionBar className="o-action-bar--fixed" isOpen>
+						<ActionBarContentSection>
+							<div className="u-wrapper row end-xs">
+								<Button
+									className="u-margin-right-xs"
+									onClick={() => submitForm()}
+									type="success"
+									htmlType="submit"
+								>
+									Bewaar
+								</Button>
+								<Button onClick={onCancel} outline>
+									Annuleer
+								</Button>
+							</div>
+						</ActionBarContentSection>
+					</ActionBar>
 				</>
 			)}
 		</Formik>
