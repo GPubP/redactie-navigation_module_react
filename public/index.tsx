@@ -1,16 +1,15 @@
-import Core from '@redactie/redactie-core';
+import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
+import { registerContentDetailCompartment } from './lib/connectors/content';
+import { registerContentTypeModuleTab } from './lib/connectors/contentTypes';
 
-import { ContentDetailCompartment } from './lib/components';
+registerContentDetailCompartment('navigation', {
+	label: 'Navigatie',
+	component: ContentDetailCompartment,
+});
 
-const contentModuleAPI = Core.modules.getModuleAPI('content-module');
-
-if (contentModuleAPI) {
-	// register content detail compartiment
-	contentModuleAPI.registerContentDetailCompartment('navigation', {
-		label: 'Navigatie',
-		component: ContentDetailCompartment,
-	});
-}
-
+registerContentTypeModuleTab('navigation', {
+	label: 'Navigatie',
+	component: ContentTypeDetailTab,
+});
 // export all components
 export * from './lib/components';
