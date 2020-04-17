@@ -1,13 +1,13 @@
 import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
 import { registerContentDetailCompartment } from './lib/connectors/content';
-import { registerContentTypeModuleTab } from './lib/connectors/contentTypes';
+import { registerCTDetailTab } from './lib/connectors/contentTypes';
 
 registerContentDetailCompartment('navigation', {
 	label: 'Navigatie',
 	component: ContentDetailCompartment,
 });
 
-registerContentTypeModuleTab('navigation', {
+registerCTDetailTab('navigation', {
 	label: 'Navigatie',
 	component: ContentTypeDetailTab,
 });
