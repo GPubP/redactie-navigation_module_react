@@ -5,7 +5,7 @@ import React, { FC, useMemo } from 'react';
 
 import AutoSubmit from '../AutoSubmit/AutoSubmit';
 
-const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, settings, onChange }) => {
+const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }) => {
 	const initialValues = useMemo(
 		() => ({
 			navigationTree: value.navigationTree || 'hoofdnavigatie',

@@ -9,7 +9,7 @@ registerContentDetailCompartment('navigation', {
 	module: 'navigation-module',
 	component: ContentDetailCompartment,
 	show: (settings: ModuleSettings) => settings?.config?.activateTree === 'true',
-} as any);
+});
 
 registerCTDetailTab('navigation', {
 	label: 'Navigatie',

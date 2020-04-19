@@ -1,13 +1,13 @@
 import { Button, RadioGroup, Select } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import { ExternalTabProps } from '@redactie/content-types-module';
 import { Field, Formik } from 'formik';
 import React, { FC, useMemo } from 'react';
 
 import { IS_ACTIVE_TREE_OPTIONS } from './ContentTypeDetailTab.const';
-import { ContentTypeDetailTabProps } from './ContentTypeDetailTab.types';
 
-const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({
-	value = {},
+const ContentTypeDetailTab: FC<ExternalTabProps> = ({
+	value = {} as Record<string, any>,
 	onSubmit,
 	onCancel,
 }) => {
@@ -20,7 +20,7 @@ const ContentTypeDetailTab: FC<ContentTypeDetailTabProps> = ({
 	);
 
 	const onFormSubmit = (values: any): void => {
-		onSubmit({ config: values });
+		onSubmit({ config: values, validationSchema: {} });
 	};
 
 	const navigationTreeOptions = [
