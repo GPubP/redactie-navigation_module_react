@@ -1,6 +1,10 @@
+import { ContentTypeAPI } from '@redactie/content-types-module';
+import { ExternalTabOptions } from '@redactie/content-types-module/dist/lib/store/api/externalTabs';
 import Core from '@redactie/redactie-core';
 
-const contentTypeModuleAPI = Core.modules.getModuleAPI('content-type-module');
+const contentTypeModuleAPI: ContentTypeAPI = Core.modules.getModuleAPI(
+	'content-type-module'
+) as ContentTypeAPI;
 
-export const registerCTDetailTab = (key: string, options: any): any | false =>
+export const registerCTDetailTab = (key: string, options: ExternalTabOptions): void | false =>
 	contentTypeModuleAPI ? contentTypeModuleAPI.registerCTDetailTab(key, options) : false;

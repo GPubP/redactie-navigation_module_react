@@ -1,12 +1,11 @@
 import { Select, Textarea, TextField } from '@acpaas-ui/react-components';
+import { CompartmentProps } from '@redactie/content-module';
 import { Field, Formik } from 'formik';
 import React, { FC, useMemo } from 'react';
 
 import AutoSubmit from '../AutoSubmit/AutoSubmit';
 
-import { ContentDetailCompartmentProps } from './ContentDetailCompartment.types';
-
-const ContentDetailCompartment: FC<ContentDetailCompartmentProps> = ({ value = {}, onChange }) => {
+const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }) => {
 	const initialValues = useMemo(
 		() => ({
 			navigationTree: value.navigationTree || 'hoofdnavigatie',
