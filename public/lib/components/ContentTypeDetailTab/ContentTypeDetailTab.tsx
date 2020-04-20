@@ -13,8 +13,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 }) => {
 	const initialValues = useMemo(
 		() => ({
-			activateTree: value.activateTree || 'false',
-			navigationTree: value.navigationTree || 'hoofdnavigatie',
+			activateTree: value?.config?.activateTree || 'false',
+			navigationTree: value?.config?.navigationTree || 'hoofdnavigatie',
 		}),
 		[value]
 	);
