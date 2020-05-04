@@ -1,8 +1,11 @@
 import { Button, RadioGroup, Select } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
+import { CORE_TRANSLATIONS } from '@redactie/translations-module/public/lib/i18next/translations.const';
 import { Field, Formik } from 'formik';
 import React, { FC, useMemo } from 'react';
+
+import { useCoreTranslation } from '../../connectors/translations';
 
 import { IS_ACTIVE_TREE_OPTIONS } from './ContentTypeDetailTab.const';
 
@@ -18,6 +21,7 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 		}),
 		[value]
 	);
+	const [t] = useCoreTranslation();
 
 	const onFormSubmit = (values: any): void => {
 		onSubmit({ config: values, validationSchema: {} });
@@ -73,10 +77,10 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 									type="success"
 									htmlType="submit"
 								>
-									Bewaar
+									{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
 								</Button>
 								<Button onClick={onCancel} outline>
-									Annuleer
+									{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
 								</Button>
 							</div>
 						</ActionBarContentSection>

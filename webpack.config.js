@@ -19,7 +19,7 @@ module.exports = env => {
 				{
 					test: /\.ts(x)?$/,
 					use: 'ts-loader',
-					exclude: /node_modules/,
+					include: [/public/, /node_modules\/@redactie\/translations-module/],
 				},
 				{
 					test: /\.s[ac]ss$/i,
@@ -52,13 +52,17 @@ module.exports = env => {
 		],
 		externals: {
 			react: 'react',
+			ramda: 'ramda',
+			ky: 'ky',
+			formik: 'formik',
+			yup: 'yup',
 			rxjs: 'rxjs',
+			'rxjs/operators': 'rxjs/operators',
 			'react-dom': 'react-dom',
 			'react-router-dom': 'react-router-dom',
 			'@redactie/redactie-core': '@redactie/redactie-core',
 			'@acpaas-ui/react-components': '@acpaas-ui/react-components',
 			'@acpaas-ui/react-editorial-components': '@acpaas-ui/react-editorial-components',
-			'rxjs/operators': 'rxjs/operators',
 			'@datorama/akita': '@datorama/akita',
 		},
 		output: {

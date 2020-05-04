@@ -44,6 +44,7 @@
     "@redactie/content-types-module": "^0.6.0",
     "@redactie/module-webpack-plugin": "2.0.0",
     "@redactie/redactie-core": "1.2.0",
+    "@redactie/translations-module": "^0.2.0",
     "@testing-library/jest-dom": "5.0.2",
     "@testing-library/react": "9.4.0",
     "@types/jest": "24.9.1",
@@ -87,14 +88,14 @@
     "typescript-plugin-css-modules": "2.1.2",
     "webpack": "4.41.5",
     "webpack-bundle-analyzer": "3.6.1",
-    "webpack-cli": "3.3.10"
-  },
-  "dependencies": {
-    "lodash.debounce": "4.0.8",
+    "webpack-cli": "3.3.10",
     "ky": "0.17.0",
     "ramda": "0.27.0",
     "yup": "0.28.3",
     "formik": "2.1.4"
+  },
+  "dependencies": {
+    "lodash.debounce": "4.0.8"
   },
   "author": "Glenn verschooren",
   "license": "ISC"
