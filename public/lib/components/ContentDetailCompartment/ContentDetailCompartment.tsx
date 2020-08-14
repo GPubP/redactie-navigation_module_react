@@ -5,15 +5,22 @@ import React, { FC, useMemo } from 'react';
 
 import AutoSubmit from '../AutoSubmit/AutoSubmit';
 
+import {
+	NAVIGATION_TREE_OPTIONS,
+	POSITION_OPTIONS,
+	STATUS_OPTIONS,
+	VALIDATION_SCHEMA,
+} from './ContentDetailCompartment.const';
+
 const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }) => {
 	const initialValues = useMemo(
 		() => ({
-			navigationTree: value.navigationTree || 'hoofdnavigatie',
-			position: value.position || 'sport',
+			navigationTree: value.navigationTree || NAVIGATION_TREE_OPTIONS[0].value,
+			position: value.position || POSITION_OPTIONS[0].value,
 			label: value.label || '',
 			slug: value.slug || '',
 			description: value.description || '',
-			status: value.status || 'gepubliceerd',
+			status: value.status || STATUS_OPTIONS[0].value,
 		}),
 		[value]
 	);
@@ -22,29 +29,12 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 		onChange(values);
 	};
 
-	const navigationTreeOptions = [
-		{
-			label: 'Hoofdnavigatie',
-			value: 'hoofdnavigatie',
-		},
-	];
-
-	const positionOptions = [
-		{
-			label: 'Cultuur en sport > Sport >',
-			value: 'sport',
-		},
-	];
-
-	const statusOptions = [
-		{
-			label: 'Gepubliceerd',
-			value: 'gepubliceerd',
-		},
-	];
-
 	return (
-		<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
+		<Formik
+			initialValues={initialValues}
+			onSubmit={onFormSubmit}
+			validationSchema={VALIDATION_SCHEMA}
+		>
 			{() => (
 				<>
 					<AutoSubmit />
@@ -57,9 +47,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									id="navigationTree"
 									name="navigationTree"
 									label="Navigatieboom"
-									required={true}
-									options={navigationTreeOptions}
-								></Field>
+									required
+									options={NAVIGATION_TREE_OPTIONS}
+								/>
 								<div className="u-text-light u-margin-top-xs">
 									Selecteer een navigatieboom
 								</div>
@@ -70,9 +60,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									id="position"
 									name="position"
 									label="Positie"
-									required={true}
-									options={positionOptions}
-								></Field>
+									required
+									options={POSITION_OPTIONS}
+								/>
 								<div className="u-text-light u-margin-top-xs">
 									Selecteer op welke plek je de pagina in de navigatieboom wilt
 									hangen.
@@ -86,20 +76,14 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									id="label"
 									name="label"
 									label="Label"
-									required={true}
-								></Field>
+									required
+								/>
 								<div className="u-text-light u-margin-top-xs">
 									Geef een naam of &apos;label&apos; op voor dit item.
 								</div>
 							</div>
 							<div className="col-xs-12 col-sm-6">
-								<Field
-									as={TextField}
-									id="slug"
-									name="slug"
-									label="Slug"
-									required={true}
-								></Field>
+								<Field as={TextField} id="slug" name="slug" label="Slug" required />
 								<div className="u-text-light u-margin-top-xs">
 									Geef een &apos;slug&apos; op voor dit item.
 								</div>
@@ -112,7 +96,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 								name="description"
 								label="Beschrijving"
 								placeholder="Typ een beschrijving"
-							></Field>
+							/>
 							<div className="u-text-light u-margin-top-xs">
 								Geef dit item een korte beschrijving.
 							</div>
@@ -124,9 +108,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									id="status"
 									name="status"
 									label="Status"
-									required={true}
-									options={statusOptions}
-								></Field>
+									required
+									options={STATUS_OPTIONS}
+								/>
 								<div className="u-text-light u-margin-top-xs">
 									Selecteer een status
 								</div>
