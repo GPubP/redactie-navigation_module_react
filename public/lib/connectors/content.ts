@@ -8,6 +8,4 @@ export const registerContentDetailCompartment = (
 	key: string,
 	options: ExternalCompartmentOptions
 ): any | false =>
-	contentModuleAPI
-		? contentModuleAPI.registerContentDetailCompartment('navigation', options)
-		: false;
+	contentModuleAPI ? contentModuleAPI.registerContentDetailCompartment(key, options) : false;
