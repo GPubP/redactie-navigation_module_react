@@ -7,6 +7,7 @@ import { registerCTDetailTab } from './lib/connectors/contentTypes';
 
 registerContentDetailCompartment('navigation', {
 	label: 'Navigatie',
+	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: 'navigation-module',
 	component: ContentDetailCompartment,
 	isValid: false,
