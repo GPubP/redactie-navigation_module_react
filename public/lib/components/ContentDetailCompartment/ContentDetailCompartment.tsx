@@ -1,9 +1,9 @@
 import { Select, Textarea, TextField } from '@acpaas-ui/react-components';
 import { CompartmentProps } from '@redactie/content-module';
-import { Field, Formik } from 'formik';
+import { Field, Formik, FormikValues } from 'formik';
 import React, { FC, useMemo } from 'react';
 
-import AutoSubmit from '../AutoSubmit/AutoSubmit';
+import { FormikOnChangeHandler } from '../FormikOnChangeHandler';
 
 import {
 	NAVIGATION_TREE_OPTIONS,
@@ -25,19 +25,20 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 		[value]
 	);
 
-	const onFormSubmit = (values: any): void => {
+	const onFormChange = (values: FormikValues, submitForm: () => Promise<void>): void => {
+		submitForm();
 		onChange(values);
 	};
 
 	return (
 		<Formik
 			initialValues={initialValues}
-			onSubmit={onFormSubmit}
+			onSubmit={onChange}
 			validationSchema={VALIDATION_SCHEMA}
 		>
-			{() => (
+			{({ submitForm }) => (
 				<>
-					<AutoSubmit />
+					<FormikOnChangeHandler onChange={values => onFormChange(values, submitForm)} />
 					<div className="u-margin-top">
 						<h6 className="u-margin-bottom">Navigatie</h6>
 						<div className="row">
