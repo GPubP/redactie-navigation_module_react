@@ -41,7 +41,7 @@
     "@commitlint/config-conventional": "8.3.4",
     "@datorama/akita": "4.22.0",
     "@redactie/content-module": "^0.12.0",
-    "@redactie/content-types-module": "^0.6.0",
+    "@redactie/content-types-module": "^0.15.0",
     "@redactie/module-webpack-plugin": "2.0.0",
     "@redactie/redactie-core": "1.2.0",
     "@redactie/translations-module": "^0.2.0",
