@@ -36,7 +36,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 			onSubmit={onChange}
 			validationSchema={VALIDATION_SCHEMA}
 		>
-			{({ submitForm }) => (
+			{({ errors, submitForm, touched }) => (
 				<>
 					<FormikOnChangeHandler onChange={values => onFormChange(values, submitForm)} />
 					<div className="u-margin-top">
@@ -77,6 +77,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									id="label"
 									name="label"
 									label="Label"
+									state={!!touched.label && !!errors.label ? 'error' : ''}
 									required
 								/>
 								<div className="u-text-light u-margin-top-xs">
@@ -84,7 +85,14 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 								</div>
 							</div>
 							<div className="col-xs-12 col-sm-6">
-								<Field as={TextField} id="slug" name="slug" label="Slug" required />
+								<Field
+									as={TextField}
+									id="slug"
+									name="slug"
+									label="Slug"
+									state={!!touched.slug && !!errors.slug ? 'error' : ''}
+									required
+								/>
 								<div className="u-text-light u-margin-top-xs">
 									Geef een &apos;slug&apos; op voor dit item.
 								</div>

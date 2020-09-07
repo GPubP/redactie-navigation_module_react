@@ -1,5 +1,4 @@
-import { ContentTypeAPI } from '@redactie/content-types-module';
-import { ExternalTabOptions } from '@redactie/content-types-module/dist/lib/store/api/externalTabs';
+import { ContentTypeAPI, ExternalTabOptions } from '@redactie/content-types-module';
 import Core from '@redactie/redactie-core';
 
 const contentTypeModuleAPI: ContentTypeAPI = Core.modules.getModuleAPI(
