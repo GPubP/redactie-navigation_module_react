@@ -51,9 +51,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									required
 									options={NAVIGATION_TREE_OPTIONS}
 								/>
-								<div className="u-text-light u-margin-top-xs">
+								<small className="u-block u-text-light u-margin-top-xs">
 									Selecteer een navigatieboom
-								</div>
+								</small>
 							</div>
 							<div className="col-xs-12 col-sm-6">
 								<Field
@@ -64,38 +64,34 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									required
 									options={POSITION_OPTIONS}
 								/>
-								<div className="u-text-light u-margin-top-xs">
+								<small className="u-block u-text-light u-margin-top-xs">
 									Selecteer op welke plek je de pagina in de navigatieboom wilt
 									hangen.
-								</div>
+								</small>
 							</div>
 						</div>
 						<div className="row u-margin-top">
 							<div className="col-xs-12 col-sm-6">
 								<Field
 									as={TextField}
+									description="Geef een naam of 'label' op voor dit item."
 									id="label"
 									name="label"
 									label="Label"
 									state={!!touched.label && !!errors.label ? 'error' : ''}
 									required
 								/>
-								<div className="u-text-light u-margin-top-xs">
-									Geef een naam of &apos;label&apos; op voor dit item.
-								</div>
 							</div>
 							<div className="col-xs-12 col-sm-6">
 								<Field
 									as={TextField}
+									description="Geef een 'slug' op voor dit item."
 									id="slug"
 									name="slug"
 									label="Slug"
 									state={!!touched.slug && !!errors.slug ? 'error' : ''}
 									required
 								/>
-								<div className="u-text-light u-margin-top-xs">
-									Geef een &apos;slug&apos; op voor dit item.
-								</div>
 							</div>
 						</div>
 						<div className="u-margin-top">
@@ -106,9 +102,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 								label="Beschrijving"
 								placeholder="Typ een beschrijving"
 							/>
-							<div className="u-text-light u-margin-top-xs">
+							<small className="u-block u-text-light u-margin-top-xs">
 								Geef dit item een korte beschrijving.
-							</div>
+							</small>
 						</div>
 						<div className="u-margin-top row">
 							<div className="col-xs-12 col-sm-6">
@@ -120,9 +116,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, onChange }
 									required
 									options={STATUS_OPTIONS}
 								/>
-								<div className="u-text-light u-margin-top-xs">
+								<small className="u-block u-text-light u-margin-top-xs">
 									Selecteer een status
-								</div>
+								</small>
 							</div>
 						</div>
 					</div>
