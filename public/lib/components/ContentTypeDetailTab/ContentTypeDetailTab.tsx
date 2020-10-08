@@ -25,10 +25,11 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 	);
 	const [t] = useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(null);
-	const [hasChanges] = useDetectValueChanges(!isLoading, formValue);
+	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
 
 	const onFormSubmit = (values: any): void => {
 		onSubmit({ config: values, validationSchema: {} });
+		resetChangeDetection();
 	};
 
 	return (
