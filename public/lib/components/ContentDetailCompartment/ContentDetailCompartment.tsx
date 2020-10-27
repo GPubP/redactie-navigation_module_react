@@ -1,9 +1,8 @@
 import { Select, Textarea, TextField } from '@acpaas-ui/react-components';
 import { CompartmentProps } from '@redactie/content-module';
+import { FormikOnChangeHandler } from '@redactie/utils';
 import { Field, Formik, FormikValues } from 'formik';
 import React, { FC, useMemo } from 'react';
-
-import { FormikOnChangeHandler } from '../FormikOnChangeHandler';
 
 import {
 	NAVIGATION_TREE_OPTIONS,

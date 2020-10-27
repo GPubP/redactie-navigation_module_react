@@ -20,6 +20,7 @@ registerCTDetailTab('navigation', {
 	label: 'Navigatie',
 	module: 'navigation-module',
 	component: ContentTypeDetailTab,
+	containerId: 'update' as any,
 });
 // export all components
 export * from './lib/components';

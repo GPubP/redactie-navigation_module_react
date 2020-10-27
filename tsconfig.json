@@ -27,7 +27,6 @@
 		"outDir": "dist"
 	},
 	"include": [
-		"public",
-		"node_modules/@redactie/translations-module"
+		"public"
 	]
 }

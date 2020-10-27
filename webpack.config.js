@@ -19,7 +19,7 @@ module.exports = env => {
 				{
 					test: /\.ts(x)?$/,
 					use: 'ts-loader',
-					include: [/public/, /node_modules\/@redactie\/translations-module/],
+					include: [/public/],
 				},
 				{
 					test: /\.s[ac]ss$/i,
@@ -61,6 +61,7 @@ module.exports = env => {
 			'react-dom': 'react-dom',
 			'react-router-dom': 'react-router-dom',
 			'@redactie/redactie-core': '@redactie/redactie-core',
+			'@redactie/translations-module': '@redactie/translations-module',
 			'@redactie/utils': '@redactie/utils',
 			'@acpaas-ui/react-components': '@acpaas-ui/react-components',
 			'@acpaas-ui/react-editorial-components': '@acpaas-ui/react-editorial-components',
