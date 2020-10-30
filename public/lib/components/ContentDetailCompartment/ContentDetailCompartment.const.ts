@@ -1,31 +1,48 @@
 import { object, string } from 'yup';
 
+const isNotEmpty = (value: any): boolean => value !== null && value !== undefined && value !== '';
+
 export const VALIDATION_SCHEMA = object().shape({
-	navigationTree: string().required(),
-	position: string().required(),
-	label: string().required(),
-	slug: string().required(),
+	navigationTree: string(),
+	position: string(),
 	description: string(),
-	status: string().required(),
+	label: string().when('navigationTree', {
+		is: isNotEmpty,
+		then: string().required(),
+	}),
+	slug: string().when('navigationTree', {
+		is: isNotEmpty,
+		then: string().required(),
+	}),
+	status: string().when('navigationTree', {
+		is: isNotEmpty,
+		then: string().required(),
+	}),
 });
-
-export const NAVIGATION_TREE_OPTIONS = [
-	{
-		label: 'Hoofdnavigatie',
-		value: 'hoofdnavigatie',
-	},
-];
-
-export const POSITION_OPTIONS = [
-	{
-		label: 'Cultuur en sport > Sport >',
-		value: 'sport',
-	},
-];
 
 export const STATUS_OPTIONS = [
 	{
-		label: 'Gepubliceerd',
-		value: 'gepubliceerd',
+		label: 'Afgewezen',
+		value: 'rejected',
+	},
+	{
+		label: 'Gearchiveerd',
+		value: 'archived',
+	},
+	{
+		label: 'Werkversie',
+		value: 'draftf',
+	},
+	{
+		label: 'Klaar voor nakijken',
+		value: 'inreview',
+	},
+	{
+		label: 'Klaar voor publicatie',
+		value: 'ready',
+	},
+	{
+		label: 'published',
+		value: 'Gepubliceerd',
 	},
 ];
