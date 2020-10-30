@@ -25,7 +25,7 @@ const beforeSubmit = (activeCompartmentName: string, moduleValue: ModuleValue): 
 
 	if (shouldCreate) {
 		return treesFacade
-			.createTreeItem(moduleValue.navigationTree, body as any)
+			.createTreeItem(moduleValue.navigationTree, body)
 			.then(response => {
 				if (response) {
 					return {
@@ -41,7 +41,7 @@ const beforeSubmit = (activeCompartmentName: string, moduleValue: ModuleValue): 
 	}
 
 	return treesFacade
-		.updateTreeItem(moduleValue.navigationTree, moduleValue.id as string, body as any)
+		.updateTreeItem(moduleValue.navigationTree, moduleValue.id, body)
 		.then(response => {
 			if (response) {
 				return moduleValue;

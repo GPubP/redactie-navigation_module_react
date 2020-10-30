@@ -32,9 +32,7 @@ export interface TreeDetailItemResponse {
 }
 
 export interface CreateTreeItemPayload {
-	externalUrl: string;
 	slug: string;
-	linkedTreeId?: string;
 	description: string;
 	label: string;
 	parentId?: string;
@@ -44,9 +42,8 @@ export interface CreateTreeItemPayload {
 export interface CreateTreeItemResponse {
 	id: string;
 	slug: string;
-	externalUrl: string;
-	linkedTreeId: string;
 	description: string;
+	parentId?: string;
 	label: string;
 	publishStatus: string;
 }
