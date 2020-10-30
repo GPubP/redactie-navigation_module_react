@@ -11,7 +11,7 @@ treesFacade.getTrees();
 
 registerContentDetailCompartment('navigation', {
 	label: 'Navigatie',
-	getDescription: (contentItem: any) => contentItem?.meta.slug.nl || '',
+	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: 'navigation-module',
 	component: ContentDetailCompartment,
 	isValid: false,
