@@ -12,3 +12,13 @@ export interface ContentDetailCompartmentProps {
 	updateContent?: (e: any) => boolean; // For edge cases where content item must be changed. Boolean for validation result (maybe?)
 	setValidity?: (isValid: boolean) => void;
 }
+
+export interface ContentDetailCompartmentFormState {
+	id?: string;
+	navigationTree: string;
+	position: string[];
+	label: string;
+	slug: string;
+	description: string;
+	status: string;
+}
