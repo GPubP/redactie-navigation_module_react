@@ -2,12 +2,9 @@ import { ModuleValue } from '@redactie/content-module';
 
 import { treesFacade } from '../../store/trees';
 
-const beforeSubmit = (
-	activeCompartmentName: string,
-	moduleValue: ModuleValue
-): Promise<boolean> => {
+const beforeSubmit = (activeCompartmentName: string, moduleValue: ModuleValue): Promise<any> => {
 	if (activeCompartmentName !== 'navigation' || !moduleValue) {
-		return Promise.resolve(true);
+		return Promise.resolve();
 	}
 
 	const shouldCreate =
