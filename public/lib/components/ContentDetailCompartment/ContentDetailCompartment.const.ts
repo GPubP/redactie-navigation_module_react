@@ -42,7 +42,7 @@ export const STATUS_OPTIONS = [
 		value: 'ready',
 	},
 	{
-		label: 'published',
-		value: 'Gepubliceerd',
+		label: 'Gepubliceerd',
+		value: 'published',
 	},
 ];
