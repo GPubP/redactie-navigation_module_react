@@ -1,18 +1,13 @@
-import { ModuleValue } from '@redactie/content-module';
+import { ContentSchema, ModuleValue } from '@redactie/content-module';
 
+import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
+import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/trees';
 import { treesFacade } from '../../store/trees';
 
-const beforeSubmit = (activeCompartmentName: string, moduleValue: ModuleValue): Promise<any> => {
-	if (activeCompartmentName !== 'navigation' || !moduleValue) {
-		return Promise.resolve();
-	}
-
-	const shouldCreate =
-		moduleValue.id === undefined || moduleValue.id === null || moduleValue.id === '';
-	const updateErrorMessage = 'Aanmaken van item in de navigatieboom is mislukt';
-	const createErrorMessage = 'Wijzigen van het item in de navigatieboom is mislukt';
-
-	const body = {
+const getBody = (
+	moduleValue: ContentDetailCompartmentFormState
+): UpdateTreeItemPayload | CreateTreeItemPayload => {
+	return {
 		label: moduleValue.label,
 		slug: moduleValue.slug,
 		description: moduleValue.description,
@@ -22,35 +17,87 @@ const beforeSubmit = (activeCompartmentName: string, moduleValue: ModuleValue): 
 				: undefined,
 		publishStatus: moduleValue.status,
 	};
+};
 
-	if (shouldCreate) {
-		return treesFacade
-			.createTreeItem(moduleValue.navigationTree, body)
-			.then(response => {
-				if (response) {
-					return {
-						...moduleValue,
-						id: response.id,
-					};
-				}
-				throw new Error(updateErrorMessage);
-			})
-			.catch(() => {
-				throw new Error(updateErrorMessage);
-			});
-	}
-
+const updateTreeItem = (
+	navModuleValue: ContentDetailCompartmentFormState,
+	body: UpdateTreeItemPayload
+): Promise<ContentDetailCompartmentFormState> => {
+	const updateErrorMessage = 'Wijzigen van het item in de navigatieboom is mislukt';
 	return treesFacade
-		.updateTreeItem(moduleValue.navigationTree, moduleValue.id, body)
+		.updateTreeItem(navModuleValue.navigationTree, navModuleValue.id || '', body)
 		.then(response => {
 			if (response) {
-				return moduleValue;
+				return {
+					...navModuleValue,
+					publishStatus: body.publishStatus,
+				};
+			}
+			throw new Error(updateErrorMessage);
+		})
+		.catch(() => {
+			throw new Error(updateErrorMessage);
+		});
+};
+
+const createTreeItem = (
+	navModuleValue: ContentDetailCompartmentFormState,
+	body: CreateTreeItemPayload
+): Promise<ContentDetailCompartmentFormState> => {
+	const createErrorMessage = 'Aanmaken van item in de navigatieboom is mislukt';
+	return treesFacade
+		.createTreeItem(navModuleValue.navigationTree, body)
+		.then(response => {
+			if (response) {
+				return {
+					...navModuleValue,
+					id: response.id,
+				};
 			}
 			throw new Error(createErrorMessage);
 		})
 		.catch(() => {
 			throw new Error(createErrorMessage);
 		});
+};
+
+const beforeSubmit = (
+	activeCompartmentName: string,
+	activeModuleValue: ModuleValue,
+	contentItem: ContentSchema
+): Promise<any> => {
+	const navModuleValue = contentItem.modulesData?.navigation as ContentDetailCompartmentFormState;
+
+	if (!navModuleValue) {
+		return Promise.resolve();
+	}
+
+	const isCurrentActiveCompartment = activeCompartmentName === 'navigation';
+	const navItemExist =
+		navModuleValue.id !== undefined && navModuleValue.id !== null && navModuleValue.id !== '';
+	const navItemIsPublished = navModuleValue.status === NAV_ITEM_STATUSES.PUBLISHED;
+	const contentItemIsUnpublished = contentItem.meta.status === 'UNPUBLISHED';
+
+	const shouldCreate = isCurrentActiveCompartment && !navItemExist;
+	const shouldUpdate = isCurrentActiveCompartment && navItemExist;
+	const shouldDepublish = navItemIsPublished && contentItemIsUnpublished;
+
+	const body = shouldDepublish
+		? getBody({
+				...navModuleValue,
+				status: NAV_ITEM_STATUSES.ARCHIVED,
+		  })
+		: getBody(navModuleValue);
+
+	if (shouldCreate) {
+		return createTreeItem(navModuleValue, body);
+	}
+
+	if (shouldUpdate || shouldDepublish) {
+		return updateTreeItem(navModuleValue, body);
+	}
+
+	return Promise.resolve();
 };
 
 export default beforeSubmit;

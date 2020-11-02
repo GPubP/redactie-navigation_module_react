@@ -20,29 +20,38 @@ export const VALIDATION_SCHEMA = object().shape({
 	}),
 });
 
+export const NAV_ITEM_STATUSES = {
+	REJECTED: 'rejected',
+	ARCHIVED: 'archived',
+	DRAFT: 'draft',
+	INREVIEW: 'inreview',
+	READY: 'ready',
+	PUBLISHED: 'published',
+};
+
 export const STATUS_OPTIONS = [
 	{
 		label: 'Afgewezen',
-		value: 'rejected',
+		value: NAV_ITEM_STATUSES.REJECTED,
 	},
 	{
 		label: 'Gearchiveerd',
-		value: 'archived',
+		value: NAV_ITEM_STATUSES.ARCHIVED,
 	},
 	{
 		label: 'Werkversie',
-		value: 'draftf',
+		value: NAV_ITEM_STATUSES.DRAFT,
 	},
 	{
 		label: 'Klaar voor nakijken',
-		value: 'inreview',
+		value: NAV_ITEM_STATUSES.INREVIEW,
 	},
 	{
 		label: 'Klaar voor publicatie',
-		value: 'ready',
+		value: NAV_ITEM_STATUSES.READY,
 	},
 	{
 		label: 'published',
-		value: 'Gepubliceerd',
+		value: NAV_ITEM_STATUSES.PUBLISHED,
 	},
 ];
