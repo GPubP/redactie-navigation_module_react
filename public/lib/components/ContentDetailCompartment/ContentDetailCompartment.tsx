@@ -43,18 +43,26 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 	const treeOptions = useMemo<CascaderOption[]>(() => {
 		if (tree) {
 			const mapTreeItemsToOptions = (items: TreeDetailItemResponse[]): CascaderOption[] => {
-				return items.map(
-					(item: TreeDetailItemResponse): CascaderOption => ({
-						value: item.id,
-						label: item.label,
-						children: mapTreeItemsToOptions(item.items || []),
+				return items
+					.map((item: TreeDetailItemResponse) => {
+						// Filter out the current navigation item from the position list
+						// The user can not set the current navigation item as the position in the
+						// navigation tree because it will create a circular dependency
+						if (item.id === value.id) {
+							return null;
+						}
+						return {
+							value: item.id,
+							label: item.label,
+							children: mapTreeItemsToOptions(item.items || []),
+						};
 					})
-				);
+					.filter(item => item !== null) as CascaderOption[];
 			};
 			return mapTreeItemsToOptions(tree.items || []);
 		}
 		return [];
-	}, [tree]);
+	}, [tree, value.id]);
 
 	useEffect(() => {
 		if (value.navigationTree && value.navigationTree !== previousValue?.navigationTree) {
