@@ -1,12 +1,19 @@
 import { ListApiResponse } from '../../navigation.types';
 
+/**
+ * Trees
+ */
+
+/////////////////////////////////
+// GET TREES TYPES ---------------------
+/////////////////////////////////
 export type TreesResponse = ListApiResponse<Embedded>;
 
 export interface Embedded {
-	resourceList: TreeResponse[];
+	resourceList: Tree[];
 }
 
-export interface TreeResponse {
+export interface Tree {
 	id: number;
 	logicalId: string;
 	label: string;
@@ -21,41 +28,6 @@ export interface TreeResponse {
 	meta: TreeMeta;
 }
 
-export interface TreeDetailItemResponse {
-	id: string;
-	label: string;
-	description: string;
-	publishStatus: string;
-	slug: string;
-	externalUrl: string;
-	items: TreeDetailItemResponse[];
-}
-
-export interface CreateTreeItemPayload {
-	slug: string;
-	description: string;
-	label: string;
-	parentId?: string;
-	publishStatus: string;
-}
-
-export interface CreateTreeItemResponse {
-	id: string;
-	slug: string;
-	description: string;
-	parentId?: string;
-	label: string;
-	publishStatus: string;
-}
-
-export type UpdateTreeItemResponse = CreateTreeItemResponse;
-
-export type UpdateTreeItemPayload = CreateTreeItemPayload;
-
-export interface TreeDetailResponse extends TreeResponse {
-	items: TreeDetailItemResponse[];
-}
-
 export interface TreeCategory {
 	id: number;
 	label: string;
@@ -64,3 +36,38 @@ export interface TreeCategory {
 export interface TreeMeta {
 	lastEditor: null;
 }
+///////////////////////////////////////
+// GET TREE TYPES ---------------------
+///////////////////////////////////////
+export interface TreeDetail extends Tree {
+	items: TreeDetailItem[];
+}
+
+export interface TreeDetailItem {
+	id: string;
+	label: string;
+	description: string;
+	publishStatus: string;
+	slug: string;
+	externalUrl?: string;
+	items: TreeDetailItem[];
+}
+
+///////////////////////////////////////
+// GET TREE ITEM TYPES ----------------
+///////////////////////////////////////
+export interface TreeItem extends Omit<TreeDetailItem, 'items'> {
+	parentId?: string;
+}
+
+///////////////////////////////////////
+// CREATE TREE ITEM TYPES -------------
+///////////////////////////////////////
+
+export type CreateTreeItemPayload = Omit<TreeItem, 'id'>;
+
+///////////////////////////////////////
+// UPDATE TREE ITEM TYPES -------------
+///////////////////////////////////////
+
+export type UpdateTreeItemPayload = CreateTreeItemPayload;

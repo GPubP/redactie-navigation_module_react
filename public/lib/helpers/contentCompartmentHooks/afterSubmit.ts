@@ -1,65 +1,52 @@
-import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
+import { ContentSchema, ModuleValue } from '@redactie/content-module';
+import { omit } from 'ramda';
 
-import { NAV_ITEM_STATUSES } from '../../components/ContentDetailCompartment';
-import { treesFacade } from '../../store/trees';
+import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
+import { UpdateTreeItemPayload } from '../../services/trees';
+import { treeItemsFacade } from '../../store/treeItems';
 
-const afterSubmit: ExternalCompartmentAfterSubmitFn = (
-	error,
-	activeCompartmentName,
-	moduleValue,
-	contentItem
-): Promise<any> => {
-	// Only do something when the content item is successfully saved
-	console.log(error, '//////////////:');
-	// if (error) {
-	// 	return Promise.resolve();
-	// }
-	const navModuleValue = contentItem.modulesData?.navigation;
-	if (!navModuleValue) {
-		return Promise.resolve();
-	}
-
-	const navItemExist =
-		navModuleValue.id !== undefined && navModuleValue.id !== null && navModuleValue.id !== '';
-	const navItemIsPublished = navModuleValue.status === NAV_ITEM_STATUSES.PUBLISHED;
-	// TODO: import 'UNPUBLISHED' status from content module when available
-	const contentItemIsUnpublished = contentItem.meta.status === 'UNPUBLISHED';
-	const updateErrorMessage = `Archiveren van het navigatie item ${navModuleValue.label} mislukt.`;
-
-	console.log(
-		navItemExist,
-		navItemIsPublished,
-		contentItemIsUnpublished,
-		navModuleValue,
-		contentItem
-	);
-
-	if (!(navItemExist && navItemIsPublished && contentItemIsUnpublished)) {
-		return Promise.resolve();
-	}
-
-	const body = {
-		label: navModuleValue.label,
-		slug: navModuleValue.slug,
-		description: navModuleValue.description,
-		parentId:
-			navModuleValue.position.length > 0
-				? navModuleValue.position[navModuleValue.position.length - 1]
-				: undefined,
-		publishStatus: NAV_ITEM_STATUSES.ARCHIVED,
-	};
-
-	return treesFacade
-		.updateTreeItem(navModuleValue.navigationTree, navModuleValue.id, body)
-		.then(response => {
-			if (!response) {
-				throw new Error(updateErrorMessage);
-			}
-			return treesFacade.getTree(navModuleValue.id);
+const updateTreeItem = (
+	navModuleValue: ContentDetailCompartmentFormState,
+	body: UpdateTreeItemPayload
+): Promise<void> => {
+	const updateErrorMessage = 'Wijzigen van het item in de navigatieboom is mislukt';
+	return treeItemsFacade
+		.updateTreeItem(navModuleValue.navigationTree, navModuleValue.id || '', body)
+		.then(() => {
+			return;
 		})
 		.catch(() => {
 			throw new Error(updateErrorMessage);
 		});
+};
+
+const afterSubmit = (
+	error: Error | undefined,
+	activeCompartmentName: string,
+	activeModuleValue: ModuleValue,
+	contentItem: ContentSchema
+): Promise<any> => {
+	const navModuleValue = contentItem.modulesData?.navigation as ContentDetailCompartmentFormState;
+	const treeItem = treeItemsFacade.getTreeItem(navModuleValue.id as string);
+
+	if (error || !navModuleValue || !treeItem) {
+		return Promise.resolve();
+	}
+
+	const navItemIsPublished = treeItem.publishStatus === NAV_ITEM_STATUSES.PUBLISHED;
+	const contentItemIsUnpublished = contentItem.meta.status === 'UNPUBLISHED';
+	const shouldDepublish = navItemIsPublished && contentItemIsUnpublished;
+
+	const body = {
+		...omit(['weight'], treeItem),
+		publishStatus: NAV_ITEM_STATUSES.ARCHIVED,
+	};
+
+	if (shouldDepublish) {
+		return updateTreeItem(navModuleValue, body);
+	}
+
+	return Promise.resolve();
 };
 
 export default afterSubmit;

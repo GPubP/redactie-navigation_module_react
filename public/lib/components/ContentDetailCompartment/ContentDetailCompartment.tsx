@@ -1,50 +1,62 @@
 import { Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps } from '@redactie/content-module';
-import { DataLoader, FormikOnChangeHandler, LoadingState, usePrevious } from '@redactie/utils';
+import { DataLoader, FormikOnChangeHandler, LoadingState, useDidMount } from '@redactie/utils';
 import arrayTreeFilter from 'array-tree-filter';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
+import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
-import { useTree, useTreesOptions } from '../../hooks';
+import { useTree, useTreeItem, useTreesOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
-import { TreeDetailItemResponse } from '../../services/trees';
+import { TreeDetailItem } from '../../services/trees';
+import { treeItemsFacade } from '../../store/treeItems';
 import { treesFacade } from '../../store/trees';
 
-import { STATUS_OPTIONS, VALIDATION_SCHEMA } from './ContentDetailCompartment.const';
+import {
+	NAV_ITEM_STATUSES,
+	STATUS_OPTIONS,
+	VALIDATION_SCHEMA,
+} from './ContentDetailCompartment.const';
 
 const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentValue, onChange }) => {
 	/**
 	 * Hooks
 	 */
-	const [loadingTrees, treesOptions] = useTreesOptions();
-	const [loadingTree, tree] = useTree();
-	const initialValues = useMemo(
-		() => ({
-			id: value.id || '',
-			navigationTree: value.navigationTree || '',
-			position: value.position || [],
-			label: value.label || '',
-			slug: contentValue?.meta.slug.nl,
-			description: value.description || '',
-			status: value.status || STATUS_OPTIONS[0].value,
-		}),
-		[
-			contentValue,
-			value.description,
-			value.id,
-			value.label,
-			value.navigationTree,
-			value.position,
-			value.status,
-		]
-	);
-	const previousValue = usePrevious(value);
+
+	// Data hooks
+	const [loadingTreesOptions, treesOptions] = useTreesOptions();
+	const [loadingTree, tree] = useTree(value.navigationTree);
+	const treeItem = useTreeItem(value.id);
+
+	const findPosition = (treeOptions: CascaderOption[], treeItemId?: string): string[] => {
+		const reduceTreeOptions = (options: CascaderOption[]): string[] => {
+			return options.reduce((acc, option) => {
+				if (option.value === treeItemId) {
+					acc.push(option.value);
+					return acc;
+				}
+
+				if (option.children && option.children.length > 0) {
+					const childrenValue = reduceTreeOptions(option.children);
+
+					if (childrenValue && childrenValue.length > 0) {
+						return [option.value, ...childrenValue];
+					}
+				}
+
+				return acc;
+			}, [] as string[]);
+		};
+
+		return reduceTreeOptions(treeOptions);
+	};
+
 	const treeOptions = useMemo<CascaderOption[]>(() => {
 		if (tree) {
-			const mapTreeItemsToOptions = (items: TreeDetailItemResponse[]): CascaderOption[] => {
+			const mapTreeItemsToOptions = (items: TreeDetailItem[]): CascaderOption[] => {
 				return items
-					.map((item: TreeDetailItemResponse) => {
+					.map((item: TreeDetailItem) => {
 						// Filter out the current navigation item from the position list
 						// The user can not set the current navigation item as the position in the
 						// navigation tree because it will create a circular dependency
@@ -64,17 +76,60 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 		return [];
 	}, [tree, value.id]);
 
+	const initialValues = useMemo(
+		() => ({
+			id: value.id || '',
+			navigationTree: value.navigationTree || '',
+			position:
+				!isNil(treeItem?.parentId) && treeOptions.length > 0
+					? findPosition(treeOptions, treeItem?.parentId)
+					: [],
+			label: treeItem?.label || '',
+			slug: treeItem?.slug || contentValue?.meta.slug.nl,
+			description: treeItem?.description || '',
+			status: treeItem?.publishStatus || STATUS_OPTIONS[0].value,
+		}),
+		[contentValue, treeItem, treeOptions, value.id, value.navigationTree]
+	);
+
+	const statusOptions = useMemo(() => {
+		if (
+			contentValue?.meta.status === 'UNPUBLISHED' &&
+			value.status !== NAV_ITEM_STATUSES.PUBLISHED
+		) {
+			return STATUS_OPTIONS.filter(
+				statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
+			);
+		}
+		return STATUS_OPTIONS;
+	}, [contentValue, value.status]);
+
+	/**
+	 * Fetch data effects
+	 */
+	useDidMount(() => {
+		treesFacade.getTreesList();
+	});
+
 	useEffect(() => {
-		if (value.navigationTree && value.navigationTree !== previousValue?.navigationTree) {
+		const hasNavigationTree = !isNil(value.navigationTree) && value.navigationTree !== '';
+		const hasId = !isNil(value.id) && value.id !== '';
+
+		if (hasNavigationTree) {
 			treesFacade.getTree(value.navigationTree);
 		}
-	}, [value, previousValue]);
+
+		if (hasId && hasNavigationTree) {
+			treeItemsFacade.fetchTreeItem(value.navigationTree, value.id);
+		}
+	}, [value.id, value.navigationTree]);
 
 	/**
 	 * Functions
 	 */
 
 	const onFormChange = (values: FormikValues, submitForm: () => Promise<void>): void => {
+		console.log(values);
 		submitForm();
 		onChange(values);
 	};
@@ -237,7 +292,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 												name="status"
 												label="Status"
 												required
-												options={STATUS_OPTIONS}
+												options={statusOptions}
 											/>
 											<small className="u-block u-text-light u-margin-top-xs">
 												Selecteer een status
@@ -253,7 +308,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 		</Formik>
 	);
 
-	return <DataLoader loadingState={loadingTrees} render={renderForm} />;
+	return <DataLoader loadingState={loadingTreesOptions} render={renderForm} />;
 };
 
 export default ContentDetailCompartment;

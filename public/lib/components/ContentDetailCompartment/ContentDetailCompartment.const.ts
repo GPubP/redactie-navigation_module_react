@@ -1,4 +1,4 @@
-import { object, string } from 'yup';
+import { mixed, number, object, string } from 'yup';
 
 const isNotEmpty = (value: any): boolean => value !== null && value !== undefined && value !== '';
 
@@ -18,6 +18,11 @@ export const VALIDATION_SCHEMA = object().shape({
 		is: isNotEmpty,
 		then: string().required(),
 	}),
+});
+
+export const MINIMAL_VALIDATION_SCHEMA = object().shape({
+	id: number(),
+	navigationTree: string(),
 });
 
 export const NAV_ITEM_STATUSES = {
@@ -51,7 +56,7 @@ export const STATUS_OPTIONS = [
 		value: NAV_ITEM_STATUSES.READY,
 	},
 	{
-		label: 'published',
+		label: 'Gepubliceerd',
 		value: NAV_ITEM_STATUSES.PUBLISHED,
 	},
 ];

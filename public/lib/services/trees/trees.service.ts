@@ -2,11 +2,10 @@ import { api } from '../api';
 
 import {
 	CreateTreeItemPayload,
-	CreateTreeItemResponse,
-	TreeDetailResponse,
+	TreeDetail,
+	TreeItem,
 	TreesResponse,
 	UpdateTreeItemPayload,
-	UpdateTreeItemResponse,
 } from './trees.service.types';
 
 export class TreesApiService {
@@ -14,14 +13,15 @@ export class TreesApiService {
 		return await api.get('trees').json<TreesResponse>();
 	}
 
-	public async getTree(treeId: string): Promise<TreeDetailResponse> {
-		return await api.get(`trees/${treeId}`).json<TreeDetailResponse>();
+	public async getTree(treeId: string): Promise<TreeDetail> {
+		return await api.get(`trees/${treeId}`).json<TreeDetail>();
 	}
 
-	public async createTreeItem(
-		treeId: string,
-		body: CreateTreeItemPayload
-	): Promise<CreateTreeItemResponse> {
+	public async getTreeItem(treeId: string, treeItemId: string): Promise<TreeItem> {
+		return await api.get(`trees/${treeId}/items/${treeItemId}`).json<TreeItem>();
+	}
+
+	public async createTreeItem(treeId: string, body: CreateTreeItemPayload): Promise<TreeItem> {
 		return await api
 			.post(`trees/${treeId}/items`, {
 				json: body,
@@ -33,7 +33,7 @@ export class TreesApiService {
 		treeId: string,
 		itemId: string,
 		body: UpdateTreeItemPayload
-	): Promise<UpdateTreeItemResponse> {
+	): Promise<TreeItem> {
 		return await api
 			.put(`trees/${treeId}/items/${itemId}`, {
 				json: body,

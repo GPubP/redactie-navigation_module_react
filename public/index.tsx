@@ -1,26 +1,35 @@
 import { ContentSchema, ModuleSettings } from '@redactie/content-module';
+import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 
 import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
-import { VALIDATION_SCHEMA } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
+import {
+	MINIMAL_VALIDATION_SCHEMA,
+	VALIDATION_SCHEMA,
+} from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
 import { registerCTDetailTab } from './lib/connectors/contentTypes';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
-import { treesFacade } from './lib/store/trees';
-
-treesFacade.getTrees();
 
 registerContentDetailCompartment('navigation', {
 	label: 'Navigatie',
-	getDescription: contentItem => contentItem?.meta.slug.nl || '',
+	getDescription: (contentItem: any) => contentItem?.meta.slug.nl || '',
 	module: 'navigation-module',
 	component: ContentDetailCompartment,
 	isValid: false,
 	beforeSubmit,
 	afterSubmit,
-	validate: (values: ContentSchema) =>
-		VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation),
+	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
+		if (activeCompartment.name === 'navigation') {
+			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		}
+		console.log(
+			values.modulesData?.navigation,
+			MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation)
+		);
+		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+	},
 	show: (settings: ModuleSettings) => settings?.config?.activateTree === 'true',
-});
+} as any);
 
 registerCTDetailTab('navigation', {
 	label: 'Navigatie',
