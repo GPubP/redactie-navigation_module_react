@@ -5,12 +5,22 @@ import { TreeItemModel, TreeItemsState } from './treeItems.model';
 import { treeItemsStore } from './treeItems.store';
 
 export class TreeItemsQuery extends BaseEntityQuery<TreeItemsState> {
-	public selectTreeItem(treeId: string): Observable<TreeItemModel> {
-		return this.selectEntity(treeId);
+	public selectTreeItem(itemId: string): Observable<TreeItemModel> {
+		return this.selectEntity(itemId);
 	}
 
-	public getTreeItem(treeId: string): TreeItemModel {
-		return this.getEntity(treeId);
+	public getTreeItem(itemId: string): TreeItemModel {
+		return this.getEntity(itemId);
+	}
+
+	public isTreeCreated(itemId: string): boolean {
+		const value = this.getValue();
+		return value.createdTreeItems.includes(itemId);
+	}
+
+	public getCurrentPosition(): string[] {
+		const value = this.getValue();
+		return value.currentPosition;
 	}
 }
 

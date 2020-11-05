@@ -1,7 +1,13 @@
 import { Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps } from '@redactie/content-module';
-import { DataLoader, FormikOnChangeHandler, LoadingState, useDidMount } from '@redactie/utils';
+import {
+	DataLoader,
+	ErrorMessage,
+	FormikOnChangeHandler,
+	LoadingState,
+	useDidMount,
+} from '@redactie/utils';
 import arrayTreeFilter from 'array-tree-filter';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import { isNil } from 'ramda';
@@ -19,7 +25,12 @@ import {
 	VALIDATION_SCHEMA,
 } from './ContentDetailCompartment.const';
 
-const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentValue, onChange }) => {
+const ContentDetailCompartment: FC<CompartmentProps> = ({
+	value = {},
+	contentValue,
+	onChange,
+	formikRef,
+}) => {
 	/**
 	 * Hooks
 	 */
@@ -78,18 +89,27 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 
 	const initialValues = useMemo(
 		() => ({
-			id: value.id || '',
-			navigationTree: value.navigationTree || '',
+			id: value.id ?? '',
+			navigationTree: value.navigationTree ?? '',
 			position:
 				!isNil(treeItem?.parentId) && treeOptions.length > 0
 					? findPosition(treeOptions, treeItem?.parentId)
-					: [],
-			label: treeItem?.label || '',
-			slug: treeItem?.slug || contentValue?.meta.slug.nl,
-			description: treeItem?.description || '',
-			status: treeItem?.publishStatus || STATUS_OPTIONS[0].value,
+					: value.position ?? [],
+			label: treeItem?.label ?? value.label ?? '',
+			description: treeItem?.description ?? value.description ?? '',
+			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
 		}),
-		[contentValue, treeItem, treeOptions, value.id, value.navigationTree]
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+		[
+			contentValue,
+			treeItem,
+			treeOptions,
+			value.description,
+			value.id,
+			value.label,
+			value.navigationTree,
+			value.status,
+		]
 	);
 
 	const statusOptions = useMemo(() => {
@@ -128,9 +148,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 	 * Functions
 	 */
 
-	const onFormChange = (values: FormikValues, submitForm: () => Promise<void>): void => {
-		console.log(values);
-		submitForm();
+	const onFormChange = (values: FormikValues): void => {
 		onChange(values);
 	};
 
@@ -153,12 +171,13 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 
 	const renderForm = (): ReactElement => (
 		<Formik
+			innerRef={instance => formikRef && formikRef(instance)}
 			enableReinitialize
 			initialValues={initialValues}
 			onSubmit={onChange}
 			validationSchema={VALIDATION_SCHEMA}
 		>
-			{({ errors, submitForm, touched, values, setFieldValue }) => {
+			{({ errors, touched, values, setFieldValue }) => {
 				const navigationTreeSelected =
 					values.navigationTree !== null &&
 					values.navigationTree !== undefined &&
@@ -168,7 +187,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 					<>
 						<FormikOnChangeHandler
 							delay={300}
-							onChange={values => onFormChange(values, submitForm)}
+							onChange={values => onFormChange(values)}
 						/>
 						<div className="u-margin-top">
 							<h6 className="u-margin-bottom">Navigatie</h6>
@@ -256,20 +275,21 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 												}
 												required
 											/>
+											<ErrorMessage name="label" />
 										</div>
 										<div className="col-xs-12 col-sm-6">
 											<Field
-												as={TextField}
-												description="Geef een 'slug' op voor dit item."
-												id="slug"
-												name="slug"
-												disabled
-												label="Slug"
-												state={
-													!!touched.slug && !!errors.slug ? 'error' : ''
-												}
+												as={Select}
+												id="status"
+												name="status"
+												label="Status"
 												required
+												options={statusOptions}
 											/>
+											<small className="u-block u-text-light u-margin-top-xs">
+												Selecteer een status
+											</small>
+											<ErrorMessage name="status" />
 										</div>
 									</div>
 									<div className="u-margin-top">
@@ -283,21 +303,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({ value = {}, contentVal
 										<small className="u-block u-text-light u-margin-top-xs">
 											Geef dit item een korte beschrijving.
 										</small>
-									</div>
-									<div className="u-margin-top row">
-										<div className="col-xs-12 col-sm-6">
-											<Field
-												as={Select}
-												id="status"
-												name="status"
-												label="Status"
-												required
-												options={statusOptions}
-											/>
-											<small className="u-block u-text-light u-margin-top-xs">
-												Selecteer een status
-											</small>
-										</div>
 									</div>
 								</div>
 							)}

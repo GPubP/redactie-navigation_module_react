@@ -1,4 +1,4 @@
-import { mixed, number, object, string } from 'yup';
+import { number, object, string } from 'yup';
 
 const isNotEmpty = (value: any): boolean => value !== null && value !== undefined && value !== '';
 
@@ -8,15 +8,11 @@ export const VALIDATION_SCHEMA = object().shape({
 	description: string(),
 	label: string().when('navigationTree', {
 		is: isNotEmpty,
-		then: string().required(),
-	}),
-	slug: string().when('navigationTree', {
-		is: isNotEmpty,
-		then: string().required(),
+		then: string().required('Label is een verplicht veld.'),
 	}),
 	status: string().when('navigationTree', {
 		is: isNotEmpty,
-		then: string().required(),
+		then: string().required('Status is een verplicht veld.'),
 	}),
 });
 
