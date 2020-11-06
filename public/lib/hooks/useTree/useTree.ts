@@ -1,10 +1,13 @@
 import { LoadingState, useObservable } from '@redactie/utils';
+import { of } from 'rxjs';
 
-import { TreeDetailModel, treesFacade } from '../../store/trees';
+import { TreeModel, treesFacade } from '../../store/trees';
 
-const useTree = (): [LoadingState, TreeDetailModel | undefined] => {
+const useTree = (treeId: string): [LoadingState, TreeModel | undefined] => {
 	const isFetching = useObservable(treesFacade.isFetchingOne$, LoadingState.Loading);
-	const tree = useObservable(treesFacade.tree$);
+	const tree = useObservable(
+		treeId !== undefined && treeId !== null ? treesFacade.selectTree(treeId) : of(undefined)
+	);
 	const error = useObservable(treesFacade.error$, null);
 
 	const loadingState = error ? LoadingState.Error : isFetching;

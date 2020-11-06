@@ -1,9 +1,9 @@
 import { BaseEntityState } from '@redactie/utils';
 
-import { TreeDetailResponse, TreeResponse } from '../../services/trees';
+import { Tree, TreeDetail } from '../../services/trees';
 
-export type TreeModel = TreeResponse;
-export type TreeDetailModel = TreeDetailResponse;
+export type TreeListItemModel = Tree;
+export type TreeModel = TreeDetail;
 export interface TreesState extends BaseEntityState<TreeModel, string> {
-	tree?: TreeDetailModel;
+	treeList?: TreeListItemModel[];
 }

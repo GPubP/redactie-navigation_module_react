@@ -61,6 +61,7 @@ module.exports = env => {
 			'react-dom': 'react-dom',
 			'react-router-dom': 'react-router-dom',
 			'@redactie/redactie-core': '@redactie/redactie-core',
+			'@redactie/content-module': '@redactie/content-module',
 			'@redactie/translations-module': '@redactie/translations-module',
 			'@redactie/utils': '@redactie/utils',
 			'@acpaas-ui/react-components': '@acpaas-ui/react-components',

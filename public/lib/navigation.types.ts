@@ -15,3 +15,13 @@ export interface CascaderOption {
 	value: string;
 	children: CascaderOption[];
 }
+
+export interface ContentCompartmentState {
+	id: string;
+	navigationTree: string;
+	position?: string[];
+	label?: string;
+	slug?: string;
+	description?: string;
+	status?: string;
+}
