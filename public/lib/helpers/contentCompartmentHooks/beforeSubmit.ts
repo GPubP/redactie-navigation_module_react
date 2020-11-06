@@ -1,9 +1,10 @@
-import { isNil } from '@datorama/akita';
-import { ContentSchema } from '@redactie/content-module';
+import { ContentSchema, ContentTypeSchema } from '@redactie/content-module';
+import { ModuleValue } from '@redactie/content-module/dist/lib/services/content';
 
 import { ContentCompartmentState } from '../../navigation.types';
 import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
+import { isNotEmpty } from '../empty';
 
 const getBody = (
 	moduleValue: ContentCompartmentState,
@@ -33,7 +34,7 @@ const localUpdateTreeItem = (
 	// Therefore we need to hold the unchanged data in local state to update the tree item in the after submit hook.
 	if (navModuleValue.label) {
 		treeItemsFacade.localUpateTreeItem(navModuleValue.id, body);
-		treeItemsFacade.addCurrentPosition(navModuleValue.position);
+		treeItemsFacade.addPosition(navModuleValue.id, navModuleValue.position);
 	}
 
 	// Only save the tree and item id
@@ -47,12 +48,12 @@ const createTreeItem = (
 	navModuleValue: ContentCompartmentState,
 	body: CreateTreeItemPayload
 ): Promise<ContentCompartmentState> => {
-	const createErrorMessage = 'Aanmaken van item in de navigatieboom is mislukt';
+	const createErrorMessage = 'Aanmaken van item in de navigatieboom is mislukt.';
 	return treeItemsFacade
 		.createTreeItem(navModuleValue.navigationTree, body)
 		.then(response => {
 			if (response) {
-				treeItemsFacade.addCurrentPosition(navModuleValue.position);
+				treeItemsFacade.addPosition(response.id, navModuleValue.position);
 				// Only save the treeId and treeItemId on the content item
 				return {
 					id: response.id,
@@ -66,14 +67,47 @@ const createTreeItem = (
 		});
 };
 
-const beforeSubmit = (contentItem: ContentSchema): Promise<ContentCompartmentState | void> => {
+const deleteTreeItem = (
+	navigationTree: string,
+	navModuleValue: ContentCompartmentState
+): Promise<ModuleValue> => {
+	const deleteErrorMessage = 'Verwijderen van het navigatie item is mislukt.';
+	return treeItemsFacade
+		.deleteTreeItem(navigationTree, navModuleValue.id)
+		.then(() => {
+			// remove all module values before saving the conent item
+			return {};
+		})
+		.catch(() => {
+			throw new Error(deleteErrorMessage);
+		});
+};
+
+const beforeSubmit = (
+	contentItem: ContentSchema,
+	contentType: ContentTypeSchema,
+	prevContentItem: ContentSchema | undefined
+): Promise<ModuleValue | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
+	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
+	const slugHasChanged = contentItem?.meta.slug.nl !== prevContentItem?.meta.slug.nl;
+
+	if (slugHasChanged) {
+		treeItemsFacade.setSlugIsChanged(true);
+	}
+
 	if (!navModuleValue) {
 		return Promise.resolve();
 	}
 
-	const navItemExist = !isNil(navModuleValue.id) && navModuleValue.id !== '';
+	const navItemExist = isNotEmpty(navModuleValue.id);
+	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
+	const navigationTreeExist = isNotEmpty(navModuleValue.navigationTree);
 	const body = getBody(navModuleValue, contentItem);
+
+	if (navItemExist && prevNavigationTreeExist && !navigationTreeExist) {
+		return deleteTreeItem(prevNavModuleValue?.navigationTree, navModuleValue);
+	}
 
 	return navItemExist
 		? localUpdateTreeItem(navModuleValue, body)

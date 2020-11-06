@@ -13,6 +13,7 @@ import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
+import { isNotEmpty } from '../../helpers';
 import { useTree, useTreeItem, useTreesOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
@@ -28,6 +29,7 @@ import {
 const ContentDetailCompartment: FC<CompartmentProps> = ({
 	value = {},
 	contentValue,
+	contentItem,
 	onChange,
 	formikRef,
 }) => {
@@ -94,35 +96,29 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 			position:
 				!isNil(treeItem?.parentId) && treeOptions.length > 0
 					? findPosition(treeOptions, treeItem?.parentId)
-					: value.position ?? [],
+					: value.position
+					? value.position
+					: [],
 			label: treeItem?.label ?? value.label ?? '',
 			description: treeItem?.description ?? value.description ?? '',
 			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[
-			contentValue,
-			treeItem,
-			treeOptions,
-			value.description,
-			value.id,
-			value.label,
-			value.navigationTree,
-			value.status,
-		]
+		[treeItem, treeOptions]
 	);
 
 	const statusOptions = useMemo(() => {
 		if (
-			contentValue?.meta.status === 'UNPUBLISHED' &&
-			value.status !== NAV_ITEM_STATUSES.PUBLISHED
+			(contentValue?.meta.status === 'UNPUBLISHED' &&
+				value.status !== NAV_ITEM_STATUSES.PUBLISHED) ||
+			!contentItem?.meta?.historySummary?.published
 		) {
 			return STATUS_OPTIONS.filter(
 				statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
 			);
 		}
 		return STATUS_OPTIONS;
-	}, [contentValue, value.status]);
+	}, [contentItem, contentValue, value.status]);
 
 	/**
 	 * Fetch data effects
@@ -132,8 +128,8 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	});
 
 	useEffect(() => {
-		const hasNavigationTree = !isNil(value.navigationTree) && value.navigationTree !== '';
-		const hasId = !isNil(value.id) && value.id !== '';
+		const hasNavigationTree = isNotEmpty(value.navigationTree);
+		const hasId = isNotEmpty(value.id);
 
 		if (hasNavigationTree) {
 			treesFacade.getTree(value.navigationTree);
@@ -186,7 +182,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 				return (
 					<>
 						<FormikOnChangeHandler
-							delay={300}
+							delay={1000}
 							onChange={values => onFormChange(values)}
 						/>
 						<div className="u-margin-top">
@@ -201,6 +197,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 										placeholder="Selecteer een navigatieboom"
 										onChange={(e: any): void => {
 											const navigationTreeValue = e.target.value;
+											console.log(navigationTreeValue);
 											setFieldValue('navigationTree', navigationTreeValue);
 											setFieldValue('position', []);
 										}}

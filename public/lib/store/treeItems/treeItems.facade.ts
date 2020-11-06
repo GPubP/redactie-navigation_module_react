@@ -106,14 +106,28 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		return this.query.isTreeCreated(itemId);
 	}
 
-	public addCurrentPosition(position: string[] = []): void {
+	public addPosition(itemId: string, position: string[] = []): void {
+		this.store.update(prevState => ({
+			...prevState,
+			positions: {
+				...position,
+				[itemId]: position,
+			},
+		}));
+	}
+
+	public getPosition(itemId: string): string[] {
+		return this.query.getPosition(itemId);
+	}
+
+	public setSlugIsChanged(isChanged: boolean): void {
 		this.store.update({
-			currentPosition: position,
+			slugIsChanged: isChanged,
 		});
 	}
 
-	public getCurrentPosition(): string[] {
-		return this.query.getCurrentPosition();
+	public getSlugIsChanged(): boolean {
+		return this.query.getSlugIsChanged();
 	}
 }
 

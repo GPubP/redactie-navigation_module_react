@@ -18,9 +18,14 @@ export class TreeItemsQuery extends BaseEntityQuery<TreeItemsState> {
 		return value.createdTreeItems.includes(itemId);
 	}
 
-	public getCurrentPosition(): string[] {
+	public getPosition(itemId: string): string[] {
 		const value = this.getValue();
-		return value.currentPosition;
+		return value.positions[itemId];
+	}
+
+	public getSlugIsChanged(): boolean {
+		const value = this.getValue();
+		return value.slugIsChanged;
 	}
 }
 

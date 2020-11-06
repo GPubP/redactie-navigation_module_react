@@ -1,4 +1,3 @@
-import { isNil } from '@datorama/akita';
 import { ContentSchema, ModuleSettings } from '@redactie/content-module';
 import {
 	ContentCompartmentModel,
@@ -12,6 +11,7 @@ import {
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
 import { registerCTDetailTab } from './lib/connectors/contentTypes';
+import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { CONFIG } from './lib/navigation.const';
 
@@ -26,11 +26,7 @@ registerContentDetailCompartment<ContentCompartmentState>(CONFIG.name, {
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
-		if (
-			activeCompartment.name === CONFIG.name ||
-			isNil(navModuleValue.id) ||
-			navModuleValue.id === ''
-		) {
+		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
 			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 		}
 

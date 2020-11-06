@@ -16,6 +16,11 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 	}
 
 	public getTreesList(): void {
+		const state = this.query.getValue();
+
+		if (state.treeList && state.treeList.length > 0) {
+			return;
+		}
 		this.store.setIsFetching(true);
 
 		this.service

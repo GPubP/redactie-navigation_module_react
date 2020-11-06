@@ -25,7 +25,7 @@ export class TreesQuery extends BaseEntityQuery<TreesState> {
 			newTrees.unshift({
 				label: '<-- Selecteer een lege navigatieboom -->',
 				value: '',
-				key: `default-value`,
+				key: `delete-tree`,
 			});
 			return newTrees;
 		})
