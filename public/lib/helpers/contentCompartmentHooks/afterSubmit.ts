@@ -1,4 +1,4 @@
-import { ContentSchema } from '@redactie/content-module';
+import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
 import { omit } from 'ramda';
 
 import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
@@ -7,15 +7,16 @@ import { TreeItem, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
 import { isEmpty } from '../empty';
 
+import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
+
 const updateTreeItem = (
 	navModuleValue: ContentCompartmentState,
 	body: UpdateTreeItemPayload
 ): Promise<void> => {
-	const updateErrorMessage = 'Wijzigen van het item in de navigatieboom is mislukt';
 	return treeItemsFacade
 		.updateTreeItem(navModuleValue.navigationTree, navModuleValue.id, body)
 		.catch(() => {
-			throw new Error(updateErrorMessage);
+			throw new Error(ERROR_MESSAGES.update);
 		});
 };
 
@@ -84,7 +85,7 @@ const deleteTreeItem = (
 			// TODO: Do we throw an error when it fails or do we resolve the promise
 			// with the previous form data
 			// Not resolving the promise will result in loosing the previous form data
-			throw new Error('Terugrollen aanmaak navigatie item is mislukt');
+			throw new Error(ERROR_MESSAGES.rollback);
 		});
 };
 
@@ -93,9 +94,9 @@ const deleteTreeItem = (
  * The afterSubmit hook
  * This function is called after submitting a content item.
  */
-const afterSubmit = (
-	error: Error | undefined,
-	contentItem: ContentSchema
+const afterSubmit: ExternalCompartmentAfterSubmitFn = (
+	error,
+	contentItem
 ): Promise<ContentDetailCompartmentFormState | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 

@@ -1,4 +1,4 @@
-import { LoadingState, useObservable } from '@redactie/utils';
+import { useObservable } from '@redactie/utils';
 import { of } from 'rxjs';
 
 import { TreeItemModel, treeItemsFacade } from '../../store/treeItems';

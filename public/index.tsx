@@ -1,8 +1,5 @@
 import { ContentSchema, ModuleSettings } from '@redactie/content-module';
-import {
-	ContentCompartmentModel,
-	ContentCompartmentState,
-} from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
+import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 
 import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
 import {
@@ -15,9 +12,9 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { CONFIG } from './lib/navigation.const';
 
-registerContentDetailCompartment<ContentCompartmentState>(CONFIG.name, {
+registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
-	getDescription: (contentItem: any) => contentItem?.meta.slug.nl || '',
+	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: CONFIG.module,
 	component: ContentDetailCompartment,
 	isValid: false,
@@ -33,7 +30,7 @@ registerContentDetailCompartment<ContentCompartmentState>(CONFIG.name, {
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
 	show: (settings: ModuleSettings) => settings?.config?.activateTree === 'true',
-} as any);
+});
 
 registerCTDetailTab(CONFIG.name, {
 	label: 'Navigatie',

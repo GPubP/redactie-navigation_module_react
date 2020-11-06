@@ -1,10 +1,12 @@
-import { ContentSchema, ContentTypeSchema } from '@redactie/content-module';
+import { ContentSchema, ExternalCompartmentBeforeSubmitFn } from '@redactie/content-module';
 import { ModuleValue } from '@redactie/content-module/dist/lib/services/content';
 
 import { ContentCompartmentState } from '../../navigation.types';
 import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
 import { isNotEmpty } from '../empty';
+
+import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
 const getBody = (
 	moduleValue: ContentCompartmentState,
@@ -48,7 +50,6 @@ const createTreeItem = (
 	navModuleValue: ContentCompartmentState,
 	body: CreateTreeItemPayload
 ): Promise<ContentCompartmentState> => {
-	const createErrorMessage = 'Aanmaken van item in de navigatieboom is mislukt.';
 	return treeItemsFacade
 		.createTreeItem(navModuleValue.navigationTree, body)
 		.then(response => {
@@ -56,14 +57,14 @@ const createTreeItem = (
 				treeItemsFacade.addPosition(response.id, navModuleValue.position);
 				// Only save the treeId and treeItemId on the content item
 				return {
-					id: response.id,
+					id: String(response.id),
 					navigationTree: navModuleValue.navigationTree,
 				};
 			}
-			throw new Error(createErrorMessage);
+			throw new Error(ERROR_MESSAGES.create);
 		})
 		.catch(() => {
-			throw new Error(createErrorMessage);
+			throw new Error(ERROR_MESSAGES.create);
 		});
 };
 
@@ -71,7 +72,6 @@ const deleteTreeItem = (
 	navigationTree: string,
 	navModuleValue: ContentCompartmentState
 ): Promise<ModuleValue> => {
-	const deleteErrorMessage = 'Verwijderen van het navigatie item is mislukt.';
 	return treeItemsFacade
 		.deleteTreeItem(navigationTree, navModuleValue.id)
 		.then(() => {
@@ -79,15 +79,15 @@ const deleteTreeItem = (
 			return {};
 		})
 		.catch(() => {
-			throw new Error(deleteErrorMessage);
+			throw new Error(ERROR_MESSAGES.delete);
 		});
 };
 
-const beforeSubmit = (
-	contentItem: ContentSchema,
-	contentType: ContentTypeSchema,
-	prevContentItem: ContentSchema | undefined
-): Promise<ModuleValue | void> => {
+const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
+	contentItem,
+	contentType,
+	prevContentItem
+) => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
 	const slugHasChanged = contentItem?.meta.slug.nl !== prevContentItem?.meta.slug.nl;
