@@ -1,4 +1,4 @@
-import { Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
+import { CardBody, Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps } from '@redactie/content-module';
 import {
@@ -185,7 +185,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 							delay={1000}
 							onChange={values => onFormChange(values)}
 						/>
-						<div className="u-margin-top">
+						<CardBody>
 							<h6 className="u-margin-bottom">Navigatie</h6>
 							<div className="row">
 								<div className="col-xs-12 col-sm-6">
@@ -303,7 +303,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									</div>
 								</div>
 							)}
-						</div>
+						</CardBody>
 					</>
 				);
 			}}
