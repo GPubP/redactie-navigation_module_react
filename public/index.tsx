@@ -1,5 +1,7 @@
 import { ContentSchema, ModuleSettings } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
+import { MySecurityRightModel } from '@redactie/roles-rights-module';
+import { take } from 'rxjs/operators';
 
 import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
 import {
@@ -8,6 +10,7 @@ import {
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
 import { registerCTDetailTab } from './lib/connectors/contentTypes';
+import rolesRightsConnector from './lib/connectors/rolesRights';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { CONFIG } from './lib/navigation.const';
@@ -29,7 +32,23 @@ registerContentDetailCompartment(CONFIG.name, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (settings: ModuleSettings) => settings?.config?.activateTree === 'true',
+	show: (settings: ModuleSettings) => {
+		let securityRights: string[] = [];
+
+		rolesRightsConnector.api.store.mySecurityRights.query
+			.siteRights$(settings?.config?.siteUuid)
+			.pipe(take(1))
+			.subscribe((rights: MySecurityRightModel[]) => {
+				securityRights = rights.map(right => right.attributes.key);
+			});
+
+		return (
+			settings?.config?.activateTree === 'true' &&
+			rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, [
+				'navigation-navigation_read',
+			])
+		);
+	},
 });
 
 registerCTDetailTab(CONFIG.name, {
