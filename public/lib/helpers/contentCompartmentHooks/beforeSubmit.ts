@@ -17,8 +17,8 @@ const getBody = (
 		slug: contentItem?.meta.slug.nl ?? '',
 		description: moduleValue.description ?? '',
 		parentId:
-			moduleValue.position?.length || 0 > 0
-				? moduleValue.position && moduleValue.position[moduleValue.position.length - 1]
+			Array.isArray(moduleValue.position) && moduleValue.position.length > 0
+				? moduleValue.position[moduleValue.position.length - 1]
 				: undefined,
 		publishStatus: moduleValue.status ?? '',
 	};
@@ -83,6 +83,31 @@ const deleteTreeItem = (
 		});
 };
 
+const moveTreeItem = (
+	fromNavigationTree: string,
+	toNavigationTree: string,
+	treeItemId: string,
+	position: string[] | undefined,
+	body: CreateTreeItemPayload
+): Promise<ContentCompartmentState> => {
+	return treeItemsFacade
+		.moveTreeItem(fromNavigationTree, toNavigationTree, treeItemId, body)
+		.then(response => {
+			if (response) {
+				treeItemsFacade.addPosition(response.id, position);
+				// Only save the treeId and treeItemId on the content item
+				return {
+					id: String(response.id),
+					navigationTree: toNavigationTree,
+				};
+			}
+			throw new Error(ERROR_MESSAGES.moveTreeItem);
+		})
+		.catch(() => {
+			throw new Error(ERROR_MESSAGES.moveTreeItem);
+		});
+};
+
 const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	contentItem,
 	contentType,
@@ -103,6 +128,10 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	const navItemExist = isNotEmpty(navModuleValue.id);
 	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
 	const navigationTreeExist = isNotEmpty(navModuleValue.navigationTree);
+	const TreeItemMovedToOtherTree =
+		prevNavigationTreeExist &&
+		navigationTreeExist &&
+		prevNavModuleValue.navigationTree !== navModuleValue.navigationTree;
 	const body = getBody(navModuleValue, contentItem);
 
 	if (navItemExist && prevNavigationTreeExist && !navigationTreeExist) {
@@ -110,7 +139,15 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	}
 
 	return navItemExist
-		? localUpdateTreeItem(navModuleValue, body)
+		? TreeItemMovedToOtherTree
+			? moveTreeItem(
+					prevNavModuleValue.navigationTree,
+					navModuleValue.navigationTree,
+					navModuleValue.id,
+					navModuleValue.position,
+					body
+			  )
+			: localUpdateTreeItem(navModuleValue, body)
 		: createTreeItem(navModuleValue, body);
 };
 

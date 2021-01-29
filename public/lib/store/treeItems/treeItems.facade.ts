@@ -54,6 +54,23 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		});
 	}
 
+	public moveTreeItem(
+		fromTreeId: string,
+		toTreeId: string,
+		treeItemId: string,
+		body: CreateTreeItemPayload
+	): Promise<TreeItem> {
+		return this.service.moveTreeItem(fromTreeId, toTreeId, treeItemId, body).then(response => {
+			if (response) {
+				this.store.add(response);
+				this.store.update(previousState => ({
+					createdTreeItems: [...previousState.createdTreeItems, response.id],
+				}));
+			}
+			return response;
+		});
+	}
+
 	public updateTreeItem(
 		treeId: string,
 		itemId: string,
