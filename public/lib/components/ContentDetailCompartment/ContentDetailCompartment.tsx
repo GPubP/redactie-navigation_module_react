@@ -65,15 +65,20 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		return reduceTreeOptions(treeOptions);
 	};
 
-	const treeOptions = useMemo<CascaderOption[]>(() => {
+	const treeConfig = useMemo<{
+		options: CascaderOption[];
+		activeItem: TreeDetailItem | undefined;
+	}>(() => {
 		if (tree) {
+			let activeItem;
 			const mapTreeItemsToOptions = (items: TreeDetailItem[]): CascaderOption[] => {
 				return items
 					.map((item: TreeDetailItem) => {
 						// Filter out the current navigation item from the position list
 						// The user can not set the current navigation item as the position in the
 						// navigation tree because it will create a circular dependency
-						if (item.id === value.id) {
+						if (item.id.toString() === value.id) {
+							activeItem = item;
 							return null;
 						}
 						return {
@@ -84,18 +89,33 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 					})
 					.filter(item => item !== null) as CascaderOption[];
 			};
-			return mapTreeItemsToOptions(tree.items || []);
+			return {
+				options: mapTreeItemsToOptions(tree.items || []),
+				activeItem,
+			};
 		}
-		return [];
+		return {
+			options: [],
+			activeItem: undefined,
+		};
 	}, [tree, value.id]);
+
+	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
+		if (treeConfig.activeItem) {
+			return (
+				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
+			);
+		}
+		return false;
+	}, [treeConfig.activeItem]);
 
 	const initialValues = useMemo(
 		() => ({
 			id: value.id ?? '',
 			navigationTree: value.navigationTree ?? '',
 			position:
-				!isNil(treeItem?.parentId) && treeOptions.length > 0
-					? findPosition(treeOptions, treeItem?.parentId)
+				!isNil(treeItem?.parentId) && treeConfig.options.length > 0
+					? findPosition(treeConfig.options, treeItem?.parentId)
 					: value.position
 					? value.position
 					: [],
@@ -104,7 +124,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[treeItem, treeOptions]
+		[treeItem, treeConfig.options]
 	);
 
 	const statusOptions = useMemo(() => {
@@ -192,6 +212,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									<Field
 										as={Select}
 										id="navigationTree"
+										disabled={activeTreeItemHasChildItems}
 										name="navigationTree"
 										label="Navigatieboom"
 										placeholder="Selecteer een navigatieboom"
@@ -216,7 +237,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											<Cascader
 												changeOnSelect
 												value={values.position}
-												options={treeOptions}
+												options={treeConfig.options}
 												onChange={(value: string[]) =>
 													handlePositionOnChange(value, setFieldValue)
 												}
@@ -226,7 +247,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 														onChange={() => null}
 														placeholder="Kies een positie in de boom"
 														value={getPositionInputValue(
-															treeOptions,
+															treeConfig.options,
 															values.position
 														)}
 													/>
