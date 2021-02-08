@@ -47,7 +47,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 			if (response) {
 				this.store.add(response);
 				this.store.update(previousState => ({
-					createdTreeItems: [...previousState.createdTreeItems, response.id],
+					createdTreeItems: [...previousState.createdTreeItems, response.id.toString()],
 				}));
 			}
 			return response;
