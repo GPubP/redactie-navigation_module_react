@@ -11,7 +11,7 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 	public readonly treesList$ = this.query.treeList$;
 	public readonly treesOptions$ = this.query.treesOptions$;
 
-	public selectTree(treeId: string): Observable<TreeModel> {
+	public selectTree(treeId: number): Observable<TreeModel> {
 		return this.query.selectTree(treeId);
 	}
 
@@ -42,7 +42,7 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 			});
 	}
 
-	public getTree(treeId: string): void {
+	public getTree(treeId: number): void {
 		this.store.setIsFetchingOne(true);
 
 		this.service

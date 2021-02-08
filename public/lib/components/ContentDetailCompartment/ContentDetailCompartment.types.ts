@@ -14,9 +14,9 @@ export interface ContentDetailCompartmentProps {
 }
 
 export interface ContentDetailCompartmentFormState {
-	id?: string;
-	navigationTree: string;
-	position: string[];
+	id?: number;
+	navigationTree: number;
+	position: number[];
 	label: string;
 	slug: string;
 	description: string;

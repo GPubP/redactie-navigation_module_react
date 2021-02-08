@@ -12,14 +12,14 @@ export interface ListApiPageResponse {
 
 export interface CascaderOption {
 	label: string;
-	value: string;
+	value: number;
 	children: CascaderOption[];
 }
 
 export interface ContentCompartmentState {
-	id: string;
-	navigationTree: string;
-	position?: string[];
+	id: number;
+	navigationTree: number;
+	position?: number[];
 	label?: string;
 	slug?: string;
 	description?: string;

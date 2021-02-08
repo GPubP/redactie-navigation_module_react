@@ -15,15 +15,15 @@ export class TreesApiService {
 		return api.get('trees').json<TreesResponse>();
 	}
 
-	public getTree(treeId: string): Promise<TreeDetail> {
+	public getTree(treeId: number): Promise<TreeDetail> {
 		return api.get(`trees/${treeId}`).json<TreeDetail>();
 	}
 
-	public getTreeItem(treeId: string, treeItemId: string): Promise<TreeItem> {
+	public getTreeItem(treeId: number, treeItemId: number): Promise<TreeItem> {
 		return api.get(`trees/${treeId}/items/${treeItemId}`).json<TreeItem>();
 	}
 
-	public createTreeItem(treeId: string, body: CreateTreeItemPayload): Promise<TreeItem> {
+	public createTreeItem(treeId: number, body: CreateTreeItemPayload): Promise<TreeItem> {
 		return api
 			.post(`trees/${treeId}/items`, {
 				json: body,
@@ -32,8 +32,8 @@ export class TreesApiService {
 	}
 
 	public updateTreeItem(
-		treeId: string,
-		itemId: string,
+		treeId: number,
+		itemId: number,
 		body: UpdateTreeItemPayload
 	): Promise<TreeItem> {
 		return api
@@ -43,7 +43,7 @@ export class TreesApiService {
 			.json();
 	}
 
-	public deleteTreeItem(treeId: string, itemId: string): ResponsePromise {
+	public deleteTreeItem(treeId: number, itemId: number): ResponsePromise {
 		return api.delete(`trees/${treeId}/items/${itemId}`);
 	}
 }

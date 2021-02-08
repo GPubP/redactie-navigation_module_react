@@ -49,37 +49,27 @@ const handleTreeItemUpdate = (
 
 const getPreviousFormState = (
 	treeItem: Partial<TreeItem>,
-	navigationTree: string,
-	position: string[],
+	navigationTree: number,
+	position: number[],
 	contentItem: ContentSchema
 ): ContentDetailCompartmentFormState => {
 	return {
-		id: treeItem.id,
+		id: treeItem?.id,
 		navigationTree,
 		position,
-		label: treeItem.label ?? '',
+		label: treeItem?.label ?? '',
 		slug: contentItem?.meta.slug.nl ?? '',
-		description: treeItem.description ?? '',
-		status: treeItem.publishStatus ?? '',
+		description: treeItem?.description ?? '',
+		status: treeItem?.publishStatus ?? '',
 	};
 };
 
-const deleteTreeItem = (
-	navModuleValue: ContentCompartmentState,
-	treeItem: TreeItem,
-	contentItem: ContentSchema,
-	currentPosition: string[]
-): Promise<ContentDetailCompartmentFormState> => {
+const deleteTreeItem = (navModuleValue: ContentCompartmentState): Promise<void> => {
 	return treeItemsFacade
 		.deleteTreeItem(navModuleValue.navigationTree, navModuleValue.id)
 		.then(() => {
 			treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
-			return getPreviousFormState(
-				omit(['id'], treeItem),
-				navModuleValue.navigationTree,
-				currentPosition,
-				contentItem
-			);
+			return;
 		})
 		.catch(() => {
 			// TODO: Do we throw an error when it fails or do we resolve the promise
@@ -108,6 +98,8 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 		return Promise.resolve();
 	}
 
+	const prevTreeItem = treeItemsFacade.getTreeItem(prevNavModuleValue?.id);
+	const prevCurrentPosition = treeItemsFacade.getPosition(prevNavModuleValue?.id);
 	const treeItem = treeItemsFacade.getTreeItem(navModuleValue.id);
 	const treeIsCreated = treeItemsFacade.isTreeCreated(navModuleValue.id);
 	const currentPosition = treeItemsFacade.getPosition(navModuleValue.id);
@@ -123,7 +115,22 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	if (error && treeItem) {
 		return treeIsCreated
 			? // We need to delete the created tree item after a content item has failed saving
-			  deleteTreeItem(navModuleValue, treeItem, contentItem, currentPosition)
+			  deleteTreeItem(navModuleValue).then(() => {
+					if (treeItemMovedToOtherTree) {
+						return getPreviousFormState(
+							prevTreeItem,
+							prevNavModuleValue.navigationTree,
+							prevCurrentPosition,
+							contentItem
+						);
+					}
+					return getPreviousFormState(
+						omit(['id'], treeItem),
+						navModuleValue.navigationTree,
+						currentPosition,
+						contentItem
+					);
+			  })
 			: // Rollback changes after a content item has failed saving
 			  // We only save the id and navigation tree on the content item
 			  // therefore we need to rollback to the previous state

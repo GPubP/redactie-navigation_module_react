@@ -3,8 +3,8 @@ import { BaseEntityState } from '@redactie/utils';
 import { TreeItem } from '../../services/trees';
 
 export type TreeItemModel = TreeItem;
-export interface TreeItemsState extends BaseEntityState<TreeItemModel, string> {
-	createdTreeItems: string[];
-	positions: Record<string, string[]>;
+export interface TreeItemsState extends BaseEntityState<TreeItemModel, number> {
+	createdTreeItems: number[];
+	positions: Record<number, number[]>;
 	slugIsChanged: boolean;
 }

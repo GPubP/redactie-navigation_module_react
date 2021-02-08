@@ -42,10 +42,10 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const [loadingTree, tree] = useTree(value.navigationTree);
 	const treeItem = useTreeItem(value.id);
 
-	const findPosition = (treeOptions: CascaderOption[], treeItemId?: string): string[] => {
-		const reduceTreeOptions = (options: CascaderOption[]): string[] => {
+	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
+		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
 			return options.reduce((acc, option) => {
-				if (option.value === treeItemId) {
+				if (option.value == treeItemId) {
 					acc.push(option.value);
 					return acc;
 				}
@@ -59,7 +59,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 				}
 
 				return acc;
-			}, [] as string[]);
+			}, [] as number[]);
 		};
 
 		return reduceTreeOptions(treeOptions);
@@ -77,7 +77,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 						// Filter out the current navigation item from the position list
 						// The user can not set the current navigation item as the position in the
 						// navigation tree because it will create a circular dependency
-						if (item.id.toString() === value.id) {
+						if (item.id === parseInt(value.id, 10)) {
 							activeItem = item;
 							return null;
 						}
@@ -151,14 +151,18 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		const hasNavigationTree = isNotEmpty(value.navigationTree);
 		const hasId = isNotEmpty(value.id);
 
-		if (hasNavigationTree) {
-			treesFacade.getTree(value.navigationTree);
-		}
-
-		if (hasId && hasNavigationTree) {
+		if (hasId && hasNavigationTree && treeItem?.id != value.id) {
 			treeItemsFacade.fetchTreeItem(value.navigationTree, value.id);
 		}
-	}, [value.id, value.navigationTree]);
+	}, [value.id, value.navigationTree, treeItem, value]);
+
+	useEffect(() => {
+		const hasNavigationTree = isNotEmpty(value.navigationTree);
+
+		if (hasNavigationTree && tree?.id != value.navigationTree) {
+			treesFacade.getTree(value.navigationTree);
+		}
+	}, [tree, value.navigationTree]);
 
 	/**
 	 * Functions
@@ -169,13 +173,13 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	};
 
 	const handlePositionOnChange = (
-		value: string[],
+		value: number[],
 		setFieldValue: FormikProps<FormikValues>['setFieldValue']
 	): void => {
 		setFieldValue('position', value);
 	};
 
-	const getPositionInputValue = (options: CascaderOption[], inputValue: string[]): string => {
+	const getPositionInputValue = (options: CascaderOption[], inputValue: number[]): string => {
 		return arrayTreeFilter(options, (o, level) => o.value === inputValue[level])
 			.map(o => o.label)
 			.join(' > ');
@@ -218,7 +222,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 										placeholder="Selecteer een navigatieboom"
 										onChange={(e: any): void => {
 											const navigationTreeValue = e.target.value;
-											console.log(navigationTreeValue);
 											setFieldValue('navigationTree', navigationTreeValue);
 											setFieldValue('position', []);
 										}}
@@ -238,7 +241,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												changeOnSelect
 												value={values.position}
 												options={treeConfig.options}
-												onChange={(value: string[]) =>
+												onChange={(value: number[]) =>
 													handlePositionOnChange(value, setFieldValue)
 												}
 											>
