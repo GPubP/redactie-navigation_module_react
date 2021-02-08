@@ -31,22 +31,6 @@ export class TreesApiService {
 			.json();
 	}
 
-	public moveTreeItem(
-		fromTreeId: string,
-		toTreeId: string,
-		treeItemId: string,
-		body: CreateTreeItemPayload
-	): Promise<TreeItem> {
-		return api
-			.post(`trees/${fromTreeId}/items/${treeItemId}/move`, {
-				json: {
-					toTreeId,
-					item: body,
-				},
-			})
-			.json();
-	}
-
 	public updateTreeItem(
 		treeId: string,
 		itemId: string,

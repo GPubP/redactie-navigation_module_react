@@ -1,11 +1,11 @@
 import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
-import { omit } from 'ramda';
+import { equals, omit } from 'ramda';
 
 import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
 import { ContentCompartmentState } from '../../navigation.types';
 import { TreeItem, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
-import { isEmpty } from '../empty';
+import { isEmpty, isNotEmpty } from '../empty';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
@@ -96,9 +96,12 @@ const deleteTreeItem = (
  */
 const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	error,
-	contentItem
+	contentItem,
+	contentType,
+	prevContentItem
 ): Promise<ContentDetailCompartmentFormState | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
+	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
 
 	// We can not update or delete the tree item if there is no navigation tree or tree item id available.
 	if (!navModuleValue || isEmpty(navModuleValue.id) || isEmpty(navModuleValue.navigationTree)) {
@@ -108,7 +111,11 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	const treeItem = treeItemsFacade.getTreeItem(navModuleValue.id);
 	const treeIsCreated = treeItemsFacade.isTreeCreated(navModuleValue.id);
 	const currentPosition = treeItemsFacade.getPosition(navModuleValue.id);
-	const slugIsChanged = treeItemsFacade.getSlugIsChanged();
+	const slugHasChanged = treeItemsFacade.getSlugIsChanged();
+	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
+	const treeItemMovedToOtherTree =
+		prevNavigationTreeExist &&
+		prevNavModuleValue.navigationTree !== navModuleValue.navigationTree;
 
 	/**
 	 * Define rollback strategy
@@ -133,18 +140,42 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	// We can safely remove the curent tree item from the created list since we know it already exist.
 	treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 
+	const shouldUpdateTreeItem = !equals(navModuleValue, prevNavModuleValue) || slugHasChanged;
+
+	if (!shouldUpdateTreeItem) {
+		return Promise.resolve();
+	}
+
+	const handleTreeItemUpdateActions = (treeItem: TreeItem): Promise<any> => {
+		// Delete tree item from the navigation tree on which it was attached to
+		if (treeItemMovedToOtherTree) {
+			return treeItemsFacade.deleteTreeItem(
+				prevNavModuleValue.navigationTree,
+				prevNavModuleValue.id
+			);
+		}
+
+		// Don't update the tree item when it is created in the before submit hook.
+		// We know that the tree item has not changed.
+		if (treeIsCreated) {
+			return Promise.resolve();
+		}
+
+		// Update tree item
+		return handleTreeItemUpdate(treeItem, navModuleValue, contentItem);
+	};
+
 	/**
 	 * Update tree item
-	 * We need to update the tree item when the user has changed the slug.
 	 * We don't have a treeItem when the user has not visited the navigation compartment
 	 * before saving the content item, so in that case we need to fetch the tree item from the server
 	 * before we can update it properly.
 	 */
-	return slugIsChanged && !treeItem
+	return !treeItem
 		? treeItemsFacade
 				.fetchTreeItem(navModuleValue.navigationTree, navModuleValue.id)
-				.then(treeItem => handleTreeItemUpdate(treeItem, navModuleValue, contentItem))
-		: handleTreeItemUpdate(treeItem, navModuleValue, contentItem);
+				.then(treeItem => handleTreeItemUpdateActions(treeItem as TreeItem))
+		: handleTreeItemUpdateActions(treeItem);
 };
 
 export default afterSubmit;

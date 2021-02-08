@@ -83,31 +83,6 @@ const deleteTreeItem = (
 		});
 };
 
-const moveTreeItem = (
-	fromNavigationTree: string,
-	toNavigationTree: string,
-	treeItemId: string,
-	position: string[] | undefined,
-	body: CreateTreeItemPayload
-): Promise<ContentCompartmentState> => {
-	return treeItemsFacade
-		.moveTreeItem(fromNavigationTree, toNavigationTree, treeItemId, body)
-		.then(response => {
-			if (response) {
-				treeItemsFacade.addPosition(response.id, position);
-				// Only save the treeId and treeItemId on the content item
-				return {
-					id: String(response.id),
-					navigationTree: toNavigationTree,
-				};
-			}
-			throw new Error(ERROR_MESSAGES.moveTreeItem);
-		})
-		.catch(() => {
-			throw new Error(ERROR_MESSAGES.moveTreeItem);
-		});
-};
-
 const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	contentItem,
 	contentType,
@@ -138,16 +113,8 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 		return deleteTreeItem(prevNavModuleValue?.navigationTree, navModuleValue);
 	}
 
-	return navItemExist
-		? TreeItemMovedToOtherTree
-			? moveTreeItem(
-					prevNavModuleValue.navigationTree,
-					navModuleValue.navigationTree,
-					navModuleValue.id,
-					navModuleValue.position,
-					body
-			  )
-			: localUpdateTreeItem(navModuleValue, body)
+	return navItemExist && !TreeItemMovedToOtherTree
+		? localUpdateTreeItem(navModuleValue, body)
 		: createTreeItem(navModuleValue, body);
 };
 
