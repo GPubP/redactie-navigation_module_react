@@ -17,8 +17,8 @@ const getBody = (
 		slug: contentItem?.meta.slug.nl ?? '',
 		description: moduleValue.description ?? '',
 		parentId:
-			moduleValue.position?.length || 0 > 0
-				? moduleValue.position && moduleValue.position[moduleValue.position.length - 1]
+			Array.isArray(moduleValue.position) && moduleValue.position.length > 0
+				? moduleValue.position[moduleValue.position.length - 1]
 				: undefined,
 		publishStatus: moduleValue.status ?? '',
 	};
@@ -47,17 +47,22 @@ const localUpdateTreeItem = (
 };
 
 const createTreeItem = (
+	prevNavModuleValue: ContentCompartmentState,
 	navModuleValue: ContentCompartmentState,
-	body: CreateTreeItemPayload
+	body: CreateTreeItemPayload,
+	treeItemMovedToOtherTree = false
 ): Promise<ContentCompartmentState> => {
 	return treeItemsFacade
 		.createTreeItem(navModuleValue.navigationTree, body)
 		.then(response => {
 			if (response) {
 				treeItemsFacade.addPosition(response.id, navModuleValue.position);
+				if (treeItemMovedToOtherTree) {
+					treeItemsFacade.addPosition(prevNavModuleValue.id, prevNavModuleValue.position);
+				}
 				// Only save the treeId and treeItemId on the content item
 				return {
-					id: String(response.id),
+					id: response.id,
 					navigationTree: navModuleValue.navigationTree,
 				};
 			}
@@ -69,7 +74,7 @@ const createTreeItem = (
 };
 
 const deleteTreeItem = (
-	navigationTree: string,
+	navigationTree: number,
 	navModuleValue: ContentCompartmentState
 ): Promise<ModuleValue> => {
 	return treeItemsFacade
@@ -103,15 +108,19 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	const navItemExist = isNotEmpty(navModuleValue.id);
 	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
 	const navigationTreeExist = isNotEmpty(navModuleValue.navigationTree);
+	const treeItemMovedToOtherTree =
+		prevNavigationTreeExist &&
+		navigationTreeExist &&
+		prevNavModuleValue.navigationTree !== navModuleValue.navigationTree;
 	const body = getBody(navModuleValue, contentItem);
 
 	if (navItemExist && prevNavigationTreeExist && !navigationTreeExist) {
 		return deleteTreeItem(prevNavModuleValue?.navigationTree, navModuleValue);
 	}
 
-	return navItemExist
+	return navItemExist && !treeItemMovedToOtherTree
 		? localUpdateTreeItem(navModuleValue, body)
-		: createTreeItem(navModuleValue, body);
+		: createTreeItem(prevNavModuleValue, navModuleValue, body, treeItemMovedToOtherTree);
 };
 
 export default beforeSubmit;

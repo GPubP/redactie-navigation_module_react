@@ -44,7 +44,7 @@ export interface TreeDetail extends Tree {
 }
 
 export interface TreeDetailItem {
-	id: string;
+	id: number;
 	label: string;
 	description: string;
 	publishStatus: string;
@@ -57,7 +57,7 @@ export interface TreeDetailItem {
 // GET TREE ITEM TYPES ----------------
 ///////////////////////////////////////
 export interface TreeItem extends Omit<TreeDetailItem, 'items'> {
-	parentId?: string;
+	parentId?: number;
 }
 
 ///////////////////////////////////////

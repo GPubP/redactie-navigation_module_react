@@ -5,20 +5,20 @@ import { TreeItemModel, TreeItemsState } from './treeItems.model';
 import { treeItemsStore } from './treeItems.store';
 
 export class TreeItemsQuery extends BaseEntityQuery<TreeItemsState> {
-	public selectTreeItem(itemId: string): Observable<TreeItemModel> {
+	public selectTreeItem(itemId: number): Observable<TreeItemModel> {
 		return this.selectEntity(itemId);
 	}
 
-	public getTreeItem(itemId: string): TreeItemModel {
+	public getTreeItem(itemId: number): TreeItemModel {
 		return this.getEntity(itemId);
 	}
 
-	public isTreeCreated(itemId: string): boolean {
+	public isTreeCreated(itemId: number): boolean {
 		const value = this.getValue();
 		return value.createdTreeItems.includes(itemId);
 	}
 
-	public getPosition(itemId: string): string[] {
+	public getPosition(itemId: number): number[] {
 		const value = this.getValue();
 		return value.positions[itemId];
 	}

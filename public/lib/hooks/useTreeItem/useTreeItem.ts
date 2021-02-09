@@ -3,7 +3,7 @@ import { of } from 'rxjs';
 
 import { TreeItemModel, treeItemsFacade } from '../../store/treeItems';
 
-const useTreeItem = (treeItemId: string): TreeItemModel | undefined => {
+const useTreeItem = (treeItemId: number): TreeItemModel | undefined => {
 	const treeItem = useObservable(
 		treeItemId !== undefined && treeItemId !== null
 			? treeItemsFacade.selectTreeItem(treeItemId)

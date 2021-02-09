@@ -11,7 +11,7 @@ export class TreesQuery extends BaseEntityQuery<TreesState> {
 		filter(treeList => !isNil(treeList), distinctUntilChanged())
 	);
 
-	public selectTree(treeId: string): Observable<TreeModel> {
+	public selectTree(treeId: number): Observable<TreeModel> {
 		return this.selectEntity(treeId);
 	}
 

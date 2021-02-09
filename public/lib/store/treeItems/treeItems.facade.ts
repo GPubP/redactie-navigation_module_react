@@ -18,7 +18,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 	TreesApiService,
 	TreeItemsQuery
 > {
-	public fetchTreeItem(treeId: string, treeItemId: string): Promise<TreeItem | void> {
+	public fetchTreeItem(treeId: number, treeItemId: number): Promise<TreeItem | void> {
 		if (this.query.hasEntity(treeItemId)) {
 			return Promise.resolve(this.getTreeItem(treeItemId));
 		}
@@ -42,7 +42,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public createTreeItem(treeId: string, body: CreateTreeItemPayload): Promise<TreeItem> {
+	public createTreeItem(treeId: number, body: CreateTreeItemPayload): Promise<TreeItem> {
 		return this.service.createTreeItem(treeId, body).then(response => {
 			if (response) {
 				this.store.add(response);
@@ -55,8 +55,8 @@ export class TreeItemsFacade extends BaseEntityFacade<
 	}
 
 	public updateTreeItem(
-		treeId: string,
-		itemId: string,
+		treeId: number,
+		itemId: number,
 		body: UpdateTreeItemPayload
 	): Promise<void> {
 		return this.service.updateTreeItem(treeId, itemId, body).then(response => {
@@ -71,21 +71,21 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public deleteTreeItem(treeId: string, itemId: string): Promise<void> {
+	public deleteTreeItem(treeId: number, itemId: number): Promise<void> {
 		return this.service.deleteTreeItem(treeId, itemId).then(() => {
 			return this.store.remove(itemId);
 		});
 	}
 
-	public selectTreeItem(treeItemId: string): Observable<TreeItemModel> {
+	public selectTreeItem(treeItemId: number): Observable<TreeItemModel> {
 		return this.query.selectTreeItem(treeItemId);
 	}
 
-	public getTreeItem(treeItemId: string): TreeItemModel {
+	public getTreeItem(treeItemId: number): TreeItemModel {
 		return this.query.getTreeItem(treeItemId);
 	}
 
-	public localUpateTreeItem(itemId: string, body: UpdateTreeItemPayload): void {
+	public localUpateTreeItem(itemId: number, body: UpdateTreeItemPayload): void {
 		this.store.update(itemId, previousState => {
 			return {
 				...previousState,
@@ -94,7 +94,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public removeFromCreatedTreeItems(itemId: string): void {
+	public removeFromCreatedTreeItems(itemId: number): void {
 		this.store.update(previousState => ({
 			createdTreeItems: previousState.createdTreeItems.filter(
 				treeItemId => treeItemId !== itemId
@@ -102,11 +102,11 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		}));
 	}
 
-	public isTreeCreated(itemId: string): boolean {
+	public isTreeCreated(itemId: number): boolean {
 		return this.query.isTreeCreated(itemId);
 	}
 
-	public addPosition(itemId: string, position: string[] = []): void {
+	public addPosition(itemId: number, position: number[] = []): void {
 		this.store.update(prevState => ({
 			...prevState,
 			positions: {
@@ -116,7 +116,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		}));
 	}
 
-	public getPosition(itemId: string): string[] {
+	public getPosition(itemId: number): number[] {
 		return this.query.getPosition(itemId);
 	}
 

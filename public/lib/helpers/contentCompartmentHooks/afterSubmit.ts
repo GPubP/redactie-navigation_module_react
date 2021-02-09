@@ -1,11 +1,11 @@
 import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
-import { omit } from 'ramda';
+import { equals, omit } from 'ramda';
 
 import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
 import { ContentCompartmentState } from '../../navigation.types';
 import { TreeItem, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
-import { isEmpty } from '../empty';
+import { isEmpty, isNotEmpty } from '../empty';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
@@ -49,37 +49,27 @@ const handleTreeItemUpdate = (
 
 const getPreviousFormState = (
 	treeItem: Partial<TreeItem>,
-	navigationTree: string,
-	position: string[],
+	navigationTree: number,
+	position: number[],
 	contentItem: ContentSchema
 ): ContentDetailCompartmentFormState => {
 	return {
-		id: treeItem.id,
+		id: treeItem?.id,
 		navigationTree,
 		position,
-		label: treeItem.label ?? '',
+		label: treeItem?.label ?? '',
 		slug: contentItem?.meta.slug.nl ?? '',
-		description: treeItem.description ?? '',
-		status: treeItem.publishStatus ?? '',
+		description: treeItem?.description ?? '',
+		status: treeItem?.publishStatus ?? '',
 	};
 };
 
-const deleteTreeItem = (
-	navModuleValue: ContentCompartmentState,
-	treeItem: TreeItem,
-	contentItem: ContentSchema,
-	currentPosition: string[]
-): Promise<ContentDetailCompartmentFormState> => {
+const deleteTreeItem = (navModuleValue: ContentCompartmentState): Promise<void> => {
 	return treeItemsFacade
 		.deleteTreeItem(navModuleValue.navigationTree, navModuleValue.id)
 		.then(() => {
 			treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
-			return getPreviousFormState(
-				omit(['id'], treeItem),
-				navModuleValue.navigationTree,
-				currentPosition,
-				contentItem
-			);
+			return;
 		})
 		.catch(() => {
 			// TODO: Do we throw an error when it fails or do we resolve the promise
@@ -96,19 +86,28 @@ const deleteTreeItem = (
  */
 const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	error,
-	contentItem
+	contentItem,
+	contentType,
+	prevContentItem
 ): Promise<ContentDetailCompartmentFormState | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
+	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
 
 	// We can not update or delete the tree item if there is no navigation tree or tree item id available.
 	if (!navModuleValue || isEmpty(navModuleValue.id) || isEmpty(navModuleValue.navigationTree)) {
 		return Promise.resolve();
 	}
 
+	const prevTreeItem = treeItemsFacade.getTreeItem(prevNavModuleValue?.id);
+	const prevCurrentPosition = treeItemsFacade.getPosition(prevNavModuleValue?.id);
 	const treeItem = treeItemsFacade.getTreeItem(navModuleValue.id);
 	const treeIsCreated = treeItemsFacade.isTreeCreated(navModuleValue.id);
 	const currentPosition = treeItemsFacade.getPosition(navModuleValue.id);
-	const slugIsChanged = treeItemsFacade.getSlugIsChanged();
+	const slugHasChanged = treeItemsFacade.getSlugIsChanged();
+	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
+	const treeItemMovedToOtherTree =
+		prevNavigationTreeExist &&
+		prevNavModuleValue.navigationTree !== navModuleValue.navigationTree;
 
 	/**
 	 * Define rollback strategy
@@ -116,7 +115,22 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	if (error && treeItem) {
 		return treeIsCreated
 			? // We need to delete the created tree item after a content item has failed saving
-			  deleteTreeItem(navModuleValue, treeItem, contentItem, currentPosition)
+			  deleteTreeItem(navModuleValue).then(() => {
+					if (treeItemMovedToOtherTree) {
+						return getPreviousFormState(
+							prevTreeItem,
+							prevNavModuleValue.navigationTree,
+							prevCurrentPosition,
+							contentItem
+						);
+					}
+					return getPreviousFormState(
+						omit(['id'], treeItem),
+						navModuleValue.navigationTree,
+						currentPosition,
+						contentItem
+					);
+			  })
 			: // Rollback changes after a content item has failed saving
 			  // We only save the id and navigation tree on the content item
 			  // therefore we need to rollback to the previous state
@@ -133,18 +147,42 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	// We can safely remove the curent tree item from the created list since we know it already exist.
 	treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 
+	const shouldUpdateTreeItem = !equals(navModuleValue, prevNavModuleValue) || slugHasChanged;
+
+	if (!shouldUpdateTreeItem) {
+		return Promise.resolve();
+	}
+
+	const handleTreeItemUpdateActions = (treeItem: TreeItem): Promise<any> => {
+		// Delete tree item from the navigation tree on which it was attached to
+		if (treeItemMovedToOtherTree) {
+			return treeItemsFacade.deleteTreeItem(
+				prevNavModuleValue.navigationTree,
+				prevNavModuleValue.id
+			);
+		}
+
+		// Don't update the tree item when it is created in the before submit hook.
+		// We know that the tree item has not changed.
+		if (treeIsCreated) {
+			return Promise.resolve();
+		}
+
+		// Update tree item
+		return handleTreeItemUpdate(treeItem, navModuleValue, contentItem);
+	};
+
 	/**
 	 * Update tree item
-	 * We need to update the tree item when the user has changed the slug.
 	 * We don't have a treeItem when the user has not visited the navigation compartment
 	 * before saving the content item, so in that case we need to fetch the tree item from the server
 	 * before we can update it properly.
 	 */
-	return slugIsChanged && !treeItem
+	return !treeItem
 		? treeItemsFacade
 				.fetchTreeItem(navModuleValue.navigationTree, navModuleValue.id)
-				.then(treeItem => handleTreeItemUpdate(treeItem, navModuleValue, contentItem))
-		: handleTreeItemUpdate(treeItem, navModuleValue, contentItem);
+				.then(treeItem => handleTreeItemUpdateActions(treeItem as TreeItem))
+		: handleTreeItemUpdateActions(treeItem);
 };
 
 export default afterSubmit;

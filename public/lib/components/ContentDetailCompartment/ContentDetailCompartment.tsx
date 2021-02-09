@@ -42,10 +42,10 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const [loadingTree, tree] = useTree(value.navigationTree);
 	const treeItem = useTreeItem(value.id);
 
-	const findPosition = (treeOptions: CascaderOption[], treeItemId?: string): string[] => {
-		const reduceTreeOptions = (options: CascaderOption[]): string[] => {
+	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
+		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
 			return options.reduce((acc, option) => {
-				if (option.value === treeItemId) {
+				if (option.value == treeItemId) {
 					acc.push(option.value);
 					return acc;
 				}
@@ -59,21 +59,26 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 				}
 
 				return acc;
-			}, [] as string[]);
+			}, [] as number[]);
 		};
 
 		return reduceTreeOptions(treeOptions);
 	};
 
-	const treeOptions = useMemo<CascaderOption[]>(() => {
+	const treeConfig = useMemo<{
+		options: CascaderOption[];
+		activeItem: TreeDetailItem | undefined;
+	}>(() => {
 		if (tree) {
+			let activeItem;
 			const mapTreeItemsToOptions = (items: TreeDetailItem[]): CascaderOption[] => {
 				return items
 					.map((item: TreeDetailItem) => {
 						// Filter out the current navigation item from the position list
 						// The user can not set the current navigation item as the position in the
 						// navigation tree because it will create a circular dependency
-						if (item.id === value.id) {
+						if (item.id === parseInt(value.id, 10)) {
+							activeItem = item;
 							return null;
 						}
 						return {
@@ -84,18 +89,33 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 					})
 					.filter(item => item !== null) as CascaderOption[];
 			};
-			return mapTreeItemsToOptions(tree.items || []);
+			return {
+				options: mapTreeItemsToOptions(tree.items || []),
+				activeItem,
+			};
 		}
-		return [];
+		return {
+			options: [],
+			activeItem: undefined,
+		};
 	}, [tree, value.id]);
+
+	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
+		if (treeConfig.activeItem) {
+			return (
+				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
+			);
+		}
+		return false;
+	}, [treeConfig.activeItem]);
 
 	const initialValues = useMemo(
 		() => ({
 			id: value.id ?? '',
 			navigationTree: value.navigationTree ?? '',
 			position:
-				!isNil(treeItem?.parentId) && treeOptions.length > 0
-					? findPosition(treeOptions, treeItem?.parentId)
+				!isNil(treeItem?.parentId) && treeConfig.options.length > 0
+					? findPosition(treeConfig.options, treeItem?.parentId)
 					: value.position
 					? value.position
 					: [],
@@ -104,7 +124,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
 		}),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[treeItem, treeOptions]
+		[treeItem, treeConfig.options]
 	);
 
 	const statusOptions = useMemo(() => {
@@ -131,14 +151,18 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		const hasNavigationTree = isNotEmpty(value.navigationTree);
 		const hasId = isNotEmpty(value.id);
 
-		if (hasNavigationTree) {
-			treesFacade.getTree(value.navigationTree);
-		}
-
-		if (hasId && hasNavigationTree) {
+		if (hasId && hasNavigationTree && treeItem?.id != value.id) {
 			treeItemsFacade.fetchTreeItem(value.navigationTree, value.id);
 		}
-	}, [value.id, value.navigationTree]);
+	}, [value.id, value.navigationTree, treeItem, value]);
+
+	useEffect(() => {
+		const hasNavigationTree = isNotEmpty(value.navigationTree);
+
+		if (hasNavigationTree && tree?.id != value.navigationTree) {
+			treesFacade.getTree(value.navigationTree);
+		}
+	}, [tree, value.navigationTree]);
 
 	/**
 	 * Functions
@@ -149,13 +173,13 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	};
 
 	const handlePositionOnChange = (
-		value: string[],
+		value: number[],
 		setFieldValue: FormikProps<FormikValues>['setFieldValue']
 	): void => {
 		setFieldValue('position', value);
 	};
 
-	const getPositionInputValue = (options: CascaderOption[], inputValue: string[]): string => {
+	const getPositionInputValue = (options: CascaderOption[], inputValue: number[]): string => {
 		return arrayTreeFilter(options, (o, level) => o.value === inputValue[level])
 			.map(o => o.label)
 			.join(' > ');
@@ -192,12 +216,12 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									<Field
 										as={Select}
 										id="navigationTree"
+										disabled={activeTreeItemHasChildItems}
 										name="navigationTree"
 										label="Navigatieboom"
 										placeholder="Selecteer een navigatieboom"
 										onChange={(e: any): void => {
 											const navigationTreeValue = e.target.value;
-											console.log(navigationTreeValue);
 											setFieldValue('navigationTree', navigationTreeValue);
 											setFieldValue('position', []);
 										}}
@@ -216,8 +240,8 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											<Cascader
 												changeOnSelect
 												value={values.position}
-												options={treeOptions}
-												onChange={(value: string[]) =>
+												options={treeConfig.options}
+												onChange={(value: number[]) =>
 													handlePositionOnChange(value, setFieldValue)
 												}
 											>
@@ -226,7 +250,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 														onChange={() => null}
 														placeholder="Kies een positie in de boom"
 														value={getPositionInputValue(
-															treeOptions,
+															treeConfig.options,
 															values.position
 														)}
 													/>
