@@ -1,5 +1,5 @@
 import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
-import { equals, omit } from 'ramda';
+import { omit } from 'ramda';
 
 import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
 import { ContentCompartmentState } from '../../navigation.types';
@@ -21,7 +21,7 @@ const updateTreeItem = (
 };
 
 const handleTreeItemUpdate = (
-	treeItem: TreeItem | undefined | void,
+	treeItem: TreeItem | undefined,
 	navModuleValue: ContentCompartmentState,
 	contentItem: ContentSchema
 ): Promise<void> => {
@@ -147,7 +147,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	// We can safely remove the curent tree item from the created list since we know it already exist.
 	treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 
-	const shouldUpdateTreeItem = !equals(navModuleValue, prevNavModuleValue) || slugHasChanged;
+	const shouldUpdateTreeItem = !!treeItem || slugHasChanged;
 
 	if (!shouldUpdateTreeItem) {
 		return Promise.resolve();
