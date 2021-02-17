@@ -144,7 +144,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 			  );
 	}
 
-	// We can safely remove the curent tree item from the created list since we know it already exist.
+	// We can safely remove the current tree item from the created list since we know it already exist.
 	treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 
 	const shouldUpdateTreeItem = !!treeItem || slugHasChanged;
