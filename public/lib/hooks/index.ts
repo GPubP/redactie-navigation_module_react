@@ -1,3 +1,3 @@
-export * from './useTreesOptions';
+export * from './useTreeOptions';
 export * from './useTree';
 export * from './useTreeItem';
