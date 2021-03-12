@@ -11,40 +11,45 @@ import {
 } from './trees.service.types';
 
 export class TreesApiService {
-	public getTrees(): Promise<TreesResponse> {
-		return api.get('trees').json<TreesResponse>();
+	public getTrees(siteId: string): Promise<TreesResponse> {
+		return api.get(`${siteId}/trees`).json<TreesResponse>();
 	}
 
-	public getTree(treeId: number): Promise<TreeDetail> {
-		return api.get(`trees/${treeId}`).json<TreeDetail>();
+	public getTree(siteId: string, treeId: number): Promise<TreeDetail> {
+		return api.get(`${siteId}/trees/${treeId}`).json<TreeDetail>();
 	}
 
-	public getTreeItem(treeId: number, treeItemId: number): Promise<TreeItem> {
-		return api.get(`trees/${treeId}/items/${treeItemId}`).json<TreeItem>();
+	public getTreeItem(siteId: string, treeId: number, treeItemId: number): Promise<TreeItem> {
+		return api.get(`${siteId}/trees/${treeId}/items/${treeItemId}`).json<TreeItem>();
 	}
 
-	public createTreeItem(treeId: number, body: CreateTreeItemPayload): Promise<TreeItem> {
+	public createTreeItem(
+		siteId: string,
+		treeId: number,
+		body: CreateTreeItemPayload
+	): Promise<TreeItem> {
 		return api
-			.post(`trees/${treeId}/items`, {
+			.post(`${siteId}/trees/${treeId}/items`, {
 				json: body,
 			})
 			.json();
 	}
 
 	public updateTreeItem(
+		siteId: string,
 		treeId: number,
 		itemId: number,
 		body: UpdateTreeItemPayload
 	): Promise<TreeItem> {
 		return api
-			.put(`trees/${treeId}/items/${itemId}`, {
+			.put(`${siteId}/trees/${treeId}/items/${itemId}`, {
 				json: body,
 			})
 			.json();
 	}
 
-	public deleteTreeItem(treeId: number, itemId: number): ResponsePromise {
-		return api.delete(`trees/${treeId}/items/${itemId}`);
+	public deleteTreeItem(siteId: string, treeId: number, itemId: number): ResponsePromise {
+		return api.delete(`${siteId}/trees/${treeId}/items/${itemId}`);
 	}
 }
 

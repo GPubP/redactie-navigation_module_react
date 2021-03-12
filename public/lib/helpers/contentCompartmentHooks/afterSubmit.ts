@@ -10,17 +10,19 @@ import { isEmpty, isNotEmpty } from '../empty';
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
 const updateTreeItem = (
+	siteId: string,
 	navModuleValue: ContentCompartmentState,
 	body: UpdateTreeItemPayload
 ): Promise<void> => {
 	return treeItemsFacade
-		.updateTreeItem(navModuleValue.navigationTree, navModuleValue.id, body)
+		.updateTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id, body)
 		.catch(() => {
 			throw new Error(ERROR_MESSAGES.update);
 		});
 };
 
 const handleTreeItemUpdate = (
+	siteId: string,
 	treeItem: TreeItem | undefined,
 	navModuleValue: ContentCompartmentState,
 	contentItem: ContentSchema
@@ -44,7 +46,7 @@ const handleTreeItemUpdate = (
 		  }
 		: updateData;
 
-	return updateTreeItem(navModuleValue, body);
+	return updateTreeItem(siteId, navModuleValue, body);
 };
 
 const getPreviousFormState = (
@@ -64,9 +66,9 @@ const getPreviousFormState = (
 	};
 };
 
-const deleteTreeItem = (navModuleValue: ContentCompartmentState): Promise<void> => {
+const deleteTreeItem = (siteId: string, navModuleValue: ContentCompartmentState): Promise<void> => {
 	return treeItemsFacade
-		.deleteTreeItem(navModuleValue.navigationTree, navModuleValue.id)
+		.deleteTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id)
 		.then(() => {
 			treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 			return;
@@ -92,6 +94,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 ): Promise<ContentDetailCompartmentFormState | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
+	const siteId = contentItem.meta.site;
 
 	// We can not update or delete the tree item if there is no navigation tree or tree item id available.
 	if (!navModuleValue || isEmpty(navModuleValue.id) || isEmpty(navModuleValue.navigationTree)) {
@@ -115,7 +118,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	if (error && treeItem) {
 		return treeIsCreated
 			? // We need to delete the created tree item after a content item has failed saving
-			  deleteTreeItem(navModuleValue).then(() => {
+			  deleteTreeItem(siteId, navModuleValue).then(() => {
 					if (treeItemMovedToOtherTree) {
 						return getPreviousFormState(
 							prevTreeItem,
@@ -157,6 +160,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 		// Delete tree item from the navigation tree on which it was attached to
 		if (treeItemMovedToOtherTree) {
 			return treeItemsFacade.deleteTreeItem(
+				siteId,
 				prevNavModuleValue.navigationTree,
 				prevNavModuleValue.id
 			);
@@ -169,7 +173,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 		}
 
 		// Update tree item
-		return handleTreeItemUpdate(treeItem, navModuleValue, contentItem);
+		return handleTreeItemUpdate(siteId, treeItem, navModuleValue, contentItem);
 	};
 
 	/**
@@ -180,7 +184,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	 */
 	return !treeItem
 		? treeItemsFacade
-				.fetchTreeItem(navModuleValue.navigationTree, navModuleValue.id)
+				.fetchTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id)
 				.then(treeItem => handleTreeItemUpdateActions(treeItem as TreeItem))
 		: handleTreeItemUpdateActions(treeItem);
 };

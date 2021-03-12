@@ -167,7 +167,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	 * Fetch data effects
 	 */
 	useDidMount(() => {
-		treesFacade.getTreesList();
+		treesFacade.getTreesList(siteId);
 	});
 
 	useEffect(() => {
@@ -175,17 +175,17 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		const hasId = isNotEmpty(value.id);
 
 		if (hasId && hasNavigationTree && treeItem?.id != value.id) {
-			treeItemsFacade.fetchTreeItem(value.navigationTree, value.id);
+			treeItemsFacade.fetchTreeItem(siteId, value.navigationTree, value.id);
 		}
-	}, [value.id, value.navigationTree, treeItem, value]);
+	}, [value.id, value.navigationTree, treeItem, value, siteId]);
 
 	useEffect(() => {
 		const hasNavigationTree = isNotEmpty(value.navigationTree);
 
 		if (hasNavigationTree && tree?.id != value.navigationTree) {
-			treesFacade.getTree(value.navigationTree);
+			treesFacade.getTree(siteId, value.navigationTree);
 		}
-	}, [tree, value.navigationTree]);
+	}, [siteId, tree, value.navigationTree]);
 
 	/**
 	 * Functions

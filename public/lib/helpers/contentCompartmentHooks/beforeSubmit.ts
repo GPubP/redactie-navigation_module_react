@@ -47,13 +47,14 @@ const localUpdateTreeItem = (
 };
 
 const createTreeItem = (
+	siteId: string,
 	prevNavModuleValue: ContentCompartmentState,
 	navModuleValue: ContentCompartmentState,
 	body: CreateTreeItemPayload,
 	treeItemMovedToOtherTree = false
 ): Promise<ContentCompartmentState> => {
 	return treeItemsFacade
-		.createTreeItem(navModuleValue.navigationTree, body)
+		.createTreeItem(siteId, navModuleValue.navigationTree, body)
 		.then(response => {
 			if (response) {
 				treeItemsFacade.addPosition(response.id, navModuleValue.position);
@@ -74,11 +75,12 @@ const createTreeItem = (
 };
 
 const deleteTreeItem = (
+	siteId: string,
 	navigationTree: number,
 	navModuleValue: ContentCompartmentState
 ): Promise<ModuleValue> => {
 	return treeItemsFacade
-		.deleteTreeItem(navigationTree, navModuleValue.id)
+		.deleteTreeItem(siteId, navigationTree, navModuleValue.id)
 		.then(() => {
 			// remove all module values before saving the conent item
 			return {};
@@ -96,6 +98,7 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
 	const slugHasChanged = contentItem?.meta.slug.nl !== prevContentItem?.meta.slug.nl;
+	const siteId = contentItem.meta.site;
 
 	if (slugHasChanged) {
 		treeItemsFacade.setSlugIsChanged(true);
@@ -115,12 +118,18 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	const body = getBody(navModuleValue, contentItem);
 
 	if (navItemExist && prevNavigationTreeExist && !navigationTreeExist) {
-		return deleteTreeItem(prevNavModuleValue?.navigationTree, navModuleValue);
+		return deleteTreeItem(siteId, prevNavModuleValue?.navigationTree, navModuleValue);
 	}
 
 	return navItemExist && !treeItemMovedToOtherTree
 		? localUpdateTreeItem(navModuleValue, body)
-		: createTreeItem(prevNavModuleValue, navModuleValue, body, treeItemMovedToOtherTree);
+		: createTreeItem(
+				siteId,
+				prevNavModuleValue,
+				navModuleValue,
+				body,
+				treeItemMovedToOtherTree
+		  );
 };
 
 export default beforeSubmit;
