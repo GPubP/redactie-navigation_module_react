@@ -7,14 +7,16 @@ import {
 	FormikOnChangeHandler,
 	LoadingState,
 	useDidMount,
+	useSiteContext,
 } from '@redactie/utils';
 import arrayTreeFilter from 'array-tree-filter';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
+import rolesRightsConnector from '../../connectors/rolesRights';
 import { isNotEmpty } from '../../helpers';
-import { useTree, useTreeItem, useTreesOptions } from '../../hooks';
+import { useTree, useTreeItem, useTreeOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
@@ -31,6 +33,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	contentValue,
 	contentItem,
 	onChange,
+	isCreating,
 	formikRef,
 }) => {
 	/**
@@ -38,9 +41,29 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	 */
 
 	// Data hooks
-	const [loadingTreesOptions, treesOptions] = useTreesOptions();
 	const [loadingTree, tree] = useTree(value.navigationTree);
+	const { siteId } = useSiteContext();
 	const treeItem = useTreeItem(value.id);
+	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
+	const canDelete = useMemo(
+		() =>
+			rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.securityRights.delete,
+			]),
+		[mySecurityrights]
+	);
+	const readonly = useMemo(() => {
+		if (!isCreating) {
+			return !rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.securityRights.update,
+			]);
+		}
+		return false;
+	}, [mySecurityrights, isCreating]);
+	const [loadingTreesOptions, treesOptions] = useTreeOptions(canDelete);
 
 	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
 		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
@@ -216,7 +239,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									<Field
 										as={Select}
 										id="navigationTree"
-										disabled={activeTreeItemHasChildItems}
+										disabled={activeTreeItemHasChildItems || readonly}
 										name="navigationTree"
 										label="Navigatieboom"
 										placeholder="Selecteer een navigatieboom"
@@ -239,6 +262,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											</label>
 											<Cascader
 												changeOnSelect
+												disabled={readonly}
 												value={values.position}
 												options={treeConfig.options}
 												onChange={(value: number[]) =>
@@ -248,6 +272,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												<div className="a-input__wrapper">
 													<input
 														onChange={() => null}
+														disabled={readonly}
 														placeholder="Kies een positie in de boom"
 														value={getPositionInputValue(
 															treeConfig.options,
@@ -291,6 +316,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												id="label"
 												name="label"
 												label="Label"
+												disabled={readonly}
 												state={
 													!!touched.label && !!errors.label ? 'error' : ''
 												}
@@ -305,6 +331,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												name="status"
 												label="Status"
 												required
+												disabled={readonly}
 												options={statusOptions}
 											/>
 											<small className="u-block u-text-light u-margin-top-xs">
@@ -320,6 +347,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											name="description"
 											label="Beschrijving"
 											placeholder="Typ een beschrijving"
+											disabled={readonly}
 										/>
 										<small className="u-block u-text-light u-margin-top-xs">
 											Geef dit item een korte beschrijving.

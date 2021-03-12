@@ -1,4 +1,4 @@
-import { ContentSchema, ModuleSettings } from '@redactie/content-module';
+import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
 import { take } from 'rxjs/operators';
@@ -32,7 +32,7 @@ registerContentDetailCompartment(CONFIG.name, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (settings: ModuleSettings) => {
+	show: (context, settings) => {
 		let securityRights: string[] = [];
 
 		rolesRightsConnector.api.store.mySecurityRights.query
@@ -42,11 +42,13 @@ registerContentDetailCompartment(CONFIG.name, {
 				securityRights = rights.map(right => right.attributes.key);
 			});
 
+		const requiredRights = context.isCreating
+			? [rolesRightsConnector.securityRights.create, rolesRightsConnector.securityRights.read]
+			: [rolesRightsConnector.securityRights.read];
+
 		return (
 			settings?.config?.activateTree === 'true' &&
-			rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, [
-				'navigation-navigation_read',
-			])
+			rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, requiredRights)
 		);
 	},
 });
