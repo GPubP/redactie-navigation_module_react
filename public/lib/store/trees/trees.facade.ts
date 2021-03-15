@@ -19,7 +19,7 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 		return this.query.selectTreesOptions(canDelete);
 	}
 
-	public getTreesList(): void {
+	public getTreesList(siteId: string): void {
 		const state = this.query.getValue();
 
 		if (state.treeList && state.treeList.length > 0) {
@@ -28,7 +28,7 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 		this.store.setIsFetching(true);
 
 		this.service
-			.getTrees()
+			.getTrees(siteId)
 			.then(response => {
 				const resourceList = response?._embedded?.resourceList;
 				if (resourceList) {
@@ -46,11 +46,11 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 			});
 	}
 
-	public getTree(treeId: number): void {
+	public getTree(siteId: string, treeId: number): void {
 		this.store.setIsFetchingOne(true);
 
 		this.service
-			.getTree(treeId)
+			.getTree(siteId, treeId)
 			.then(response => {
 				if (response) {
 					this.store.upsert(treeId, response);

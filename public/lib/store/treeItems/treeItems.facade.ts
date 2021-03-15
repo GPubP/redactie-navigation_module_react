@@ -18,7 +18,11 @@ export class TreeItemsFacade extends BaseEntityFacade<
 	TreesApiService,
 	TreeItemsQuery
 > {
-	public fetchTreeItem(treeId: number, treeItemId: number): Promise<TreeItem | void> {
+	public fetchTreeItem(
+		siteId: string,
+		treeId: number,
+		treeItemId: number
+	): Promise<TreeItem | void> {
 		if (this.query.hasEntity(treeItemId)) {
 			return Promise.resolve(this.getTreeItem(treeItemId));
 		}
@@ -26,7 +30,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		this.store.setIsFetchingOne(true);
 
 		return this.service
-			.getTreeItem(treeId, treeItemId)
+			.getTreeItem(siteId, treeId, treeItemId)
 			.then(response => {
 				if (response) {
 					this.store.upsert(treeItemId, response);
@@ -42,8 +46,12 @@ export class TreeItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public createTreeItem(treeId: number, body: CreateTreeItemPayload): Promise<TreeItem> {
-		return this.service.createTreeItem(treeId, body).then(response => {
+	public createTreeItem(
+		siteId: string,
+		treeId: number,
+		body: CreateTreeItemPayload
+	): Promise<TreeItem> {
+		return this.service.createTreeItem(siteId, treeId, body).then(response => {
 			if (response) {
 				this.store.add(response);
 				this.store.update(previousState => ({
@@ -55,11 +63,12 @@ export class TreeItemsFacade extends BaseEntityFacade<
 	}
 
 	public updateTreeItem(
+		siteId: string,
 		treeId: number,
 		itemId: number,
 		body: UpdateTreeItemPayload
 	): Promise<void> {
-		return this.service.updateTreeItem(treeId, itemId, body).then(response => {
+		return this.service.updateTreeItem(siteId, treeId, itemId, body).then(response => {
 			if (response) {
 				this.store.update(itemId, response);
 				this.store.update(previousState => ({
@@ -71,8 +80,8 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public deleteTreeItem(treeId: number, itemId: number): Promise<void> {
-		return this.service.deleteTreeItem(treeId, itemId).then(() => {
+	public deleteTreeItem(siteId: string, treeId: number, itemId: number): Promise<void> {
+		return this.service.deleteTreeItem(siteId, treeId, itemId).then(() => {
 			return this.store.remove(itemId);
 		});
 	}
