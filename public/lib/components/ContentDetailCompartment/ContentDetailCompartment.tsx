@@ -229,7 +229,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const renderForm = (): ReactElement => (
 		<Formik
 			innerRef={instance => formikRef && formikRef(instance)}
-			enableReinitialize
 			initialValues={initialValues}
 			onSubmit={onChange}
 			validationSchema={VALIDATION_SCHEMA}
