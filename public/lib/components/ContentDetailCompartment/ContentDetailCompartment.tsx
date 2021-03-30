@@ -12,7 +12,7 @@ import {
 import arrayTreeFilter from 'array-tree-filter';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import { isNil } from 'ramda';
-import React, { FC, ReactElement, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { isNotEmpty } from '../../helpers';
@@ -33,7 +33,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	contentValue,
 	contentItem,
 	onChange,
-	isCreating,
 	formikRef,
 }) => {
 	/**
@@ -55,15 +54,18 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 			]),
 		[mySecurityrights]
 	);
-	const readonly = useMemo(() => {
-		if (!isCreating) {
-			return !rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.update,
-			]);
-		}
-		return false;
-	}, [mySecurityrights, isCreating]);
 	const [loadingTreesOptions, treesOptions] = useTreeOptions(canDelete);
+	const [initialLoading, setInitialLoading] = useState(true);
+
+	useEffect(() => {
+		if (
+			!initialLoading &&
+			loadingTreesOptions !== LoadingState.Loading &&
+			loadingTree !== LoadingState.Loading
+		) {
+			setInitialLoading(false);
+		}
+	}, [loadingTree, loadingTreesOptions, initialLoading]);
 
 	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
 		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
@@ -150,6 +152,18 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		[treeItem, treeConfig.options]
 	);
 
+	const readonly = useMemo(() => {
+		const rightsToCheck =
+			initialValues.id !== ''
+				? [rolesRightsConnector.securityRights.update]
+				: [rolesRightsConnector.securityRights.create];
+
+		return !rolesRightsConnector.api.helpers.checkSecurityRights(
+			mySecurityrights,
+			rightsToCheck
+		);
+	}, [mySecurityrights, initialValues]);
+
 	const statusOptions = useMemo(() => {
 		if (
 			(contentValue?.meta.status === 'UNPUBLISHED' &&
@@ -228,10 +242,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 				return (
 					<>
-						<FormikOnChangeHandler
-							delay={1000}
-							onChange={values => onFormChange(values)}
-						/>
+						<FormikOnChangeHandler delay={300} onChange={onFormChange} />
 						<CardBody>
 							<h6 className="u-margin-bottom">Navigatie</h6>
 							<div className="row">
@@ -362,7 +373,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		</Formik>
 	);
 
-	return <DataLoader loadingState={loadingTreesOptions} render={renderForm} />;
+	return <DataLoader loadingState={initialLoading} render={renderForm} />;
 };
 
 export default ContentDetailCompartment;
