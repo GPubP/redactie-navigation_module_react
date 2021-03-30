@@ -59,7 +59,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 	useEffect(() => {
 		if (
-			!initialLoading &&
+			initialLoading &&
 			loadingTreesOptions !== LoadingState.Loading &&
 			loadingTree !== LoadingState.Loading
 		) {
