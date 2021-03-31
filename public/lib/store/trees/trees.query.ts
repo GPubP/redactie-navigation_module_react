@@ -3,7 +3,7 @@ import { BaseEntityQuery } from '@redactie/utils';
 import { Observable } from 'rxjs';
 import { distinctUntilChanged, filter, map } from 'rxjs/operators';
 
-import { TreeOption } from '../../navigation.types';
+import { NavigationSecurityRights, TreeOption } from '../../navigation.types';
 
 import { TreeModel, TreesState } from './trees.model';
 import { treesStore } from './trees.store';
@@ -17,18 +17,27 @@ export class TreesQuery extends BaseEntityQuery<TreesState> {
 		return this.selectEntity(treeId);
 	}
 
-	public selectTreesOptions = (canDelete: boolean): Observable<TreeOption[]> =>
+	public selectTreesOptions = (
+		navigationRights: NavigationSecurityRights,
+		treeItemId: string
+	): Observable<TreeOption[]> =>
 		this.treeList$.pipe(
 			map(trees => {
 				const newTrees = (trees || []).map(tree => ({
 					label: tree.label,
+					disabled:
+						treeItemId === ''
+							? !(navigationRights.update || navigationRights.create)
+							: !navigationRights.update,
 					value: String(tree.id),
 					key: `${tree.label}_${tree.id}`,
 				}));
-				if (canDelete) {
+
+				if (navigationRights.delete) {
 					newTrees.unshift({
 						label: '<-- Selecteer een lege navigatieboom -->',
 						value: '',
+						disabled: false,
 						key: `delete-tree`,
 					});
 				}

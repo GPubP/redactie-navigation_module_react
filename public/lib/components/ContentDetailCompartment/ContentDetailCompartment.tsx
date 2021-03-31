@@ -9,14 +9,12 @@ import {
 	useDidMount,
 	useSiteContext,
 } from '@redactie/utils';
-import arrayTreeFilter from 'array-tree-filter';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
-import rolesRightsConnector from '../../connectors/rolesRights';
 import { isNotEmpty } from '../../helpers';
-import { useTree, useTreeItem, useTreeOptions } from '../../hooks';
+import { useNavigationRights, useTree, useTreeItem, useTreeOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
@@ -27,6 +25,7 @@ import {
 	STATUS_OPTIONS,
 	VALIDATION_SCHEMA,
 } from './ContentDetailCompartment.const';
+import { findPosition, getPositionInputValue } from './contentDetailCompartment.helpers';
 
 const ContentDetailCompartment: FC<CompartmentProps> = ({
 	value = {},
@@ -43,53 +42,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const [loadingTree, tree] = useTree(value.navigationTree);
 	const { siteId } = useSiteContext();
 	const treeItem = useTreeItem(value.id);
-	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
-		siteUuid: siteId,
-		onlyKeys: true,
-	});
-	const canDelete = useMemo(
-		() =>
-			rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.delete,
-			]),
-		[mySecurityrights]
-	);
-	const [loadingTreesOptions, treesOptions] = useTreeOptions(canDelete);
-	const [initialLoading, setInitialLoading] = useState(true);
-
-	useEffect(() => {
-		if (
-			initialLoading &&
-			loadingTreesOptions !== LoadingState.Loading &&
-			loadingTree !== LoadingState.Loading
-		) {
-			setInitialLoading(false);
-		}
-	}, [loadingTree, loadingTreesOptions, initialLoading]);
-
-	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
-		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
-			return options.reduce((acc, option) => {
-				if (option.value == treeItemId) {
-					acc.push(option.value);
-					return acc;
-				}
-
-				if (option.children && option.children.length > 0) {
-					const childrenValue = reduceTreeOptions(option.children);
-
-					if (childrenValue && childrenValue.length > 0) {
-						return [option.value, ...childrenValue];
-					}
-				}
-
-				return acc;
-			}, [] as number[]);
-		};
-
-		return reduceTreeOptions(treeOptions);
-	};
-
+	const navigationRights = useNavigationRights(siteId);
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
@@ -124,16 +77,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 			activeItem: undefined,
 		};
 	}, [tree, value.id]);
-
-	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
-		if (treeConfig.activeItem) {
-			return (
-				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
-			);
-		}
-		return false;
-	}, [treeConfig.activeItem]);
-
 	const initialValues = useMemo(
 		() => ({
 			id: value.id ?? '',
@@ -151,18 +94,30 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[treeItem, treeConfig.options]
 	);
+	const readonlyNavigationTree = useMemo(() => {
+		return initialValues.id !== ''
+			? !navigationRights.update && !navigationRights.delete
+			: !navigationRights.create;
+	}, [
+		initialValues.id,
+		navigationRights.create,
+		navigationRights.delete,
+		navigationRights.update,
+	]);
+	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
+	const [initialLoading, setInitialLoading] = useState(true);
+	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
+		if (treeConfig.activeItem) {
+			return (
+				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
+			);
+		}
+		return false;
+	}, [treeConfig.activeItem]);
 
 	const readonly = useMemo(() => {
-		const rightsToCheck =
-			initialValues.id !== ''
-				? [rolesRightsConnector.securityRights.update]
-				: [rolesRightsConnector.securityRights.create];
-
-		return !rolesRightsConnector.api.helpers.checkSecurityRights(
-			mySecurityrights,
-			rightsToCheck
-		);
-	}, [mySecurityrights, initialValues]);
+		return initialValues.id !== '' ? !navigationRights.update : !navigationRights.create;
+	}, [initialValues.id, navigationRights.update, navigationRights.create]);
 
 	const statusOptions = useMemo(() => {
 		if (
@@ -183,6 +138,16 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	useDidMount(() => {
 		treesFacade.getTreesList(siteId);
 	});
+
+	useEffect(() => {
+		if (
+			initialLoading &&
+			loadingTreesOptions !== LoadingState.Loading &&
+			loadingTree !== LoadingState.Loading
+		) {
+			setInitialLoading(false);
+		}
+	}, [loadingTree, loadingTreesOptions, initialLoading]);
 
 	useEffect(() => {
 		const hasNavigationTree = isNotEmpty(value.navigationTree);
@@ -216,19 +181,13 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		setFieldValue('position', value);
 	};
 
-	const getPositionInputValue = (options: CascaderOption[], inputValue: number[]): string => {
-		return arrayTreeFilter(options, (o, level) => o.value === inputValue[level])
-			.map(o => o.label)
-			.join(' > ');
-	};
-
 	/**
 	 * Render
 	 */
-
 	const renderForm = (): ReactElement => (
 		<Formik
 			innerRef={instance => formikRef && formikRef(instance)}
+			enableReinitialize
 			initialValues={initialValues}
 			onSubmit={onChange}
 			validationSchema={VALIDATION_SCHEMA}
@@ -249,7 +208,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									<Field
 										as={Select}
 										id="navigationTree"
-										disabled={activeTreeItemHasChildItems || readonly}
+										disabled={
+											activeTreeItemHasChildItems || readonlyNavigationTree
+										}
 										name="navigationTree"
 										label="Navigatieboom"
 										placeholder="Selecteer een navigatieboom"

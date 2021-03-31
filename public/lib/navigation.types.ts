@@ -31,3 +31,10 @@ export interface ContentCompartmentState {
 	description?: string;
 	status?: string;
 }
+
+export interface NavigationSecurityRights {
+	create: boolean;
+	read: boolean;
+	update: boolean;
+	delete: boolean;
+}

@@ -1,7 +1,7 @@
 import { BaseEntityFacade } from '@redactie/utils';
 import { Observable } from 'rxjs';
 
-import { TreeOption } from '../../navigation.types';
+import { NavigationSecurityRights, TreeOption } from '../../navigation.types';
 import { treesApiService, TreesApiService } from '../../services/trees';
 
 import { TreeModel } from './trees.model';
@@ -15,8 +15,11 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 		return this.query.selectTree(treeId);
 	}
 
-	public selectTreeOptions(canDelete: boolean): Observable<TreeOption[]> {
-		return this.query.selectTreesOptions(canDelete);
+	public selectTreeOptions(
+		navigationRights: NavigationSecurityRights,
+		treeItemId: string
+	): Observable<TreeOption[]> {
+		return this.query.selectTreesOptions(navigationRights, treeItemId);
 	}
 
 	public getTreesList(siteId: string): void {
