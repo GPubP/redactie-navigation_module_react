@@ -200,7 +200,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 				return (
 					<>
-						<FormikOnChangeHandler delay={300} onChange={onFormChange} />
+						<FormikOnChangeHandler onChange={onFormChange} />
 						<CardBody>
 							<h6 className="u-margin-bottom">Navigatie</h6>
 							<div className="row">
