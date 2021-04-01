@@ -1,31 +1,22 @@
 import { CardBody, Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps } from '@redactie/content-module';
-import {
-	DataLoader,
-	ErrorMessage,
-	FormikOnChangeHandler,
-	LoadingState,
-	useDidMount,
-	useSiteContext,
-} from '@redactie/utils';
+import { DataLoader, ErrorMessage, FormikOnChangeHandler, useSiteContext } from '@redactie/utils';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
-import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
-import { isNotEmpty } from '../../helpers';
 import { useNavigationRights, useTree, useTreeItem, useTreeOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
-import { treeItemsFacade } from '../../store/treeItems';
-import { treesFacade } from '../../store/trees';
 
+import { VALIDATION_SCHEMA } from './ContentDetailCompartment.const';
 import {
-	NAV_ITEM_STATUSES,
-	STATUS_OPTIONS,
-	VALIDATION_SCHEMA,
-} from './ContentDetailCompartment.const';
-import { findPosition, getPositionInputValue } from './contentDetailCompartment.helpers';
+	getInitialFormValues,
+	getPositionInputValue,
+	getStatusOptions,
+	getTreeConfig,
+	hasTreeItemHasChildItems,
+} from './contentDetailCompartment.helpers';
 
 const ContentDetailCompartment: FC<CompartmentProps> = ({
 	value = {},
@@ -37,139 +28,57 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	/**
 	 * Hooks
 	 */
+	// Context hooks
+	const { siteId } = useSiteContext();
 
 	// Data hooks
 	const [loadingTree, tree] = useTree(value.navigationTree);
-	const { siteId } = useSiteContext();
-	const treeItem = useTreeItem(value.id);
+	const [loadingTreeItem, treeItem] = useTreeItem(value.navigationTree, value.id);
 	const navigationRights = useNavigationRights(siteId);
+
+	// Local state hooks
+	const [initialLoading, setInitialLoading] = useState(true);
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
-	}>(() => {
-		if (tree) {
-			let activeItem;
-			const mapTreeItemsToOptions = (items: TreeDetailItem[]): CascaderOption[] => {
-				return items
-					.map((item: TreeDetailItem) => {
-						// Filter out the current navigation item from the position list
-						// The user can not set the current navigation item as the position in the
-						// navigation tree because it will create a circular dependency
-						if (item.id === parseInt(value.id, 10)) {
-							activeItem = item;
-							return null;
-						}
-						return {
-							value: item.id,
-							label: item.label,
-							children: mapTreeItemsToOptions(item.items || []),
-						};
-					})
-					.filter(item => item !== null) as CascaderOption[];
-			};
-			return {
-				options: mapTreeItemsToOptions(tree.items || []),
-				activeItem,
-			};
-		}
-		return {
-			options: [],
-			activeItem: undefined,
-		};
-	}, [tree, value.id]);
+	}>(() => getTreeConfig(tree, value.id), [tree, value.id]);
 	const initialValues = useMemo(
-		() => ({
-			id: value.id ?? '',
-			navigationTree: value.navigationTree ?? '',
-			position:
-				!isNil(treeItem?.parentId) && treeConfig.options.length > 0
-					? findPosition(treeConfig.options, treeItem?.parentId)
-					: value.position
-					? value.position
-					: [],
-			label: treeItem?.label ?? value.label ?? '',
-			description: treeItem?.description ?? value.description ?? '',
-			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
-		}),
+		() => getInitialFormValues(value, treeItem, treeConfig.options),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[treeItem, treeConfig.options]
 	);
+	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
+	const activeTreeItemHasChildItems = useMemo(
+		() => hasTreeItemHasChildItems(treeConfig.activeItem),
+		[treeConfig.activeItem]
+	);
+	const statusOptions = useMemo(() => getStatusOptions(contentItem, contentValue, value.status), [
+		contentItem,
+		contentValue,
+		value.status,
+	]);
+
+	// Initial loading hooks
+	useEffect(() => {
+		if (initialLoading && !loadingTreesOptions && !loadingTree && !loadingTreeItem) {
+			setInitialLoading(false);
+		}
+	}, [loadingTree, loadingTreesOptions, initialLoading, loadingTreeItem]);
+
+	// Form state Hooks
 	const readonlyNavigationTree = useMemo(() => {
 		return initialValues.id !== ''
 			? !navigationRights.update && !navigationRights.delete
 			: !navigationRights.create;
-	}, [
-		initialValues.id,
-		navigationRights.create,
-		navigationRights.delete,
-		navigationRights.update,
-	]);
-	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
-	const [initialLoading, setInitialLoading] = useState(true);
-	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
-		if (treeConfig.activeItem) {
-			return (
-				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
-			);
-		}
-		return false;
-	}, [treeConfig.activeItem]);
+	}, [initialValues.id, navigationRights]);
 
 	const readonly = useMemo(() => {
 		return initialValues.id !== '' ? !navigationRights.update : !navigationRights.create;
 	}, [initialValues.id, navigationRights.update, navigationRights.create]);
 
-	const statusOptions = useMemo(() => {
-		if (
-			(contentValue?.meta.status === 'UNPUBLISHED' &&
-				value.status !== NAV_ITEM_STATUSES.PUBLISHED) ||
-			!contentItem?.meta?.historySummary?.published
-		) {
-			return STATUS_OPTIONS.filter(
-				statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
-			);
-		}
-		return STATUS_OPTIONS;
-	}, [contentItem, contentValue, value.status]);
-
-	/**
-	 * Fetch data effects
-	 */
-	useDidMount(() => {
-		treesFacade.getTreesList(siteId);
-	});
-
-	useEffect(() => {
-		if (
-			initialLoading &&
-			loadingTreesOptions !== LoadingState.Loading &&
-			loadingTree !== LoadingState.Loading
-		) {
-			setInitialLoading(false);
-		}
-	}, [loadingTree, loadingTreesOptions, initialLoading]);
-
-	useEffect(() => {
-		const hasNavigationTree = isNotEmpty(value.navigationTree);
-		const hasId = isNotEmpty(value.id);
-
-		if (hasId && hasNavigationTree && treeItem?.id != value.id) {
-			treeItemsFacade.fetchTreeItem(siteId, value.navigationTree, value.id);
-		}
-	}, [value.id, value.navigationTree, treeItem, value, siteId]);
-
-	useEffect(() => {
-		const hasNavigationTree = isNotEmpty(value.navigationTree);
-
-		if (hasNavigationTree && tree?.id != value.navigationTree) {
-			treesFacade.getTree(siteId, value.navigationTree);
-		}
-	}, [siteId, tree, value.navigationTree]);
-
 	/**
 	 * Functions
 	 */
-
 	const onFormChange = (values: FormikValues): void => {
 		onChange(values);
 	};
@@ -226,7 +135,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									</small>
 								</div>
 								<div className="col-xs-12 col-sm-6">
-									{navigationTreeSelected && loadingTree === LoadingState.Loaded && (
+									{navigationTreeSelected && !loadingTree && (
 										<div className="a-input has-icon-right">
 											<label className="a-input__label" htmlFor="text-field">
 												Positie
@@ -273,7 +182,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											</small>
 										</div>
 									)}
-									{loadingTree === LoadingState.Loading && <Spinner />}
+									{loadingTree && <Spinner />}
 								</div>
 							</div>
 

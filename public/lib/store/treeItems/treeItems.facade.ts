@@ -94,6 +94,10 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		return this.query.getTreeItem(treeItemId);
 	}
 
+	public hasTreeItem(treeItemId: number): boolean {
+		return this.query.hasEntity(treeItemId);
+	}
+
 	public localUpateTreeItem(itemId: number, body: UpdateTreeItemPayload): void {
 		this.store.update(itemId, previousState => {
 			return {

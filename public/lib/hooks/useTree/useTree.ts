@@ -1,18 +1,34 @@
-import { LoadingState, useObservable } from '@redactie/utils';
-import { of } from 'rxjs';
+import { LoadingState, useObservable, useSiteContext } from '@redactie/utils';
+import { isNil } from 'ramda';
+import { useEffect, useState } from 'react';
 
 import { TreeModel, treesFacade } from '../../store/trees';
 
-const useTree = (treeId: number): [LoadingState, TreeModel | undefined] => {
-	const isFetching = useObservable(treesFacade.isFetchingOne$, LoadingState.Loading);
-	const tree = useObservable(
-		treeId !== undefined && treeId !== null ? treesFacade.selectTree(treeId) : of(undefined)
-	);
-	const error = useObservable(treesFacade.error$, null);
+const useTree = (treeId: number): [boolean, TreeModel | undefined] => {
+	const { siteId } = useSiteContext();
+	const [tree, setTree] = useState<TreeModel>();
+	const isFetchingOne = useObservable(treesFacade.isFetchingOne$, LoadingState.Loading);
+	const isLoading = isFetchingOne === LoadingState.Loading;
 
-	const loadingState = error ? LoadingState.Error : isFetching;
+	useEffect(() => {
+		if (isNil(treeId) || isNil(siteId)) {
+			return;
+		}
 
-	return [loadingState, tree];
+		const hasTree = treesFacade.hasTree(treeId);
+
+		if (!hasTree) {
+			treesFacade.fetchTree(siteId, treeId);
+		}
+
+		const treeSubscription = treesFacade.selectTree(treeId).subscribe(setTree);
+
+		return () => {
+			treeSubscription.unsubscribe();
+		};
+	}, [siteId, treeId]);
+
+	return [isLoading, tree];
 };
 
 export default useTree;
