@@ -1,196 +1,84 @@
 import { CardBody, Select, Spinner, Textarea, TextField } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps } from '@redactie/content-module';
-import {
-	DataLoader,
-	ErrorMessage,
-	FormikOnChangeHandler,
-	LoadingState,
-	useDidMount,
-	useSiteContext,
-} from '@redactie/utils';
-import arrayTreeFilter from 'array-tree-filter';
+import { DataLoader, ErrorMessage, FormikOnChangeHandler, useSiteContext } from '@redactie/utils';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
-import { isNil } from 'ramda';
-import React, { FC, ReactElement, useEffect, useMemo } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
-import rolesRightsConnector from '../../connectors/rolesRights';
-import { isNotEmpty } from '../../helpers';
-import { useTree, useTreeItem, useTreeOptions } from '../../hooks';
+import { useNavigationRights, useTree, useTreeItem, useTreeOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
-import { treeItemsFacade } from '../../store/treeItems';
-import { treesFacade } from '../../store/trees';
 
+import { VALIDATION_SCHEMA } from './ContentDetailCompartment.const';
 import {
-	NAV_ITEM_STATUSES,
-	STATUS_OPTIONS,
-	VALIDATION_SCHEMA,
-} from './ContentDetailCompartment.const';
+	getInitialFormValues,
+	getPositionInputValue,
+	getStatusOptions,
+	getTreeConfig,
+	hasTreeItemHasChildItems,
+} from './contentDetailCompartment.helpers';
 
 const ContentDetailCompartment: FC<CompartmentProps> = ({
 	value = {},
 	contentValue,
 	contentItem,
 	onChange,
-	isCreating,
 	formikRef,
 }) => {
 	/**
 	 * Hooks
 	 */
+	// Context hooks
+	const { siteId } = useSiteContext();
 
 	// Data hooks
 	const [loadingTree, tree] = useTree(value.navigationTree);
-	const { siteId } = useSiteContext();
-	const treeItem = useTreeItem(value.id);
-	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
-		siteUuid: siteId,
-		onlyKeys: true,
-	});
-	const canDelete = useMemo(
-		() =>
-			rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.delete,
-			]),
-		[mySecurityrights]
-	);
-	const readonly = useMemo(() => {
-		if (!isCreating) {
-			return !rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.update,
-			]);
-		}
-		return false;
-	}, [mySecurityrights, isCreating]);
-	const [loadingTreesOptions, treesOptions] = useTreeOptions(canDelete);
+	const [loadingTreeItem, treeItem] = useTreeItem(value.navigationTree, value.id);
+	const navigationRights = useNavigationRights(siteId);
 
-	const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
-		const reduceTreeOptions = (options: CascaderOption[]): number[] => {
-			return options.reduce((acc, option) => {
-				if (option.value == treeItemId) {
-					acc.push(option.value);
-					return acc;
-				}
-
-				if (option.children && option.children.length > 0) {
-					const childrenValue = reduceTreeOptions(option.children);
-
-					if (childrenValue && childrenValue.length > 0) {
-						return [option.value, ...childrenValue];
-					}
-				}
-
-				return acc;
-			}, [] as number[]);
-		};
-
-		return reduceTreeOptions(treeOptions);
-	};
-
+	// Local state hooks
+	const [initialLoading, setInitialLoading] = useState(true);
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
-	}>(() => {
-		if (tree) {
-			let activeItem;
-			const mapTreeItemsToOptions = (items: TreeDetailItem[]): CascaderOption[] => {
-				return items
-					.map((item: TreeDetailItem) => {
-						// Filter out the current navigation item from the position list
-						// The user can not set the current navigation item as the position in the
-						// navigation tree because it will create a circular dependency
-						if (item.id === parseInt(value.id, 10)) {
-							activeItem = item;
-							return null;
-						}
-						return {
-							value: item.id,
-							label: item.label,
-							children: mapTreeItemsToOptions(item.items || []),
-						};
-					})
-					.filter(item => item !== null) as CascaderOption[];
-			};
-			return {
-				options: mapTreeItemsToOptions(tree.items || []),
-				activeItem,
-			};
-		}
-		return {
-			options: [],
-			activeItem: undefined,
-		};
-	}, [tree, value.id]);
-
-	const activeTreeItemHasChildItems = useMemo<boolean>(() => {
-		if (treeConfig.activeItem) {
-			return (
-				Array.isArray(treeConfig.activeItem.items) && treeConfig.activeItem.items.length > 0
-			);
-		}
-		return false;
-	}, [treeConfig.activeItem]);
-
+	}>(() => getTreeConfig(tree, value.id), [tree, value.id]);
 	const initialValues = useMemo(
-		() => ({
-			id: value.id ?? '',
-			navigationTree: value.navigationTree ?? '',
-			position:
-				!isNil(treeItem?.parentId) && treeConfig.options.length > 0
-					? findPosition(treeConfig.options, treeItem?.parentId)
-					: value.position
-					? value.position
-					: [],
-			label: treeItem?.label ?? value.label ?? '',
-			description: treeItem?.description ?? value.description ?? '',
-			status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
-		}),
+		() => getInitialFormValues(value, treeItem, treeConfig.options),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 		[treeItem, treeConfig.options]
 	);
+	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
+	const activeTreeItemHasChildItems = useMemo(
+		() => hasTreeItemHasChildItems(treeConfig.activeItem),
+		[treeConfig.activeItem]
+	);
+	const statusOptions = useMemo(() => getStatusOptions(contentItem, contentValue, value.status), [
+		contentItem,
+		contentValue,
+		value.status,
+	]);
 
-	const statusOptions = useMemo(() => {
-		if (
-			(contentValue?.meta.status === 'UNPUBLISHED' &&
-				value.status !== NAV_ITEM_STATUSES.PUBLISHED) ||
-			!contentItem?.meta?.historySummary?.published
-		) {
-			return STATUS_OPTIONS.filter(
-				statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
-			);
-		}
-		return STATUS_OPTIONS;
-	}, [contentItem, contentValue, value.status]);
-
-	/**
-	 * Fetch data effects
-	 */
-	useDidMount(() => {
-		treesFacade.getTreesList(siteId);
-	});
-
+	// Initial loading hooks
 	useEffect(() => {
-		const hasNavigationTree = isNotEmpty(value.navigationTree);
-		const hasId = isNotEmpty(value.id);
-
-		if (hasId && hasNavigationTree && treeItem?.id != value.id) {
-			treeItemsFacade.fetchTreeItem(siteId, value.navigationTree, value.id);
+		if (initialLoading && !loadingTreesOptions && !loadingTree && !loadingTreeItem) {
+			setInitialLoading(false);
 		}
-	}, [value.id, value.navigationTree, treeItem, value, siteId]);
+	}, [loadingTree, loadingTreesOptions, initialLoading, loadingTreeItem]);
 
-	useEffect(() => {
-		const hasNavigationTree = isNotEmpty(value.navigationTree);
+	// Form state Hooks
+	const readonlyNavigationTree = useMemo(() => {
+		return initialValues.id !== ''
+			? !navigationRights.update && !navigationRights.delete
+			: !navigationRights.create;
+	}, [initialValues.id, navigationRights]);
 
-		if (hasNavigationTree && tree?.id != value.navigationTree) {
-			treesFacade.getTree(siteId, value.navigationTree);
-		}
-	}, [siteId, tree, value.navigationTree]);
+	const readonly = useMemo(() => {
+		return initialValues.id !== '' ? !navigationRights.update : !navigationRights.create;
+	}, [initialValues.id, navigationRights.update, navigationRights.create]);
 
 	/**
 	 * Functions
 	 */
-
 	const onFormChange = (values: FormikValues): void => {
 		onChange(values);
 	};
@@ -202,16 +90,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		setFieldValue('position', value);
 	};
 
-	const getPositionInputValue = (options: CascaderOption[], inputValue: number[]): string => {
-		return arrayTreeFilter(options, (o, level) => o.value === inputValue[level])
-			.map(o => o.label)
-			.join(' > ');
-	};
-
 	/**
 	 * Render
 	 */
-
 	const renderForm = (): ReactElement => (
 		<Formik
 			innerRef={instance => formikRef && formikRef(instance)}
@@ -228,10 +109,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 				return (
 					<>
-						<FormikOnChangeHandler
-							delay={1000}
-							onChange={values => onFormChange(values)}
-						/>
+						<FormikOnChangeHandler onChange={onFormChange} />
 						<CardBody>
 							<h6 className="u-margin-bottom">Navigatie</h6>
 							<div className="row">
@@ -239,7 +117,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									<Field
 										as={Select}
 										id="navigationTree"
-										disabled={activeTreeItemHasChildItems || readonly}
+										disabled={
+											activeTreeItemHasChildItems || readonlyNavigationTree
+										}
 										name="navigationTree"
 										label="Navigatieboom"
 										placeholder="Selecteer een navigatieboom"
@@ -255,7 +135,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									</small>
 								</div>
 								<div className="col-xs-12 col-sm-6">
-									{navigationTreeSelected && loadingTree === LoadingState.Loaded && (
+									{navigationTreeSelected && !loadingTree && (
 										<div className="a-input has-icon-right">
 											<label className="a-input__label" htmlFor="text-field">
 												Positie
@@ -302,7 +182,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											</small>
 										</div>
 									)}
-									{loadingTree === LoadingState.Loading && <Spinner />}
+									{loadingTree && <Spinner />}
 								</div>
 							</div>
 
@@ -362,7 +242,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		</Formik>
 	);
 
-	return <DataLoader loadingState={loadingTreesOptions} render={renderForm} />;
+	return <DataLoader loadingState={initialLoading} render={renderForm} />;
 };
 
 export default ContentDetailCompartment;

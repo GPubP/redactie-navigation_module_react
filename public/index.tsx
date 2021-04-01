@@ -32,7 +32,7 @@ registerContentDetailCompartment(CONFIG.name, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (context, settings) => {
+	show: (context, settings, value) => {
 		let securityRights: string[] = [];
 
 		rolesRightsConnector.api.store.mySecurityRights.query
@@ -42,7 +42,7 @@ registerContentDetailCompartment(CONFIG.name, {
 				securityRights = rights.map(right => right.attributes.key);
 			});
 
-		const requiredRights = context.isCreating
+		const requiredRights = !value?.navigationTree
 			? [rolesRightsConnector.securityRights.create, rolesRightsConnector.securityRights.read]
 			: [rolesRightsConnector.securityRights.read];
 

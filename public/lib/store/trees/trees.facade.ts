@@ -1,7 +1,6 @@
 import { BaseEntityFacade } from '@redactie/utils';
 import { Observable } from 'rxjs';
 
-import { TreeOption } from '../../navigation.types';
 import { treesApiService, TreesApiService } from '../../services/trees';
 
 import { TreeModel } from './trees.model';
@@ -15,11 +14,11 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 		return this.query.selectTree(treeId);
 	}
 
-	public selectTreeOptions(canDelete: boolean): Observable<TreeOption[]> {
-		return this.query.selectTreesOptions(canDelete);
+	public hasTree(treeId: number): boolean {
+		return this.query.hasEntity(treeId);
 	}
 
-	public getTreesList(siteId: string): void {
+	public fetchTreesList(siteId: string): void {
 		const state = this.query.getValue();
 
 		if (state.treeList && state.treeList.length > 0) {
@@ -46,7 +45,11 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 			});
 	}
 
-	public getTree(siteId: string, treeId: number): void {
+	public fetchTree(siteId: string, treeId: number): void {
+		if (this.query.hasEntity(treeId)) {
+			return;
+		}
+
 		this.store.setIsFetchingOne(true);
 
 		this.service
