@@ -45,8 +45,8 @@ export class TreesFacade extends BaseEntityFacade<TreesStore, TreesApiService, T
 			});
 	}
 
-	public fetchTree(siteId: string, treeId: number): void {
-		if (this.query.hasEntity(treeId)) {
+	public fetchTree(siteId: string, treeId: number, forceUpdate = false): void {
+		if (this.query.hasEntity(treeId) && !forceUpdate) {
 			return;
 		}
 

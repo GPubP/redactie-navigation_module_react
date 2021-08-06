@@ -43,7 +43,7 @@ export const getInitialFormValues = (
 	treeItem: TreeItemModel | undefined,
 	options: CascaderOption[]
 ) => ({
-	id: value.id ?? '',
+	id: value.id ?? undefined,
 	navigationTree: value.navigationTree ?? '',
 	position:
 		!isNil(treeItem?.parentId) && options.length > 0

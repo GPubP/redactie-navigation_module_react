@@ -4,6 +4,7 @@ import { ModuleValue } from '@redactie/content-module/dist/lib/services/content'
 import { ContentCompartmentState } from '../../navigation.types';
 import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
+import { treesFacade } from '../../store/trees';
 import { isNotEmpty } from '../empty';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
@@ -57,6 +58,7 @@ const createTreeItem = (
 		.createTreeItem(siteId, navModuleValue.navigationTree, body)
 		.then(response => {
 			if (response) {
+				treesFacade.fetchTree(siteId, navModuleValue.navigationTree, true);
 				treeItemsFacade.addPosition(response.id, navModuleValue.position);
 				if (treeItemMovedToOtherTree) {
 					treeItemsFacade.addPosition(prevNavModuleValue.id, prevNavModuleValue.position);
