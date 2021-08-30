@@ -42,19 +42,25 @@ export const getInitialFormValues = (
 	value: any,
 	treeItem: TreeItemModel | undefined,
 	options: CascaderOption[]
-) => ({
-	id: value.id ?? undefined,
-	navigationTree: value.navigationTree ?? '',
-	position:
-		!isNil(treeItem?.parentId) && options.length > 0
-			? findPosition(options, treeItem?.parentId)
-			: value.position
-			? value.position
-			: [],
-	label: treeItem?.label ?? value.label ?? '',
-	description: treeItem?.description ?? value.description ?? '',
-	status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
-});
+) => {
+	if (!treeItem) {
+		return {};
+	}
+
+	return {
+		id: value.id ?? undefined,
+		navigationTree: value.navigationTree ?? '',
+		position:
+			!isNil(treeItem?.parentId) && options.length > 0
+				? findPosition(options, treeItem?.parentId)
+				: value.position
+				? value.position
+				: [],
+		label: treeItem?.label ?? value.label ?? '',
+		description: treeItem?.description ?? value.description ?? '',
+		status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
+	};
+};
 
 export const getTreeConfig = (
 	tree: TreeDetail | undefined,

@@ -19,8 +19,20 @@ export class TreesApiService {
 		return api.get(`${siteId}/trees/${treeId}`).json<TreeDetail>();
 	}
 
-	public getTreeItem(siteId: string, treeId: number, treeItemId: number): Promise<TreeItem> {
-		return api.get(`${siteId}/trees/${treeId}/items/${treeItemId}`).json<TreeItem>();
+	public async getTreeItem(
+		siteId: string,
+		treeId: number,
+		treeItemId: number
+	): Promise<TreeItem> {
+		const item = await api
+			.get(`${siteId}/trees/${treeId}/items/${treeItemId}`)
+			.json<TreeItem>();
+
+		if (!item?.id) {
+			throw new Error('NotFound');
+		}
+
+		return item;
 	}
 
 	public createTreeItem(
