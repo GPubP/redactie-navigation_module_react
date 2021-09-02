@@ -105,7 +105,8 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 				const navigationTreeSelected =
 					values.navigationTree !== null &&
 					values.navigationTree !== undefined &&
-					values.navigationTree !== '';
+					values.navigationTree !== '' &&
+					!!Object.keys(values.navigationTree).length;
 
 				return (
 					<>
