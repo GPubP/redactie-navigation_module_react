@@ -58,4 +58,5 @@ registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-});
+	show: (context: any) => context.ctType === 'content-types',
+} as any);
