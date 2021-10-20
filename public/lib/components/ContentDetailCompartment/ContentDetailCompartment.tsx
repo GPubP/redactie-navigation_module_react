@@ -25,6 +25,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	onChange,
 	formikRef,
 }) => {
+	const contentValueStatus = contentValue?.meta.status;
+	const contentValueIsPublished = contentValue?.meta.historySummary?.published;
+
 	/**
 	 * Hooks
 	 */
@@ -45,15 +48,18 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const initialValues = useMemo(
 		() => getInitialFormValues(value, treeItem, treeConfig.options),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[treeItem, treeConfig.options]
+		[treeItem, treeItem?.publishStatus, treeConfig.options]
 	);
 	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
 	const activeTreeItemHasChildItems = useMemo(
 		() => hasTreeItemHasChildItems(treeConfig.activeItem),
 		[treeConfig.activeItem]
 	);
+	// eslint-disable-next-line react-hooks/exhaustive-deps
 	const statusOptions = useMemo(() => getStatusOptions(contentItem, contentValue, value.status), [
 		contentItem,
+		contentValueIsPublished,
+		contentValueStatus,
 		contentValue,
 		value.status,
 	]);

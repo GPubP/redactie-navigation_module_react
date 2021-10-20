@@ -6,6 +6,7 @@ import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/tre
 import { treeItemsFacade } from '../../store/treeItems';
 import { treesFacade } from '../../store/trees';
 import { isNotEmpty } from '../empty';
+import { setTreeItemStatusByContent } from '../setTreeItemStatusByContentStatus';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
@@ -99,11 +100,14 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 ) => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
-	const slugHasChanged = contentItem?.meta.slug.nl !== prevContentItem?.meta.slug.nl;
+	const contentItemDepsHaveChanged =
+		contentItem?.meta.slug.nl !== prevContentItem?.meta.slug.nl ||
+		(['UNPUBLISHED', 'PUBLISHED'].includes(contentItem.meta.status) &&
+			contentItem.meta.status !== prevContentItem?.meta.status);
 	const siteId = contentItem.meta.site;
 
-	if (slugHasChanged) {
-		treeItemsFacade.setSlugIsChanged(true);
+	if (contentItemDepsHaveChanged) {
+		treeItemsFacade.setContentItemDepsHaveChanged(true);
 	}
 
 	if (!navModuleValue) {
@@ -123,13 +127,15 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 		return deleteTreeItem(siteId, prevNavModuleValue?.navigationTree, navModuleValue);
 	}
 
+	const payload = setTreeItemStatusByContent(body, contentItem);
+
 	return navItemExist && !treeItemMovedToOtherTree
-		? localUpdateTreeItem(navModuleValue, body)
+		? localUpdateTreeItem(navModuleValue, payload)
 		: createTreeItem(
 				siteId,
 				prevNavModuleValue,
 				navModuleValue,
-				body,
+				payload,
 				treeItemMovedToOtherTree
 		  );
 };

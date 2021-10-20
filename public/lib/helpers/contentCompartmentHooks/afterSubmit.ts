@@ -1,11 +1,12 @@
 import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
 import { omit } from 'ramda';
 
-import { ContentDetailCompartmentFormState, NAV_ITEM_STATUSES } from '../../components';
+import { ContentDetailCompartmentFormState } from '../../components';
 import { ContentCompartmentState } from '../../navigation.types';
 import { TreeItem, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
 import { isEmpty, isNotEmpty } from '../empty';
+import { setTreeItemStatusByContent } from '../setTreeItemStatusByContentStatus';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
@@ -16,6 +17,7 @@ const updateTreeItem = (
 ): Promise<void> => {
 	return treeItemsFacade
 		.updateTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id, body)
+		.then(() => treeItemsFacade.localUpateTreeItem(navModuleValue.id, body))
 		.catch(() => {
 			throw new Error(ERROR_MESSAGES.update);
 		});
@@ -31,20 +33,7 @@ const handleTreeItemUpdate = (
 		return Promise.resolve();
 	}
 
-	const navItemIsPublished = treeItem.publishStatus === NAV_ITEM_STATUSES.PUBLISHED;
-	const contentItemIsUnpublished = contentItem.meta.status === 'UNPUBLISHED';
-	const shouldDepublish = navItemIsPublished && contentItemIsUnpublished;
-	const updateData = omit(['weight'], {
-		...treeItem,
-		slug: contentItem?.meta.slug.nl ?? '',
-	});
-
-	const body = shouldDepublish
-		? {
-				...updateData,
-				publishStatus: NAV_ITEM_STATUSES.ARCHIVED,
-		  }
-		: updateData;
+	const body = setTreeItemStatusByContent(treeItem, contentItem);
 
 	return updateTreeItem(siteId, navModuleValue, body);
 };
@@ -106,7 +95,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	const treeItem = treeItemsFacade.getTreeItem(navModuleValue.id);
 	const treeIsCreated = treeItemsFacade.isTreeCreated(navModuleValue.id);
 	const currentPosition = treeItemsFacade.getPosition(navModuleValue.id);
-	const slugHasChanged = treeItemsFacade.getSlugIsChanged();
+	const contentItemDepsHaveChanged = treeItemsFacade.getContentItemDepsHaveChanged();
 	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
 	const treeItemMovedToOtherTree =
 		prevNavigationTreeExist &&
@@ -150,7 +139,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	// We can safely remove the current tree item from the created list since we know it already exist.
 	treeItemsFacade.removeFromCreatedTreeItems(navModuleValue.id);
 
-	const shouldUpdateTreeItem = !!treeItem || slugHasChanged;
+	const shouldUpdateTreeItem = !!treeItem || contentItemDepsHaveChanged;
 
 	if (!shouldUpdateTreeItem) {
 		return Promise.resolve();

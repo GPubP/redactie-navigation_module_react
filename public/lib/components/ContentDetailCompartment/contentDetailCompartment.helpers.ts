@@ -109,12 +109,13 @@ export const getStatusOptions = (
 ): { label: string; value: string }[] => {
 	if (
 		(contentValue?.meta.status === 'UNPUBLISHED' && status !== NAV_ITEM_STATUSES.PUBLISHED) ||
-		!contentItem?.meta?.historySummary?.published
+		!contentValue?.meta?.historySummary?.published
 	) {
 		return STATUS_OPTIONS.filter(
 			statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
 		);
 	}
+
 	return STATUS_OPTIONS;
 };
 

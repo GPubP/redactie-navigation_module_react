@@ -133,14 +133,14 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		return this.query.getPosition(itemId);
 	}
 
-	public setSlugIsChanged(isChanged: boolean): void {
+	public setContentItemDepsHaveChanged(isChanged: boolean): void {
 		this.store.update({
-			slugIsChanged: isChanged,
+			contentItemDepsHaveChanged: isChanged,
 		});
 	}
 
-	public getSlugIsChanged(): boolean {
-		return this.query.getSlugIsChanged();
+	public getContentItemDepsHaveChanged(): boolean {
+		return this.query.getContentItemDepsHaveChanged();
 	}
 }
 

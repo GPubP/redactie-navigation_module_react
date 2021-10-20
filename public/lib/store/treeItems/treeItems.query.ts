@@ -23,9 +23,9 @@ export class TreeItemsQuery extends BaseEntityQuery<TreeItemsState> {
 		return value.positions[itemId];
 	}
 
-	public getSlugIsChanged(): boolean {
+	public getContentItemDepsHaveChanged(): boolean {
 		const value = this.getValue();
-		return value.slugIsChanged;
+		return value.contentItemDepsHaveChanged;
 	}
 }
 
