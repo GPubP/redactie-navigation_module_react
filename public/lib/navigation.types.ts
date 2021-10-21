@@ -38,4 +38,5 @@ export interface NavigationSecurityRights {
 	read: boolean;
 	update: boolean;
 	delete: boolean;
+	replace: boolean;
 }

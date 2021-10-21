@@ -277,6 +277,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 								)}
 
 								{!contentItemOldNavigation?.navigationTree &&
+									navigationRights.replace &&
 									navigationTreeSelected &&
 									navigationItemSelected &&
 									!Object.keys(errors).length && (
@@ -294,7 +295,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 																	'replaceItem',
 																	!field.value
 																);
-																setShowModal(true);
+																!field.value && setShowModal(true);
 															}}
 														/>
 													)}
