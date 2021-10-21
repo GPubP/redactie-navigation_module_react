@@ -44,7 +44,9 @@ export const getInitialFormValues = (
 	options: CascaderOption[]
 ) => {
 	if (!treeItem) {
-		return {};
+		return {
+			status: STATUS_OPTIONS[0].value,
+		};
 	}
 
 	return {
@@ -59,6 +61,7 @@ export const getInitialFormValues = (
 		label: treeItem?.label ?? value.label ?? '',
 		description: treeItem?.description ?? value.description ?? '',
 		status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
+		replaceItem: false,
 	};
 };
 

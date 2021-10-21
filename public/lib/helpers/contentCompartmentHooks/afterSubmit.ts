@@ -10,14 +10,14 @@ import { setTreeItemStatusByContent } from '../setTreeItemStatusByContentStatus'
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
-const updateTreeItem = (
+const updateTreeItem = async (
 	siteId: string,
 	navModuleValue: ContentCompartmentState,
 	body: UpdateTreeItemPayload
 ): Promise<void> => {
 	return treeItemsFacade
 		.updateTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id, body)
-		.then(() => treeItemsFacade.localUpateTreeItem(navModuleValue.id, body))
+		.then(() => treeItemsFacade.localUpdateTreeItem(navModuleValue.id, body))
 		.catch(() => {
 			throw new Error(ERROR_MESSAGES.update);
 		});
@@ -171,6 +171,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	 * before saving the content item, so in that case we need to fetch the tree item from the server
 	 * before we can update it properly.
 	 */
+
 	return !treeItem
 		? treeItemsFacade
 				.fetchTreeItem(siteId, navModuleValue.navigationTree, navModuleValue.id)

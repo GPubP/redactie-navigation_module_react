@@ -30,6 +30,7 @@ export interface ContentCompartmentState {
 	slug?: string;
 	description?: string;
 	status?: string;
+	replaceItem?: boolean;
 }
 
 export interface NavigationSecurityRights {

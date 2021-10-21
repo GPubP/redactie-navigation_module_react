@@ -14,22 +14,35 @@ const getBody = (
 	moduleValue: ContentCompartmentState,
 	contentItem: ContentSchema
 ): UpdateTreeItemPayload | CreateTreeItemPayload => {
+	const position: number[] | undefined =
+		Array.isArray(moduleValue.position) && moduleValue.replaceItem
+			? moduleValue.position.slice(0, -1)
+			: moduleValue.position;
+
 	return {
 		label: moduleValue.label ?? '',
 		slug: contentItem?.meta.slug.nl ?? '',
 		description: moduleValue.description ?? '',
 		parentId:
-			Array.isArray(moduleValue.position) && moduleValue.position.length > 0
-				? moduleValue.position[moduleValue.position.length - 1]
+			Array.isArray(position) && position.length > 0
+				? position[position.length - 1]
 				: undefined,
 		publishStatus: moduleValue.status ?? '',
 	};
 };
 
-const localUpdateTreeItem = (
+const localUpdateTreeItem = async (
+	siteId: string,
 	navModuleValue: ContentCompartmentState,
 	body: UpdateTreeItemPayload
 ): Promise<ContentCompartmentState> => {
+	// If item should be replaced, de id needs to be the last position
+	const id =
+		navModuleValue.replaceItem &&
+		Array.isArray(navModuleValue.position) &&
+		navModuleValue.position.length
+			? navModuleValue.position[navModuleValue.position.length - 1]
+			: navModuleValue.id;
 	// Update local tree item state
 	// Only update the local tree item when we know that the form is filled in correctly, we check for the label because it is
 	// a required field inside the form
@@ -37,13 +50,14 @@ const localUpdateTreeItem = (
 	// This means we modify the navModuleValue before the system will send it to the server
 	// Therefore we need to hold the unchanged data in local state to update the tree item in the after submit hook.
 	if (navModuleValue.label) {
-		treeItemsFacade.localUpateTreeItem(navModuleValue.id, body);
-		treeItemsFacade.addPosition(navModuleValue.id, navModuleValue.position);
+		await treeItemsFacade.fetchTreeItem(siteId, navModuleValue.navigationTree, id);
+		treeItemsFacade.localUpdateTreeItem(id, body);
+		treeItemsFacade.addPosition(id, navModuleValue.position);
 	}
 
 	// Only save the tree and item id
 	return Promise.resolve({
-		id: navModuleValue.id,
+		id,
 		navigationTree: navModuleValue.navigationTree,
 	});
 };
@@ -77,7 +91,7 @@ const createTreeItem = (
 		});
 };
 
-const deleteTreeItem = (
+const deleteTreeItem = async (
 	siteId: string,
 	navigationTree: number,
 	navModuleValue: ContentCompartmentState
@@ -114,7 +128,8 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 		return Promise.resolve();
 	}
 
-	const navItemExist = isNotEmpty(navModuleValue.id);
+	const navItemExist = isNotEmpty(navModuleValue.id); // TreeItem does not exist but the item it replaces, does
+	const navItemShouldReplaceParent = navModuleValue.replaceItem;
 	const prevNavigationTreeExist = isNotEmpty(prevNavModuleValue?.navigationTree);
 	const navigationTreeExist = isNotEmpty(navModuleValue.navigationTree);
 	const treeItemMovedToOtherTree =
@@ -129,8 +144,8 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 
 	const payload = setTreeItemStatusByContent(body, contentItem);
 
-	return navItemExist && !treeItemMovedToOtherTree
-		? localUpdateTreeItem(navModuleValue, payload)
+	return navItemShouldReplaceParent || (navItemExist && !treeItemMovedToOtherTree)
+		? localUpdateTreeItem(siteId, navModuleValue, payload)
 		: createTreeItem(
 				siteId,
 				prevNavModuleValue,
