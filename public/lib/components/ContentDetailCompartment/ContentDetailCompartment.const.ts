@@ -32,14 +32,6 @@ export const NAV_ITEM_STATUSES = {
 
 export const STATUS_OPTIONS = [
 	{
-		label: 'Afgewezen',
-		value: NAV_ITEM_STATUSES.REJECTED,
-	},
-	{
-		label: 'Gearchiveerd',
-		value: NAV_ITEM_STATUSES.ARCHIVED,
-	},
-	{
 		label: 'Werkversie',
 		value: NAV_ITEM_STATUSES.DRAFT,
 	},
@@ -54,5 +46,13 @@ export const STATUS_OPTIONS = [
 	{
 		label: 'Gepubliceerd',
 		value: NAV_ITEM_STATUSES.PUBLISHED,
+	},
+	{
+		label: 'Afgewezen',
+		value: NAV_ITEM_STATUSES.REJECTED,
+	},
+	{
+		label: 'Gearchiveerd',
+		value: NAV_ITEM_STATUSES.ARCHIVED,
 	},
 ];

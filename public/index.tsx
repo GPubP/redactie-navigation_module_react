@@ -1,3 +1,4 @@
+// import { akitaDevtools } from '@datorama/akita';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
@@ -14,6 +15,8 @@ import rolesRightsConnector from './lib/connectors/rolesRights';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { CONFIG } from './lib/navigation.const';
+
+// akitaDevtools();
 
 registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
