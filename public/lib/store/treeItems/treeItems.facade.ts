@@ -98,7 +98,7 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		return this.query.hasEntity(treeItemId);
 	}
 
-	public localUpateTreeItem(itemId: number, body: UpdateTreeItemPayload): void {
+	public localUpdateTreeItem(itemId: number, body: UpdateTreeItemPayload): void {
 		this.store.update(itemId, previousState => {
 			return {
 				...previousState,
@@ -133,14 +133,14 @@ export class TreeItemsFacade extends BaseEntityFacade<
 		return this.query.getPosition(itemId);
 	}
 
-	public setSlugIsChanged(isChanged: boolean): void {
+	public setContentItemDepsHaveChanged(isChanged: boolean): void {
 		this.store.update({
-			slugIsChanged: isChanged,
+			contentItemDepsHaveChanged: isChanged,
 		});
 	}
 
-	public getSlugIsChanged(): boolean {
-		return this.query.getSlugIsChanged();
+	public getContentItemDepsHaveChanged(): boolean {
+		return this.query.getContentItemDepsHaveChanged();
 	}
 }
 

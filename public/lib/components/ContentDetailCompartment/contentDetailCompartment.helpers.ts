@@ -44,7 +44,9 @@ export const getInitialFormValues = (
 	options: CascaderOption[]
 ) => {
 	if (!treeItem) {
-		return {};
+		return {
+			status: STATUS_OPTIONS[0].value,
+		};
 	}
 
 	return {
@@ -59,6 +61,7 @@ export const getInitialFormValues = (
 		label: treeItem?.label ?? value.label ?? '',
 		description: treeItem?.description ?? value.description ?? '',
 		status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
+		replaceItem: false,
 	};
 };
 
@@ -109,12 +112,13 @@ export const getStatusOptions = (
 ): { label: string; value: string }[] => {
 	if (
 		(contentValue?.meta.status === 'UNPUBLISHED' && status !== NAV_ITEM_STATUSES.PUBLISHED) ||
-		!contentItem?.meta?.historySummary?.published
+		!contentValue?.meta?.historySummary?.published
 	) {
 		return STATUS_OPTIONS.filter(
 			statusOption => statusOption.value !== NAV_ITEM_STATUSES.PUBLISHED
 		);
 	}
+
 	return STATUS_OPTIONS;
 };
 

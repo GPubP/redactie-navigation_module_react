@@ -9,5 +9,5 @@ export class TreeItemsStore extends BaseEntityStore<TreeItemsState, TreeItemMode
 export const treeItemsStore = new TreeItemsStore({
 	createdTreeItems: [],
 	positions: {},
-	slugIsChanged: false,
+	contentItemDepsHaveChanged: false,
 });
