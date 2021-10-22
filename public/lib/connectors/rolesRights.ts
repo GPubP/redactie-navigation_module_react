@@ -8,6 +8,7 @@ class RolesRightsConnector {
 		read: 'navigation-navigation_read',
 		update: 'navigation-navigation_update',
 		delete: 'navigation-navigation_delete',
+		replace: 'navigation-navigation_parent-replace',
 	};
 	public api: RolesRightsModuleAPI;
 
