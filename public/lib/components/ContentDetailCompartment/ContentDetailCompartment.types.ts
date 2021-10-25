@@ -21,4 +21,5 @@ export interface ContentDetailCompartmentFormState {
 	slug: string;
 	description: string;
 	status: string;
+	externalUrl?: string;
 }

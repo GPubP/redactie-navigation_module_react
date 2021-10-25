@@ -1,18 +1,21 @@
 import { ContentSchema, ExternalCompartmentBeforeSubmitFn } from '@redactie/content-module';
 import { ModuleValue } from '@redactie/content-module/dist/lib/services/content';
+import { SiteDetailModel } from '@redactie/sites-module';
 
 import { ContentCompartmentState } from '../../navigation.types';
 import { CreateTreeItemPayload, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
 import { treesFacade } from '../../store/trees';
 import { isNotEmpty } from '../empty';
+import { generateExternalUrl } from '../generateExternalUrl';
 import { setTreeItemStatusByContent } from '../setTreeItemStatusByContentStatus';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
 
 const getBody = (
 	moduleValue: ContentCompartmentState,
-	contentItem: ContentSchema
+	contentItem: ContentSchema | undefined,
+	site: SiteDetailModel | undefined
 ): UpdateTreeItemPayload | CreateTreeItemPayload => {
 	const position: number[] | undefined =
 		Array.isArray(moduleValue.position) && moduleValue.replaceItem
@@ -22,6 +25,7 @@ const getBody = (
 	return {
 		label: moduleValue.label ?? '',
 		slug: contentItem?.meta.slug.nl ?? '',
+		externalUrl: generateExternalUrl(site, contentItem),
 		description: moduleValue.description ?? '',
 		parentId:
 			Array.isArray(position) && position.length > 0
@@ -107,10 +111,11 @@ const deleteTreeItem = async (
 		});
 };
 
-const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
+const beforeSubmit: (...a: any) => Promise<ModuleValue | void> = (
 	contentItem,
 	contentType,
-	prevContentItem
+	prevContentItem,
+	site
 ) => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
@@ -136,13 +141,13 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 		prevNavigationTreeExist &&
 		navigationTreeExist &&
 		prevNavModuleValue.navigationTree !== navModuleValue.navigationTree;
-	const body = getBody(navModuleValue, contentItem);
+	const body = getBody(navModuleValue, contentItem, site);
 
 	if (navItemExist && prevNavigationTreeExist && !navigationTreeExist) {
 		return deleteTreeItem(siteId, prevNavModuleValue?.navigationTree, navModuleValue);
 	}
 
-	const payload = setTreeItemStatusByContent(body, contentItem);
+	const payload = setTreeItemStatusByContent(body, contentItem, site);
 
 	return navItemShouldReplaceParent || (navItemExist && !treeItemMovedToOtherTree)
 		? localUpdateTreeItem(siteId, navModuleValue, payload)
