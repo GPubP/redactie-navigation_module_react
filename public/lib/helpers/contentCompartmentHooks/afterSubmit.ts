@@ -80,7 +80,6 @@ const deleteTreeItem = (siteId: string, navModuleValue: ContentCompartmentState)
  * The afterSubmit hook
  * This function is called after submitting a content item.
  */
-// TODO: fix typing when content module is published
 const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	error,
 	contentItem,
