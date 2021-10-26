@@ -111,7 +111,7 @@ const deleteTreeItem = async (
 		});
 };
 
-const beforeSubmit: (...a: any) => Promise<ModuleValue | void> = (
+const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 	contentItem,
 	contentType,
 	prevContentItem,

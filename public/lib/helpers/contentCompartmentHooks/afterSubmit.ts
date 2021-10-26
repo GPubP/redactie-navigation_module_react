@@ -29,8 +29,8 @@ const handleTreeItemUpdate = (
 	siteId: string,
 	treeItem: TreeItem | undefined,
 	navModuleValue: ContentCompartmentState,
-	contentItem: ContentSchema,
-	site: SiteDetailModel
+	contentItem: ContentSchema | undefined,
+	site?: SiteDetailModel
 ): Promise<void> => {
 	if (!treeItem) {
 		return Promise.resolve();
@@ -81,7 +81,7 @@ const deleteTreeItem = (siteId: string, navModuleValue: ContentCompartmentState)
  * This function is called after submitting a content item.
  */
 // TODO: fix typing when content module is published
-const afterSubmit: (...a: any) => Promise<ContentDetailCompartmentFormState | void> = (
+const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	error,
 	contentItem,
 	contentType,

@@ -9,13 +9,13 @@ import { generateExternalUrl } from './generateExternalUrl';
 
 export const setTreeItemStatusByContent = (
 	treeItem: TreeItem | CreateTreeItemPayload,
-	contentItem: ContentSchema,
+	contentItem: ContentSchema | undefined,
 	site: SiteDetailModel | undefined
 ): TreeItem | CreateTreeItemPayload => {
 	const navItemIsPublished = treeItem.publishStatus === NAV_ITEM_STATUSES.PUBLISHED;
-	const contentItemIsUnpublished = contentItem.meta.status === 'UNPUBLISHED';
+	const contentItemIsUnpublished = contentItem?.meta.status === 'UNPUBLISHED';
 	const navItemIsReady = treeItem.publishStatus === NAV_ITEM_STATUSES.READY;
-	const contentItemIsPublished = contentItem.meta.status === 'PUBLISHED';
+	const contentItemIsPublished = contentItem?.meta.status === 'PUBLISHED';
 	const shouldDepublish = navItemIsPublished && contentItemIsUnpublished;
 	const shouldPublish = navItemIsReady && contentItemIsPublished;
 
