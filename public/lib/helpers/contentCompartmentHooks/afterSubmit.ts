@@ -1,4 +1,5 @@
 import { ContentSchema, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
+import { SiteDetailModel } from '@redactie/sites-module';
 import { omit } from 'ramda';
 
 import { ContentDetailCompartmentFormState } from '../../components';
@@ -6,6 +7,7 @@ import { ContentCompartmentState } from '../../navigation.types';
 import { TreeItem, UpdateTreeItemPayload } from '../../services/trees';
 import { treeItemsFacade } from '../../store/treeItems';
 import { isEmpty, isNotEmpty } from '../empty';
+import { generateExternalUrl } from '../generateExternalUrl';
 import { setTreeItemStatusByContent } from '../setTreeItemStatusByContentStatus';
 
 import { ERROR_MESSAGES } from './beforeAfterSubmit.const';
@@ -27,13 +29,14 @@ const handleTreeItemUpdate = (
 	siteId: string,
 	treeItem: TreeItem | undefined,
 	navModuleValue: ContentCompartmentState,
-	contentItem: ContentSchema
+	contentItem: ContentSchema | undefined,
+	site?: SiteDetailModel
 ): Promise<void> => {
 	if (!treeItem) {
 		return Promise.resolve();
 	}
 
-	const body = setTreeItemStatusByContent(treeItem, contentItem);
+	const body = setTreeItemStatusByContent(treeItem, contentItem, site);
 
 	return updateTreeItem(siteId, navModuleValue, body);
 };
@@ -42,7 +45,8 @@ const getPreviousFormState = (
 	treeItem: Partial<TreeItem>,
 	navigationTree: number,
 	position: number[],
-	contentItem: ContentSchema
+	contentItem: ContentSchema | undefined,
+	site: SiteDetailModel | undefined
 ): ContentDetailCompartmentFormState => {
 	return {
 		id: treeItem?.id,
@@ -50,6 +54,7 @@ const getPreviousFormState = (
 		position,
 		label: treeItem?.label ?? '',
 		slug: contentItem?.meta.slug.nl ?? '',
+		externalUrl: generateExternalUrl(site, contentItem),
 		description: treeItem?.description ?? '',
 		status: treeItem?.publishStatus ?? '',
 	};
@@ -79,7 +84,8 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 	error,
 	contentItem,
 	contentType,
-	prevContentItem
+	prevContentItem,
+	site
 ): Promise<ContentDetailCompartmentFormState | void> => {
 	const navModuleValue = contentItem.modulesData?.navigation as ContentCompartmentState;
 	const prevNavModuleValue = prevContentItem?.modulesData?.navigation as ContentCompartmentState;
@@ -113,14 +119,16 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 							prevTreeItem,
 							prevNavModuleValue.navigationTree,
 							prevCurrentPosition,
-							contentItem
+							contentItem,
+							site
 						);
 					}
 					return getPreviousFormState(
 						omit(['id'], treeItem),
 						navModuleValue.navigationTree,
 						currentPosition,
-						contentItem
+						contentItem,
+						site
 					);
 			  })
 			: // Rollback changes after a content item has failed saving
@@ -131,7 +139,8 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 						treeItem,
 						navModuleValue.navigationTree,
 						currentPosition,
-						contentItem
+						contentItem,
+						site
 					)
 			  );
 	}
@@ -162,7 +171,7 @@ const afterSubmit: ExternalCompartmentAfterSubmitFn = (
 		}
 
 		// Update tree item
-		return handleTreeItemUpdate(siteId, treeItem, navModuleValue, contentItem);
+		return handleTreeItemUpdate(siteId, treeItem, navModuleValue, contentItem, site);
 	};
 
 	/**
