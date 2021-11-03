@@ -280,7 +280,8 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 									navigationRights.replace &&
 									navigationTreeSelected &&
 									navigationItemSelected &&
-									!Object.keys(errors).length && (
+									!Object.keys(errors).length &&
+									value.id && (
 										<div className="row u-margin-top">
 											<div className="col-xs-12 u-no-margin">
 												<Field id="replaceItem" name="replaceItem">

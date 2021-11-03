@@ -1,6 +1,6 @@
 import { ContentSchema } from '@redactie/content-module';
 import arrayTreeFilter from 'array-tree-filter';
-import { isNil } from 'ramda';
+import { isEmpty, isNil } from 'ramda';
 
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetail, TreeDetailItem } from '../../services/trees';
@@ -43,7 +43,7 @@ export const getInitialFormValues = (
 	treeItem: TreeItemModel | undefined,
 	options: CascaderOption[]
 ) => {
-	if (!treeItem) {
+	if (!treeItem && isEmpty(value)) {
 		return {
 			status: STATUS_OPTIONS[0].value,
 		};
@@ -52,15 +52,14 @@ export const getInitialFormValues = (
 	return {
 		id: value.id ?? undefined,
 		navigationTree: value.navigationTree ?? '',
-		position:
-			!isNil(treeItem?.parentId) && options.length > 0
-				? findPosition(options, treeItem?.parentId)
-				: value.position
-				? value.position
-				: [],
-		label: treeItem?.label ?? value.label ?? '',
-		description: treeItem?.description ?? value.description ?? '',
-		status: treeItem?.publishStatus ?? value.status ?? STATUS_OPTIONS[0].value,
+		position: value.position
+			? value.position
+			: !isNil(treeItem?.parentId) && options.length > 0
+			? findPosition(options, treeItem?.parentId)
+			: [],
+		label: value.label ?? treeItem?.label ?? '',
+		description: value.description ?? treeItem?.description ?? '',
+		status: value.status ?? treeItem?.publishStatus ?? STATUS_OPTIONS[0].value,
 		replaceItem: false,
 	};
 };
