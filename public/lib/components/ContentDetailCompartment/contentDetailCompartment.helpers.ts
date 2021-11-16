@@ -60,7 +60,7 @@ export const getInitialFormValues = (
 		label: value.label ?? treeItem?.label ?? '',
 		description: value.description ?? treeItem?.description ?? '',
 		status: value.status ?? treeItem?.publishStatus ?? STATUS_OPTIONS[0].value,
-		replaceItem: false,
+		replaceItem: value.replaceItem ?? false,
 	};
 };
 
