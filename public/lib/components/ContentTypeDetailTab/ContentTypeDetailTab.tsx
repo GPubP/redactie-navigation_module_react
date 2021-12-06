@@ -35,8 +35,8 @@ const ContentTypeDetailTab: FC<ExternalTabProps> = ({
 					<>
 						<FormikOnChangeHandler onChange={values => setFormValue(values)} />
 						<p>
-							Bepaal of er voor dit content type een navigatie-item gemaakt kan worden
-							en of dit verplicht is. Geef naar keuze een standaard navigatieboom op.
+							Bepaal of er voor dit content type een navigatie-item gemaakt kan
+							worden.
 						</p>
 						<div className="row u-margin-top">
 							<div className="col-xs-12 col-sm-6">
