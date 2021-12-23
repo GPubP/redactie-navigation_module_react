@@ -163,6 +163,8 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 											Selecteer een navigatieboom
 										</small>
 									</div>
+								</div>
+								<div className="row u-margin-top">
 									<div className="col-xs-12 col-sm-6">
 										{navigationTreeSelected && !loadingTree && (
 											<div className="a-input has-icon-right">
