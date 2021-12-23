@@ -136,7 +136,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 						<>
 							<FormikOnChangeHandler onChange={onFormChange} />
 							<CardBody>
-								<h6 className="u-margin-bottom">Navigatie</h6>
+								<h2 className="h3 u-margin-bottom">Navigatie</h2>
 								<div className="row">
 									<div className="col-xs-12 col-sm-6">
 										<Field
