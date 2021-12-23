@@ -218,11 +218,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												</small>
 											</div>
 										)}
-										{loadingTree && (
-											<div className="u-margin-top-md">
-												<Spinner />
-											</div>
-										)}
+										{loadingTree && <Spinner />}
 									</div>
 								</div>
 
