@@ -1,4 +1,5 @@
 import {
+	Button,
 	CardBody,
 	Checkbox,
 	Select,
@@ -196,19 +197,32 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 														{values.position?.length > 0 && (
 															<span
+																className="fa"
 																style={{
 																	pointerEvents: 'initial',
 																	cursor: 'pointer',
 																}}
-																onClick={(
-																	e: React.SyntheticEvent
-																) => {
-																	e.preventDefault();
-																	e.stopPropagation();
-																	setFieldValue('position', []);
-																}}
-																className="fa fa-times-circle"
-															/>
+															>
+																<Button
+																	icon="close"
+																	ariaLabel="Close"
+																	size="small"
+																	transparent
+																	style={{
+																		top: '-2px',
+																	}}
+																	onClick={(
+																		e: React.SyntheticEvent
+																	) => {
+																		e.preventDefault();
+																		e.stopPropagation();
+																		setFieldValue(
+																			'position',
+																			[]
+																		);
+																	}}
+																></Button>
+															</span>
 														)}
 													</div>
 												</Cascader>
