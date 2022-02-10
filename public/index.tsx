@@ -1,4 +1,7 @@
 // import { akitaDevtools } from '@datorama/akita';
+import Core from '@redactie/redactie-core';
+import { RenderChildRoutes, TenantContext, SiteContext } from '@redactie/utils';
+import React, { FC, useMemo } from 'react';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
@@ -11,12 +14,60 @@ import {
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
 import { registerCTDetailTab } from './lib/connectors/contentTypes';
+import sitesConnector from './lib/connectors/sites';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
-import { CONFIG } from './lib/navigation.const';
+import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
+import { MenuModuleProps } from './lib/menu.types';
+import { MenuOverview } from './lib/views';
 
 // akitaDevtools();
+
+const MenuComponent: FC<MenuModuleProps<{ siteId: string }>> = ({ route, tenantId, match }) => {
+	const { siteId } = match.params;
+	const guardsMeta = useMemo(() => ({ tenantId, siteId }), [siteId, tenantId]);
+
+
+	return (
+		<TenantContext.Provider value={{ tenantId }}>
+			<SiteContext.Provider value={{ siteId }}>
+				<RenderChildRoutes routes={route.routes} guardsMeta={guardsMeta} />
+			</SiteContext.Provider>
+		</TenantContext.Provider>
+	);
+};
+
+sitesConnector.registerRoutes({
+	path: MODULE_PATHS.site.root,
+	breadcrumb: null,
+	component: MenuComponent,
+	redirect: MODULE_PATHS.site.overview,
+	guards: [
+		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+			rolesRightsConnector.securityRights.read,
+		]),
+	],
+	navigation: {
+		renderContext: 'site',
+		context: 'site',
+		label: 'Menu',
+		order: 0,
+		parentPath: MODULE_PATHS.site.contentTypes,
+		canShown: [
+			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+				rolesRightsConnector.securityRights.read,
+			]),
+		],
+	},
+	routes: [
+		{
+			path: MODULE_PATHS.site.overview,
+			breadcrumb: null,
+			component: MenuOverview,
+		},
+	],
+});
 
 registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
