@@ -20,7 +20,7 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import { MenuModuleProps } from './lib/menu.types';
-import { MenuOverview } from './lib/views';
+import { MenuCreate, MenuDetailSettings, MenuOverview } from './lib/views';
 
 // akitaDevtools();
 
@@ -65,6 +65,19 @@ sitesConnector.registerRoutes({
 			path: MODULE_PATHS.site.overview,
 			breadcrumb: null,
 			component: MenuOverview,
+		},
+		{
+			path: MODULE_PATHS.site.create,
+			breadcrumb: null,
+			component: MenuCreate,
+			redirect: MODULE_PATHS.site.createSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createSettings,
+					breadcrumb: null,
+					component: MenuDetailSettings,
+				},
+			],
 		},
 	],
 });

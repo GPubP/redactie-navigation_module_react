@@ -1,8 +1,9 @@
 import { BreadcrumbOptions } from '@redactie/redactie-core';
-import { NavigateGenerateFn } from '@redactie/utils';
+import { ContextHeaderTab, NavigateGenerateFn } from '@redactie/utils';
 
 export const TENANT_ROOT = '/:tenantId';
-export const SITE_ROOT = `/:siteId`;
+export const SITES_ROOT = 'sites';
+export const urlSiteParam = `/:siteId`;
 export const root = '/menus';
 
 export const MODULE_PATHS = {
@@ -12,14 +13,19 @@ export const MODULE_PATHS = {
 	overview: `${root}/overzicht`,
 
 	create: `${root}/aanmaken`,
-		// SITE
-		site: {
-			contentTypes: `${SITE_ROOT}/:ctType(content-types|content-blokken)`,
-		    admin: `${SITE_ROOT}/content/overzicht`,
-			dashboard: `${SITE_ROOT}/content`,
-			root: `${SITE_ROOT}/menus`,
-			overview: `${SITE_ROOT}/menus/overzicht`,		},
 
+	// SITE
+	site: {
+		contentTypes: `${urlSiteParam}/:ctType(content-types|content-blokken)`,
+		admin: `${urlSiteParam}/content/overzicht`,
+		dashboard: `${urlSiteParam}/content`,
+		root: `${urlSiteParam}/menus`,
+		overview: `${urlSiteParam}/menus/overzicht`,
+		create: `${urlSiteParam}/menus/aanmaken`,
+		createSettings: `${urlSiteParam}/menus/aanmaken/instellingen`,
+		detail: `${urlSiteParam}/menus/:menuUuid`,
+		detailSettings: `${urlSiteParam}/menus/:menuUuid/instellingen`,
+	},
 };
 
 export const BREADCRUMB_OPTIONS = (generatePath: NavigateGenerateFn): BreadcrumbOptions => ({
@@ -36,6 +42,20 @@ export const BREADCRUMB_OPTIONS = (generatePath: NavigateGenerateFn): Breadcrumb
 	],
 });
 
+export const MENU_DETAIL_TAB_MAP: {
+	[key in 'settings']: ContextHeaderTab;
+} = {
+	settings: {
+		name: 'Instellingen',
+		target: 'instellingen',
+		active: true,
+		disabled: false,
+	},
+};
+
+export const MENU_DETAIL_TABS: ContextHeaderTab[] = [
+	MENU_DETAIL_TAB_MAP.settings,
+];
 
 export const CONFIG: Readonly<{ name: string; module: string }> = {
 	name: 'navigation',

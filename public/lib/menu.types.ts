@@ -9,6 +9,10 @@ export interface MenuRouteParams {
 	menuId: string;
 }
 
+export interface MenuMatchProps {
+	siteId: string;
+}
+
 export interface MenuRouteProps<Params = MenuRouteParams>
 	extends RouteConfigComponentProps<Params> {
 	routes: ModuleRouteConfig[];
