@@ -4,41 +4,64 @@ import {
 	ActionBarContentSection,
 	Container,
 } from '@acpaas-ui/react-editorial-components';
-import { useDetectValueChanges } from '@redactie/utils';
+import { AlertContainer, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC } from 'react';
 
-import { useCoreTranslation } from '../../connectors/translations';
-import { MenuRouteProps } from '../../menu.types';
+import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { useMenu, useMenuDraft } from '../../hooks';
+import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
+import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
+import { MenuSchema } from '../../services/menus';
+import { menusFacade } from '../../store/menus';
 import { MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSettings.const';
 
-const MenuSettings: FC<MenuRouteProps> = () => {
+const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
+	loading,
+	isCreating,
+	onSubmit,
+}) => {
+	const [menu] = useMenuDraft();
+	const { menu: initialValues } = useMenu();
 	const [t] = useCoreTranslation();
-	const [isChanged, resetIsChanged] = useDetectValueChanges(false, {});
+	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 
 	/**
 	 * Methods
 	 */
-	const onSave = (newMenuValue: any): void => {
-		console.log(newMenuValue);
+	const onSave = (newMenuValue: MenuSchema): void => {
+		onSubmit(
+			{ ...(menu || {}), meta: { ...menu?.meta, ...newMenuValue.meta } },
+			MENU_DETAIL_TAB_MAP.settings
+		);
 		resetIsChanged();
 	};
 
-	const onChange = (newMenuValue: any): void => {
-		console.log(newMenuValue);
+	const onChange = (newMenuValue: MenuSchema): void => {
+		menusFacade.setMenuDraft(newMenuValue);
 	};
+
+	const readonly = isCreating ? false : true; //TODO: replace 'true' with '!rights.canUpdate';
 
 	/**
 	 * Render
 	 */
+
+	if (!menu || !initialValues) {
+		return null;
+	}
+
 	return (
 		<Container>
+			<div className="u-margin-bottom">
+				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
+			</div>
 			<Formik
-				initialValues={{}}
-				onSubmit={console.log}
+				initialValues={initialValues}
+				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ submitForm, values, resetForm }) => {
+				{({ errors, submitForm, values, resetForm }) => {
 					onChange(values);
 
 					return (
@@ -47,9 +70,11 @@ const MenuSettings: FC<MenuRouteProps> = () => {
 								<div className="col-xs-12 col-md-8">
 									<Field
 										as={TextField}
-										label="Label"
+										disabled={readonly}
+										label="Naam"
 										name="meta.label"
 										required
+										state={errors.meta?.label && 'error'}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
@@ -57,8 +82,7 @@ const MenuSettings: FC<MenuRouteProps> = () => {
 										name="meta.label"
 									/>
 									<div className="u-text-light u-margin-top-xs">
-										Geef deze view een gebruiksvriendelijke naam, bijvoorbeeld
-										&lsquo;Titel&lsquo;
+										Geef het menu een duidelijke naam.
 									</div>
 								</div>
 							</div>
@@ -66,10 +90,12 @@ const MenuSettings: FC<MenuRouteProps> = () => {
 								<div className="col-xs-12">
 									<Field
 										as={Textarea}
+										disabled={readonly}
 										className="a-input--small"
 										label="Beschrijving"
 										name="meta.description"
 										required
+										state={errors.meta?.description && 'error'}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
@@ -77,11 +103,11 @@ const MenuSettings: FC<MenuRouteProps> = () => {
 										name="meta.description"
 									/>
 									<div className="u-text-light u-margin-top-xs">
-										Geef een beschrijving voor deze view.
+										Geef het menu een duidelijke beschrijving.
 									</div>
 								</div>
 							</div>
-							<ActionBar className="o-action-bar--fixed">
+							<ActionBar className="o-action-bar--fixed" isOpen={!readonly}>
 								<ActionBarContentSection>
 									<div className="u-wrapper row end-xs">
 										<Button
@@ -89,10 +115,19 @@ const MenuSettings: FC<MenuRouteProps> = () => {
 											onClick={resetForm}
 											negative
 										>
-											Cancel
+											{menu?.uuid
+												? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
+												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
-										<Button onClick={submitForm} type="success">
-											Save
+										<Button
+											iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+											disabled={loading || !isChanged}
+											onClick={submitForm}
+											type="success"
+										>
+											{menu?.uuid
+												? t(CORE_TRANSLATIONS['BUTTON_SAVE'])
+												: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
 										</Button>
 									</div>
 								</ActionBarContentSection>

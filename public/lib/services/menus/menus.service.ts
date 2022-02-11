@@ -36,21 +36,6 @@ export class MenusApiService {
 		}
 	}
 
-	public async updateMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
-		try {
-			const response: MenuSchema = await api
-				.put(`sites/${siteId}/menus/${menu.uuid}`, {
-					json: menu,
-				})
-				.json();
-
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
-	}
-
 	public async createMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
 		try {
 			const response: MenuSchema = await api
@@ -64,10 +49,6 @@ export class MenusApiService {
 			console.error(err);
 			return null;
 		}
-	}
-
-	public async deleteMenu(siteId: string, menuId: string): Promise<void> {
-		return api.delete(`sites/${siteId}/menus/${menuId}`).json();
 	}
 }
 

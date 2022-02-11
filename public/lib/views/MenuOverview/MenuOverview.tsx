@@ -10,12 +10,14 @@ import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import { DataLoader, useNavigate, useRoutes } from '@redactie/utils';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import { BREADCRUMB_OPTIONS, MODULE_PATHS } from '../../navigation.const';
-import { MenuRouteProps } from '../../menu.types';
+import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
+import { MenuRouteProps, MenuMatchProps } from '../../menu.types';
 
-const MenuOverview: FC<MenuRouteProps> = () => {
+const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
+	const { siteId } = match.params;
+
 	const [t] = useCoreTranslation();
-	const { generatePath, navigate } = useNavigate();
+	const { generatePath, navigate } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
@@ -31,7 +33,10 @@ const MenuOverview: FC<MenuRouteProps> = () => {
 			<ContextHeader title="Menu">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				<ContextHeaderActionsSection>
-					<Button iconLeft="plus" onClick={() => navigate(MODULE_PATHS.create)}>
+					<Button
+						iconLeft="plus"
+						onClick={() => navigate(MODULE_PATHS.site.create, { siteId })}
+					>
 						{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
 					</Button>
 				</ContextHeaderActionsSection>

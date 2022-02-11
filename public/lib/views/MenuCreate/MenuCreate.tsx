@@ -1,3 +1,5 @@
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
 import {
 	ContextHeaderTab,
@@ -7,13 +9,15 @@ import {
 	useNavigate,
 	useRoutes,
 } from '@redactie/utils';
-import React, { FC, ReactElement, useState } from 'react';
-import { Link } from 'react-router-dom';
-
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import { MODULE_PATHS, BREADCRUMB_OPTIONS, SITES_ROOT } from '../../navigation.const';
-import { MenuModuleProps, MenuMatchProps } from '../../menu.types';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
+
+import { useCoreTranslation } from '../../connectors/translations';
+import { MODULE_PATHS, BREADCRUMB_OPTIONS, SITES_ROOT, MENU_DETAIL_TABS, ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
+import { MenuModuleProps, MenuMatchProps } from '../../menu.types';
+import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
+import { menusFacade } from '../../store/menus';
+import { generateEmptyMenu } from '../../menu.helpers';
+import { MenuSchema } from '../../services/menus';
 
 const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, match }) => {
 	const { siteId } = match.params;
@@ -29,12 +33,67 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath)
 	);
+	const activeTabs = useActiveTabs(MENU_DETAIL_TABS, location.pathname);
+	const [menuDraft] = useMenuDraft();
+	const {
+		fetchingState: menuLoadingState,
+		menu,
+		upsertingState: upsertMenuLoadingState,
+	} = useMenu();
+	const isLoading = useMemo(() => {
+		return (
+			menuLoadingState === LoadingState.Loading ||
+			upsertMenuLoadingState === LoadingState.Loading
+		);
+	}, [upsertMenuLoadingState, menuLoadingState]);
+
+	useEffect(() => {
+		if (menuLoadingState !== LoadingState.Loading) {
+			return setInitialLoading(LoadingState.Loaded);
+		}
+
+		setInitialLoading(LoadingState.Loading);
+	}, [menuLoadingState]);
+
+	useEffect(() => {
+		if (menu?.uuid) {
+			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuUuid: menu.uuid });
+		}
+	}, [navigate, siteId, menu]);
+
+	useEffect(() => {
+		if (!menuDraft) {
+			menusFacade.setMenu(generateEmptyMenu());
+			menusFacade.setMenuDraft(generateEmptyMenu());
+		}
+	}, [menuDraft]);
 
 	/**
 	 * Methods
 	 */
 	const navigateToOverview = (): void => {
 		navigate(`${MODULE_PATHS.root}`, { siteId });
+	};
+
+	const upsertView = (
+		sectionData: any,
+		tab: ContextHeaderTab,
+		alertId = ALERT_CONTAINER_IDS.settings
+	): void => {
+		switch (tab.name) {
+			case MENU_DETAIL_TAB_MAP.settings.name:
+				menusFacade.createMenu(
+					siteId,
+					{
+						...generateEmptyMenu(),
+						meta: {
+							...sectionData?.meta,
+						},
+					} as MenuSchema,
+					alertId
+				);
+				break;
+		}
 	};
 
 	/**
@@ -48,11 +107,11 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 			extraOptions={{
 				tenantId,
 				routes: route.routes,
-				loading: false,
+				menu: menu || generateEmptyMenu(),
+				loading: isLoading,
 				isCreating: true,
 				onCancel: navigateToOverview,
-				onSubmit: (sectionData: any, tab: ContextHeaderTab) =>
-					console.log({ sectionData, tab }),
+				onSubmit: (sectionData: any, tab: ContextHeaderTab) => upsertView(sectionData, tab),
 			}}
 		/>
 	);
@@ -60,6 +119,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	return (
 		<>
 			<ContextHeader
+				tabs={activeTabs.slice(0, 1)}
 				linkProps={(props: any) => ({
 					...props,
 					to: generatePath(`${route.path}/${props.href}`, { siteId }),

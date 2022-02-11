@@ -61,3 +61,8 @@ export const CONFIG: Readonly<{ name: string; module: string }> = {
 	name: 'navigation',
 	module: 'navigation-module',
 };
+
+export const ALERT_CONTAINER_IDS = {
+	settings: 'settings',
+	overview: 'overview',
+};
