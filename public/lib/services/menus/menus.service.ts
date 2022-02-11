@@ -1,121 +1,73 @@
-import { parseSearchParams } from '@redactie/utils';
-import { ResponsePromise } from 'ky';
-
 import { api } from '../api';
 
 import {
-	CreateMenuItemPayload,
-	MenuDetail,
-	MenuItem,
-	MenusResponse,
-	UpdateMenuItemPayload,
+	MenuSchema,
+	MenusSchema,
 } from './menus.service.types';
 
 export class MenusApiService {
-	public getMenus(siteId: string, siteCategory: string, lang: string): Promise<MenusResponse> {
-		return api
-			.get(
-				`${siteId}/menus?${parseSearchParams({
-					siteCategory,
-					lang,
-				})}`
-			)
-			.json<MenusResponse>();
-	}
-
-	public getMenu(
+	public async getMenus(
 		siteId: string,
-		menuId: number,
-		siteCategory: string,
-		lang: string
-	): Promise<MenuDetail> {
-		return api
-			.get(
-				`${siteId}/menus/${menuId}?${parseSearchParams({
-					siteCategory,
-					lang,
-				})}`
-			)
-			.json<MenuDetail>();
-	}
+		): Promise<MenusSchema | null> {
+		try {
+			const response: MenusSchema = await api
+				.get(`sites/${siteId}/menus`)
+				.json();
 
-	public async getMenuItem(
-		siteId: string,
-		menuId: number,
-		menuItemId: number,
-		siteCategory: string,
-		lang: string
-	): Promise<MenuItem> {
-		const item = await api
-			.get(
-				`${siteId}/menus/${menuId}/items/${menuItemId}?${parseSearchParams({
-					siteCategory,
-					lang,
-				})}`
-			)
-			.json<MenuItem>();
+			if (!response._embedded) {
+				throw new Error('Failed to get menus');
+			}
 
-		if (!item?.id) {
-			throw new Error('NotFound');
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
 		}
-
-		return item;
 	}
 
-	public createMenuItem(
-		siteId: string,
-		menuId: number,
-		body: CreateMenuItemPayload,
-		siteCategory: string,
-		lang: string
-	): Promise<MenuItem> {
-		return api
-			.post(
-				`${siteId}/menus/${menuId}/items?${parseSearchParams({
-					siteCategory,
-					lang,
-				})}`,
-				{
-					json: body,
-				}
-			)
-			.json();
+	public async getMenu(siteId: string, uuid: string): Promise<MenuSchema | null> {
+		try {
+			const response: MenuSchema = await api.get(`sites/${siteId}/menus/${uuid}`).json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
 	}
 
-	public updateMenuItem(
-		siteId: string,
-		menuId: number,
-		itemId: number,
-		body: UpdateMenuItemPayload,
-		siteCategory: string,
-		lang: string
-	): Promise<MenuItem> {
-		return api
-			.put(
-				`${siteId}/menus/${menuId}/items/${itemId}?${parseSearchParams({
-					siteCategory,
-					lang,
-				})}`,
-				{
-					json: body,
-				}
-			)
-			.json();
+	public async updateMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
+		try {
+			const response: MenuSchema = await api
+				.put(`sites/${siteId}/menus/${menu.uuid}`, {
+					json: menu,
+				})
+				.json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
 	}
 
-	public deleteMenuItem(
-		siteId: string,
-		menuId: number,
-		itemId: number,
-		siteCategory: string,
-		lang: string
-	): ResponsePromise {
-		return api.delete(
-			`${siteId}/menus/${menuId}/items/${itemId}?${parseSearchParams({
-				siteCategory,
-				lang,
-			})}`
-		);
+	public async createMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
+		try {
+			const response: MenuSchema = await api
+				.post(`sites/${siteId}/menus`, {
+					json: menu,
+				})
+				.json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async deleteMenu(siteId: string, menuId: string): Promise<void> {
+		return api.delete(`sites/${siteId}/menus/${menuId}`).json();
 	}
 }
 

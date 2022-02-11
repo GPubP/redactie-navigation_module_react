@@ -1,19 +1,21 @@
 import { isNil } from '@datorama/akita';
 import { BaseEntityQuery } from '@redactie/utils';
-import { Observable } from 'rxjs';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
-import { MenuModel, MenusState } from './menus.model';
+import { MenusState } from './menus.model';
 import { menusStore } from './menus.store';
 
 export class MenusQuery extends BaseEntityQuery<MenusState> {
-	public menuList$ = this.select(state => state.menuList).pipe(
-		filter(menuList => !isNil(menuList), distinctUntilChanged())
+	public meta$ = this.select(state => state.meta).pipe(
+		filter(meta => !isNil(meta), distinctUntilChanged())
 	);
-
-	public selectMenu(menuId: number): Observable<MenuModel> {
-		return this.selectEntity(menuId);
-	}
+	public menus$ = this.selectAll();
+	public menu$ = this.select(state => state.menu).pipe(
+		filter(menu => !isNil(menu), distinctUntilChanged())
+	);
+	public menuDraft$ = this.select(state => state.menuDraft).pipe(
+		filter(menuDraft => !isNil(menuDraft), distinctUntilChanged())
+	);
 }
 
 export const menusQuery = new MenusQuery(menusStore);

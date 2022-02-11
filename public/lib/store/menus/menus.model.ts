@@ -1,9 +1,15 @@
-import { BaseEntityState } from '@redactie/utils';
+import { BaseEntityState, Page } from '@redactie/utils';
 
-import { Menu, MenuDetail } from '../../services/menus';
+import { MenuSchema } from '../../services/menus';
 
-export type MenuListItemModel = Menu;
-export type MenuModel = MenuDetail;
-export interface MenusState extends BaseEntityState<MenuModel, number> {
-	menuList?: MenuListItemModel[];
+export interface InternalState {
+	readonly menu: MenuSchema | null;
+}
+
+export type MenuModel = MenuSchema;
+
+export interface MenusState extends BaseEntityState<MenuModel, string> {
+	meta?: Page;
+	menu?: MenuModel;
+	menuDraft?: MenuModel;
 }
