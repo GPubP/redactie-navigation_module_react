@@ -8,9 +8,10 @@ import { ListApiResponse } from '../../navigation.types';
  export interface MenuQuery {}
 
 export interface MenuMeta {
-	label: string;
+	label?: string;
 	safeLabel?: string;
-	description: string;
+	description?: string;
+	lang?: string;
 	created?: string;
 	lastModified?: string;
 	lastEditor?: null;
@@ -19,7 +20,7 @@ export interface MenuMeta {
 }
 
 export interface MenuSchema {
-	query: MenuQuery;
+	query?: MenuQuery;
 	meta: MenuMeta;
 	uuid?: string;
 }

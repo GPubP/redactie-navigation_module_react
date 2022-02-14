@@ -18,7 +18,7 @@ export const getAlertMessages = (data: MenuSchema): Record<string, any> => ({
 		},
 		error: {
 			title: 'Bewaren mislukt',
-			message: `Het bewaren van het menu "${data.meta.label}" is mislukt`,
+			message: `Het bewaren van het menu "${data.meta?.label}" is mislukt`,
 		},
 	},
 	delete: {
@@ -28,7 +28,7 @@ export const getAlertMessages = (data: MenuSchema): Record<string, any> => ({
 		},
 		error: {
 			title: 'Verwijderen mislukt',
-			message: `Het verwijderen van het menu "${data.meta.label}" is mislukt`,
+			message: `Het verwijderen van het menu "${data.meta?.label}" is mislukt`,
 		},
 	},
 });

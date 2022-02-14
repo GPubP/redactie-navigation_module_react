@@ -6,3 +6,7 @@ export const MENU_SETTINGS_VALIDATION_SCHEMA = object().shape({
 		description: string().required('Beschrijving is een verplicht veld'),
 	}),
 });
+
+export const LANG_OPTIONS = [
+	{ key: 'nl', label: 'Nederlands (NL)', value: 'nl' },
+];
