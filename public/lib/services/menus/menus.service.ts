@@ -5,6 +5,14 @@ import {
 	MenusSchema,
 } from './menus.service.types';
 
+const MENU_MOCK: MenuSchema = {
+	query: {},
+	meta: {
+		label: 'testMenu',
+		description: 'Dit is een test'
+	}
+}
+
 export class MenusApiService {
 	public async getMenus(
 		siteId: string,
@@ -27,9 +35,9 @@ export class MenusApiService {
 
 	public async getMenu(siteId: string, uuid: string): Promise<MenuSchema | null> {
 		try {
-			const response: MenuSchema = await api.get(`sites/${siteId}/menus/${uuid}`).json();
+			//const response: MenuSchema = await api.get(`sites/${siteId}/menus/${uuid}`).json();
 
-			return response;
+			return MENU_MOCK;
 		} catch (err) {
 			console.error(err);
 			return null;
@@ -38,13 +46,13 @@ export class MenusApiService {
 
 	public async createMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
 		try {
-			const response: MenuSchema = await api
+			/* const response: MenuSchema = await api
 				.post(`sites/${siteId}/menus`, {
 					json: menu,
 				})
-				.json();
+				.json(); */
 
-			return response;
+			return MENU_MOCK;
 		} catch (err) {
 			console.error(err);
 			return null;
