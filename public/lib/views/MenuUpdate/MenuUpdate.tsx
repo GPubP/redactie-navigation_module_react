@@ -102,9 +102,6 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 		if (!updatedMenu) {
 			return Promise.resolve();
 		}
-
-		console.log({updatedMenu, tab})
-
 	};
 
 	/**
@@ -136,8 +133,6 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 			/>
 		);
 	};
-
-	console.log(rights);
 
 	return (
 		<>

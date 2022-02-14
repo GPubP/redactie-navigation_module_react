@@ -19,6 +19,7 @@ import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSetti
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
 	isCreating,
+	rights,
 	onSubmit,
 }) => {
 	const [menu] = useMenuDraft();
@@ -49,7 +50,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 		menusFacade.setMenuDraft(newMenuValue);
 	};
 
-	const readonly = isCreating ? false : true; //TODO: replace 'true' with '!rights.canUpdate';
+	const readonly = isCreating ? false : !rights.canUpdate;
 
 	/**
 	 * Render
