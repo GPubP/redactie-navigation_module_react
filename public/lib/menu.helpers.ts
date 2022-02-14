@@ -1,16 +1,8 @@
-import { MenuSchema } from "./services/menus";
+import { Menu } from "./services/menus";
 
-export const generateEmptyMenu = (): MenuSchema => ({
-	meta: {
-		description: '',
-		label: '',
-		site: '',
-	},
-	query: {
-		options: {
-			offset: 0,
-			limit: 0,
-			order: 'asc',
-		},
-	},
+export const generateEmptyMenu = (): Menu => ({
+	label: '',
+	description: '',
+	publishStatus: 'draft',
+	categoryId: 35,
 });

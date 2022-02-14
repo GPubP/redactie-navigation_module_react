@@ -3,7 +3,7 @@ import { alertService, BaseEntityFacade } from '@redactie/utils';
 import {
 	menusApiService,
 	MenusApiService,
-	MenuSchema
+	Menu
 } from '../../services/menus';
 import { getAlertMessages } from './menus.messages';
 
@@ -32,9 +32,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.set(response._embedded);
+				this.store.set(response);
 				this.store.update({
-					meta: response._page,
 					isFetching: false,
 				});
 			})
@@ -73,7 +72,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public createMenu(siteId: string, body: MenuSchema, alertId: string): void {
+	public createMenu(siteId: string, body: Menu, alertId: string): void {
 		const { isCreating } = this.query.getValue();
 
 		if (isCreating) {
@@ -86,7 +85,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			.createMenu(siteId, body)
 			.then(response => {
 				if (!response) {
-					throw new Error(`Creating menu '${body?.meta?.label}' failed!`);
+					throw new Error(`Creating menu '${body?.label}' failed!`);
 				}
 
 				this.store.update({
@@ -109,13 +108,13 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public setMenu(menu: MenuSchema): void {
+	public setMenu(menu: Menu): void {
 		this.store.update({
 			menu,
 		});
 	}
 
-	public setMenuDraft(menuDraft: MenuSchema): void {
+	public setMenuDraft(menuDraft: Menu): void {
 		this.store.update({
 			menuDraft,
 		});

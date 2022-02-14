@@ -1,12 +1,12 @@
 import { BaseEntityState, Page } from '@redactie/utils';
 
-import { MenuSchema } from '../../services/menus';
+import { Menu } from '../../services/menus';
 
 export interface InternalState {
-	readonly menu: MenuSchema | null;
+	readonly menu: Menu | null;
 }
 
-export type MenuModel = MenuSchema;
+export type MenuModel = Menu;
 
 export interface MenusState extends BaseEntityState<MenuModel, string> {
 	meta?: Page;

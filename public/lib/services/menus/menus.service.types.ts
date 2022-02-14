@@ -1,31 +1,4 @@
-import { EmbeddedResponse } from '@redactie/utils';
 import { ListApiResponse } from '../../navigation.types';
-
-/**
- * Menus
- */
-
- export interface MenuQuery {}
-
-export interface MenuMeta {
-	label?: string;
-	safeLabel?: string;
-	description?: string;
-	lang?: string;
-	created?: string;
-	lastModified?: string;
-	lastEditor?: null;
-	deleted?: boolean;
-	site?: string;
-}
-
-export interface MenuSchema {
-	query?: MenuQuery;
-	meta: MenuMeta;
-	uuid?: string;
-}
-
-export type MenusSchema = EmbeddedResponse<MenuSchema>;
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
@@ -37,23 +10,28 @@ export interface Embedded {
 }
 
 export interface Menu {
-	id: number;
-	logicalId: string;
-	label: string;
-	description: string;
-	category: MenuCategory;
-	publishStatus: string;
-	createdBy: string;
-	createdAt: Date;
-	updatedBy: string;
-	updatedAt: Date;
-	slug: string;
-	meta: MenuMeta;
+	id?: number;
+	logicalId?: string;
+	label?: string;
+	description?: string;
+	lang?: string;
+	categoryId?: number;
+	publishStatus?: string;
+	createdBy?: string;
+	createdAt?: Date;
+	updatedBy?: string;
+	updatedAt?: Date;
+	slug?: string;
+	meta?: MenuMeta;
 }
 
 export interface MenuCategory {
 	id: number;
 	label: string;
+}
+
+export interface MenuMeta {
+	lastEditor: null;
 }
 ///////////////////////////////////////
 // GET MENU TYPES ---------------------
