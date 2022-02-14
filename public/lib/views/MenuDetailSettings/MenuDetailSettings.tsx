@@ -1,4 +1,4 @@
-import { Button, Textarea, TextField } from '@acpaas-ui/react-components';
+import { Button, Textarea, TextField, RadioGroup } from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
@@ -14,7 +14,7 @@ import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
 import { MenuSchema } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
-import { MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSettings.const';
+import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSettings.const';
 
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
@@ -22,9 +22,17 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	onSubmit,
 }) => {
 	const [menu] = useMenuDraft();
-	const { menu: initialValues } = useMenu();
+	const { menu: values } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
+
+	const initialValues: MenuSchema | undefined = {
+		...values,
+		meta: {
+			...values?.meta,
+			lang: values?.meta?.lang || LANG_OPTIONS[0].value,
+		},
+	};
 
 	/**
 	 * Methods
@@ -67,7 +75,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					return (
 						<>
 							<div className="row top-xs u-margin-bottom">
-								<div className="col-xs-12 col-md-8">
+								<div className="col-xs-12">
 									<Field
 										as={TextField}
 										disabled={readonly}
@@ -105,6 +113,18 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke beschrijving.
 									</div>
+								</div>
+							</div>
+							<div className="row u-margin-top">
+								<div className="col-xs-12">
+									<Field
+										as={RadioGroup}
+										id="lang"
+										label="Taal"
+										name="meta.lang"
+										required
+										options={LANG_OPTIONS}
+									/>
 								</div>
 							</div>
 							<ActionBar className="o-action-bar--fixed" isOpen={!readonly}>
