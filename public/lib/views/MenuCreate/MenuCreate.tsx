@@ -17,7 +17,7 @@ import { MenuModuleProps, MenuMatchProps } from '../../menu.types';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { menusFacade } from '../../store/menus';
 import { generateEmptyMenu } from '../../menu.helpers';
-import { MenuSchema } from '../../services/menus';
+import { Menu } from '../../services/menus';
 
 const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, match }) => {
 	const { siteId } = match.params;
@@ -56,8 +56,8 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	}, [menuLoadingState]);
 
 	useEffect(() => {
-		if (menu?.uuid) {
-			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuUuid: menu.uuid });
+		if (menu?.id) {
+			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuUuid: menu.id });
 		}
 	}, [navigate, siteId, menu]);
 
@@ -86,10 +86,8 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 					siteId,
 					{
 						...generateEmptyMenu(),
-						meta: {
-							...sectionData?.meta,
-						},
-					} as MenuSchema,
+						...sectionData
+					} as Menu,
 					alertId
 				);
 				break;

@@ -13,8 +13,8 @@ import { Link, useParams } from 'react-router-dom';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
-import { MenuSchema } from '../../services/menus';
-import { MODULE_PATHS, SITES_ROOT, MENU_DETAIL_TABS } from '../../navigation.const';
+import { Menu } from '../../services/menus';
+import { MODULE_PATHS, SITES_ROOT, MENU_DETAIL_TABS, ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { MenuRouteProps } from '../../menu.types';
 import { menusFacade } from '../../store/menus';
 
@@ -98,17 +98,23 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 		menusFacade.setMenuDraft(menu);
 	};
 
-	const update = (updatedMenu: MenuSchema, tab: ContextHeaderTab) => {
+	const update = (updatedMenu: Menu) => {
 		if (!updatedMenu) {
 			return Promise.resolve();
 		}
+
+		return menusFacade.updateMenu(
+			siteId,
+			updatedMenu,
+			ALERT_CONTAINER_IDS.settings
+		);
 	};
 
 	/**
 	 * Render
 	 */
 
-	const pageTitle = `${menuDraft?.meta?.label ? `'${menuDraft?.meta?.label}'` : 'Menu'} ${t(
+	const pageTitle = `${menuDraft?.label ? `'${menuDraft?.label}'` : 'Menu'} ${t(
 		CORE_TRANSLATIONS.ROUTING_UPDATE
 	)}`;
 

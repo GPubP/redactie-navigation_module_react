@@ -1,6 +1,6 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
 import { ContextHeaderTab } from '@redactie/utils';
-import { MenuSchema } from './services/menus';
+import { Menu } from './services/menus';
 import { InternalState } from './store/menus';
 
 export interface MenuModuleProps<Params extends { [K in keyof Params]?: string } = {}>
@@ -27,10 +27,10 @@ export interface MenuRouteProps<
 }
 
 export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentProps<Params> {
-	menu: MenuSchema;
+	menu: Menu;
 	onCancel: () => void;
-	onSubmit: (data: MenuSchema | Partial<MenuSchema>, tab: ContextHeaderTab) => Promise<void>;
-	onDelete: (data: MenuSchema | Partial<MenuSchema>) => Promise<void>;
+	onSubmit: (data: Menu | Partial<Menu>, tab: ContextHeaderTab) => Promise<void>;
+	onDelete: (data: Menu | Partial<Menu>) => Promise<void>;
 	isCreating?: boolean;
 	isRemoving?: boolean;
 	loading: boolean;

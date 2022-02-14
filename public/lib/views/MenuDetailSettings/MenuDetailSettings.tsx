@@ -12,7 +12,7 @@ import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translat
 import { useMenu, useMenuDraft } from '../../hooks';
 import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
-import { MenuSchema } from '../../services/menus';
+import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA, SETTINGS_ALLOWED_LEAVE_PATHS } from './MenuDetailSettings.const';
 
@@ -27,26 +27,23 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 
-	const initialValues: MenuSchema | undefined = {
+	const initialValues: Menu | undefined = {
 		...values,
-		meta: {
-			...values?.meta,
-			lang: values?.meta?.lang || LANG_OPTIONS[0].value,
-		},
+		lang: values?.lang || LANG_OPTIONS[0].value,
 	};
 
 	/**
 	 * Methods
 	 */
-	const onSave = (newMenuValue: MenuSchema): void => {
+	const onSave = (newMenuValue: Menu): void => {
 		onSubmit(
-			{ ...(menu || {}), meta: { ...menu?.meta, ...newMenuValue.meta } },
+			{ ...(menu || {}), ...newMenuValue },
 			MENU_DETAIL_TAB_MAP.settings
 		);
 		resetIsChanged();
 	};
 
-	const onChange = (newMenuValue: MenuSchema): void => {
+	const onChange = (newMenuValue: Menu): void => {
 		menusFacade.setMenuDraft(newMenuValue);
 	};
 
@@ -81,14 +78,14 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 										as={TextField}
 										disabled={readonly}
 										label="Naam"
-										name="meta.label"
+										name="label"
 										required
-										state={errors.meta?.label && 'error'}
+										state={errors.label && 'error'}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
 										component="p"
-										name="meta.label"
+										name="label"
 									/>
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke naam.
@@ -102,14 +99,14 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 										disabled={readonly}
 										className="a-input--small"
 										label="Beschrijving"
-										name="meta.description"
+										name="description"
 										required
-										state={errors.meta?.description && 'error'}
+										state={errors.description && 'error'}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
 										component="p"
-										name="meta.description"
+										name="description"
 									/>
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke beschrijving.
@@ -122,7 +119,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 										as={RadioGroup}
 										id="lang"
 										label="Taal"
-										name="meta.lang"
+										name="lang"
 										required
 										options={LANG_OPTIONS}
 									/>
@@ -136,7 +133,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 											onClick={resetForm}
 											negative
 										>
-											{menu?.uuid
+											{menu?.id
 												? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
@@ -146,7 +143,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 											onClick={submitForm}
 											type="success"
 										>
-											{menu?.uuid
+											{menu?.id
 												? t(CORE_TRANSLATIONS['BUTTON_SAVE'])
 												: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
 										</Button>

@@ -1,20 +1,19 @@
 import { api } from '../api';
 
 import {
-	MenuSchema,
-	MenusSchema,
+	Menu,
 } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(
 		siteId: string,
-		): Promise<MenusSchema | null> {
+		): Promise<Menu[] | null> {
 		try {
-			const response: MenusSchema = await api
+			const response: Menu[] = await api
 				.get(`${siteId}/trees`)
 				.json();
 
-			if (!response._embedded) {
+			if (!response) {
 				throw new Error('Failed to get menus');
 			}
 
@@ -25,9 +24,9 @@ export class MenusApiService {
 		}
 	}
 
-	public async getMenu(siteId: string, uuid: string): Promise<MenuSchema | null> {
+	public async getMenu(siteId: string, id: string): Promise<Menu | null> {
 		try {
-			const response: MenuSchema = await api.get(`${siteId}/trees/${uuid}`).json();
+			const response: Menu = await api.get(`${siteId}/trees/${id}`).json();
 
 			return response;
 		} catch (err) {
@@ -36,10 +35,25 @@ export class MenusApiService {
 		}
 	}
 
-	public async createMenu(siteId: string, menu: MenuSchema): Promise<MenuSchema | null> {
+	public async createMenu(siteId: string, menu: Menu): Promise<Menu | null> {
 		try {
-			const response: MenuSchema = await api
+			const response: Menu = await api
 				.post(`${siteId}/trees`, {
+					json: menu,
+				})
+				.json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async updateMenu(siteId: string, menu: Menu): Promise<Menu | null> {
+		try {
+			const response: Menu = await api
+				.put(`${siteId}/trees/${menu.id}`, {
 					json: menu,
 				})
 				.json();
