@@ -10,3 +10,5 @@ export const MENU_SETTINGS_VALIDATION_SCHEMA = object().shape({
 export const LANG_OPTIONS = [
 	{ key: 'nl', label: 'Nederlands (NL)', value: 'nl' },
 ];
+
+export const SETTINGS_ALLOWED_LEAVE_PATHS = [];

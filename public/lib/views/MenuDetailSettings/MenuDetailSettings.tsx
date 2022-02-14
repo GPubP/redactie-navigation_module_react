@@ -4,7 +4,7 @@ import {
 	ActionBarContentSection,
 	Container,
 } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, useDetectValueChanges } from '@redactie/utils';
+import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC } from 'react';
 
@@ -14,7 +14,7 @@ import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
 import { MenuSchema } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
-import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSettings.const';
+import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA, SETTINGS_ALLOWED_LEAVE_PATHS } from './MenuDetailSettings.const';
 
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
@@ -153,6 +153,12 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 									</div>
 								</ActionBarContentSection>
 							</ActionBar>
+							<LeavePrompt
+								allowedPaths={SETTINGS_ALLOWED_LEAVE_PATHS}
+								when={isChanged}
+								shouldBlockNavigationOnConfirm
+								onConfirm={submitForm}
+							/>
 						</>
 					);
 				}}
