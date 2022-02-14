@@ -10,7 +10,8 @@ const MENU_MOCK: MenuSchema = {
 	meta: {
 		label: 'testMenu',
 		description: 'Dit is een test'
-	}
+	},
+	uuid: '1234'
 }
 
 export class MenusApiService {
