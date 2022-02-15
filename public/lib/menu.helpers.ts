@@ -1,8 +1,8 @@
 import { Menu } from "./services/menus";
 
-export const generateEmptyMenu = (): Menu => ({
+export const generateEmptyMenu = (siteName: string | undefined): Menu => ({
 	label: '',
 	description: '',
 	publishStatus: 'draft',
-	categoryId: 35,
+	category: `menu_${siteName}_nl`,
 });
