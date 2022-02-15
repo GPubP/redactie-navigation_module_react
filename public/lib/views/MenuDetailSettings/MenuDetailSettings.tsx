@@ -14,7 +14,11 @@ import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
-import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA, SETTINGS_ALLOWED_LEAVE_PATHS } from './MenuDetailSettings.const';
+import {
+	LANG_OPTIONS,
+	MENU_SETTINGS_VALIDATION_SCHEMA,
+	SETTINGS_ALLOWED_LEAVE_PATHS,
+} from './MenuDetailSettings.const';
 
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
@@ -27,19 +31,11 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 
-	const initialValues: Menu | undefined = {
-		...values,
-		lang: values?.lang || LANG_OPTIONS[0].value,
-	};
-
 	/**
 	 * Methods
 	 */
 	const onSave = (newMenuValue: Menu): void => {
-		onSubmit(
-			{ ...(menu || {}), ...newMenuValue },
-			MENU_DETAIL_TAB_MAP.settings
-		);
+		onSubmit({ ...(menu || {}), ...newMenuValue }, MENU_DETAIL_TAB_MAP.settings);
 		resetIsChanged();
 	};
 
@@ -53,7 +49,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	 * Render
 	 */
 
-	if (!menu || !initialValues) {
+	if (!menu || !values) {
 		return null;
 	}
 
@@ -63,7 +59,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<Formik
-				initialValues={initialValues}
+				initialValues={values}
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
