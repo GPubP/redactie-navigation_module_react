@@ -18,6 +18,7 @@ import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { menusFacade } from '../../store/menus';
 import { generateEmptyMenu } from '../../menu.helpers';
 import { Menu } from '../../services/menus';
+import sitesConnector from '../../connectors/sites';
 
 const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, match }) => {
 	const { siteId } = match.params;
@@ -27,6 +28,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
 	const [t] = useCoreTranslation();
+	const [site] = sitesConnector.hooks.useSite(siteId);
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
@@ -62,11 +64,11 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	}, [navigate, siteId, menu]);
 
 	useEffect(() => {
-		if (!menuDraft) {
-			menusFacade.setMenu(generateEmptyMenu());
-			menusFacade.setMenuDraft(generateEmptyMenu());
+		if (!menuDraft && site) {
+			menusFacade.setMenu(generateEmptyMenu(site?.data.name));
+			menusFacade.setMenuDraft(generateEmptyMenu(site?.data.name));
 		}
-	}, [menuDraft]);
+	}, [menuDraft, site]);
 
 	/**
 	 * Methods
@@ -85,7 +87,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 				menusFacade.createMenu(
 					siteId,
 					{
-						...generateEmptyMenu(),
+						...generateEmptyMenu(site?.data.name),
 						...sectionData
 					} as Menu,
 					alertId
@@ -105,7 +107,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 			extraOptions={{
 				tenantId,
 				routes: route.routes,
-				menu: menu || generateEmptyMenu(),
+				menu: menu || generateEmptyMenu(site?.data.name),
 				loading: isLoading,
 				isCreating: true,
 				onCancel: navigateToOverview,

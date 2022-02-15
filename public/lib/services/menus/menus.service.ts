@@ -10,7 +10,7 @@ export class MenusApiService {
 		): Promise<Menu[] | null> {
 		try {
 			const response: Menu[] = await api
-				.get(`${siteId}/trees`)
+				.get(`${siteId}/menus`)
 				.json();
 
 			if (!response) {
@@ -26,7 +26,7 @@ export class MenusApiService {
 
 	public async getMenu(siteId: string, id: string): Promise<Menu | null> {
 		try {
-			const response: Menu = await api.get(`${siteId}/trees/${id}`).json();
+			const response: Menu = await api.get(`${siteId}/menus/${id}`).json();
 
 			return response;
 		} catch (err) {
@@ -38,7 +38,7 @@ export class MenusApiService {
 	public async createMenu(siteId: string, menu: Menu): Promise<Menu | null> {
 		try {
 			const response: Menu = await api
-				.post(`${siteId}/trees`, {
+				.post(`${siteId}/menus`, {
 					json: menu,
 				})
 				.json();

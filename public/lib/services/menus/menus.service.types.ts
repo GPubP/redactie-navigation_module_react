@@ -15,7 +15,7 @@ export interface Menu {
 	label?: string;
 	description?: string;
 	lang?: string;
-	categoryId?: number;
+	category?: string;
 	publishStatus?: string;
 	createdBy?: string;
 	createdAt?: Date;
