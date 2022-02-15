@@ -12,7 +12,14 @@ import {
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 
 import { useCoreTranslation } from '../../connectors/translations';
-import { MODULE_PATHS, BREADCRUMB_OPTIONS, SITES_ROOT, MENU_DETAIL_TABS, ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
+import {
+	MODULE_PATHS,
+	BREADCRUMB_OPTIONS,
+	SITES_ROOT,
+	MENU_DETAIL_TABS,
+	ALERT_CONTAINER_IDS,
+	MENU_DETAIL_TAB_MAP,
+} from '../../navigation.const';
 import { MenuModuleProps, MenuMatchProps } from '../../menu.types';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { menusFacade } from '../../store/menus';
@@ -33,7 +40,12 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
-		BREADCRUMB_OPTIONS(generatePath)
+		BREADCRUMB_OPTIONS(generatePath, [
+			{
+				name: 'Menu\'s',
+				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
+			},
+		])
 	);
 	const activeTabs = useActiveTabs(MENU_DETAIL_TABS, location.pathname);
 	const [menuDraft] = useMenuDraft();
@@ -88,7 +100,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 					siteId,
 					{
 						...generateEmptyMenu(site?.data.name),
-						...sectionData
+						...sectionData,
 					} as Menu,
 					alertId
 				);

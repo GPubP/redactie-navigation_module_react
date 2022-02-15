@@ -6,6 +6,7 @@ import {
 	LoadingState,
 	RenderChildRoutes,
 	useNavigate,
+	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
@@ -14,9 +15,16 @@ import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { Menu } from '../../services/menus';
-import { MODULE_PATHS, SITES_ROOT, MENU_DETAIL_TABS, ALERT_CONTAINER_IDS } from '../../navigation.const';
+import {
+	MODULE_PATHS,
+	SITES_ROOT,
+	MENU_DETAIL_TABS,
+	ALERT_CONTAINER_IDS,
+	BREADCRUMB_OPTIONS,
+} from '../../navigation.const';
 import { MenuRouteProps } from '../../menu.types';
 import { menusFacade } from '../../store/menus';
+import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 
 const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	location,
@@ -29,7 +37,17 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [t] = useCoreTranslation();
 	const { siteId, menuUuid } = useParams<{ menuUuid?: string; siteId: string }>();
-	const { generatePath, navigate } = useNavigate(SITES_ROOT);
+	const { navigate, generatePath } = useNavigate(SITES_ROOT);
+	const routes = useRoutes();
+	const breadcrumbs = useBreadcrumbs(
+		routes as ModuleRouteConfig[],
+		BREADCRUMB_OPTIONS(generatePath, [
+			{
+				name: "Menu's",
+				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
+			},
+		])
+	);
 	const {
 		fetchingState: menuLoadingState,
 		upsertingState: upsertMenuLoadingState,
@@ -103,11 +121,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 			return Promise.resolve();
 		}
 
-		return menusFacade.updateMenu(
-			siteId,
-			updatedMenu,
-			ALERT_CONTAINER_IDS.settings
-		);
+		return menusFacade.updateMenu(siteId, updatedMenu, ALERT_CONTAINER_IDS.settings);
 	};
 
 	/**
@@ -146,12 +160,15 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 				tabs={activeTabs}
 				linkProps={(props: ContextHeaderTabLinkProps) => ({
 					...props,
-					to: generatePath(`${MODULE_PATHS.site.detail}/${props.href}`, { siteId, menuUuid }),
+					to: generatePath(`${MODULE_PATHS.site.detail}/${props.href}`, {
+						siteId,
+						menuUuid,
+					}),
 					component: Link,
 				})}
 				title={pageTitle}
 			>
-				<ContextHeaderTopSection>{}</ContextHeaderTopSection>
+				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
 			<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
 		</>
