@@ -1,5 +1,5 @@
-import { Menu } from "./services/menus";
-import { LANG_OPTIONS } from "./views/MenuDetailSettings/MenuDetailSettings.const";
+import { Menu } from './services/menus';
+import { LANG_OPTIONS } from './views/MenuDetailSettings/MenuDetailSettings.const';
 
 export const generateEmptyMenu = (siteName: string | undefined): Menu => ({
 	label: '',

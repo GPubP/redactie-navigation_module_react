@@ -1,4 +1,4 @@
-import { Button, Textarea, TextField, RadioGroup } from '@acpaas-ui/react-components';
+import { Button, RadioGroup, Textarea, TextField } from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
@@ -10,10 +10,11 @@ import React, { FC } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useMenu, useMenuDraft } from '../../hooks';
-import { MenuMatchProps, MenuDetailRouteProps } from '../../menu.types';
+import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
+
 import {
 	LANG_OPTIONS,
 	MENU_SETTINGS_VALIDATION_SCHEMA,
@@ -118,6 +119,12 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 										name="lang"
 										required
 										options={LANG_OPTIONS}
+										state={errors.lang && 'error'}
+									/>
+									<ErrorMessage
+										className="u-text-danger"
+										component="p"
+										name="lang"
 									/>
 								</div>
 							</div>
