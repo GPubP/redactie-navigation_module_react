@@ -1,12 +1,21 @@
-import { Button, Textarea, TextField, RadioGroup } from '@acpaas-ui/react-components';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardDescription,
+	CardTitle,
+	Textarea,
+	TextField,
+	RadioGroup,
+} from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
 	Container,
 } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
+import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
-import React, { FC } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useMenu, useMenuDraft } from '../../hooks';
@@ -23,13 +32,16 @@ import {
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
 	isCreating,
+	isRemoving,
 	rights,
 	onSubmit,
+	onDelete,
 }) => {
 	const [menu] = useMenuDraft();
-	const { menu: values } = useMenu();
+	const { menu: values, occurrences } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	/**
 	 * Methods
@@ -45,6 +57,19 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 
 	const readonly = isCreating ? false : !rights.canUpdate;
 
+	const onDeletePromptConfirm = async (): Promise<void> => {
+		if (!values) {
+			return;
+		}
+
+		await onDelete(values);
+		setShowDeleteModal(false);
+	};
+
+	const onDeletePromptCancel = (): void => {
+		setShowDeleteModal(false);
+	};
+
 	/**
 	 * Render
 	 */
@@ -52,6 +77,48 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	if (!menu || !values) {
 		return null;
 	}
+
+	const renderDelete = (): ReactElement => {
+		return (
+			<>
+				<Card className="u-margin-top">
+					<CardBody>
+						<CardTitle>Verwijderen</CardTitle>
+						<CardDescription>
+							{occurrences && occurrences.length > 0 ? (
+								<span>
+									Dit menu heeft{' '}
+									<b>{occurrences ? occurrences.length : 0} menu items</b>.
+									Verwijder deze items als je het menu wil verwijderen.
+								</span>
+							) : (
+								<span>
+									Er zijn <b>{occurrences ? occurrences.length : 0} menu items</b>
+									. Je kan het menu verwijderen.
+								</span>
+							)}
+						</CardDescription>
+						<Button
+							onClick={() => setShowDeleteModal(true)}
+							className="u-margin-top"
+							type="danger"
+							iconLeft="trash-o"
+							disabled={occurrences && occurrences.length > 0}
+						>
+							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
+						</Button>
+					</CardBody>
+				</Card>
+				<DeletePrompt
+					body="Ben je zeker dat je deze view wil verwijderen? Dit kan niet ongedaan gemaakt worden."
+					isDeleting={isRemoving}
+					show={showDeleteModal}
+					onCancel={onDeletePromptCancel}
+					onConfirm={onDeletePromptConfirm}
+				/>
+			</>
+		);
+	};
 
 	return (
 		<Container>
@@ -156,6 +223,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					);
 				}}
 			</Formik>
+			{!isCreating && renderDelete()}
 		</Container>
 	);
 };
