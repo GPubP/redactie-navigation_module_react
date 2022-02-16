@@ -1,4 +1,5 @@
 import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
+import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 
 import { menusApiService, MenusApiService, Menu } from '../../services/menus';
 import { getAlertMessages } from './menus.messages';
@@ -172,6 +173,47 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					error,
 					isFetchingOccurrences: LoadingState.Error,
 				});
+			});
+	}
+
+	public async deleteMenu(siteId: string, body: Menu): Promise<void> {
+		const { isRemoving } = this.query.getValue();
+
+		if (isRemoving || !body) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsRemoving(true);
+
+		return this.service
+			.deleteMenu(siteId, body)
+			.then(() => {
+				this.store.update({
+					menu: undefined,
+					menuDraft: undefined,
+					occurrences: undefined,
+					isRemoving: false,
+				});
+
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					alertService.success(getAlertMessages(body).delete.success, {
+						containerId: ALERT_CONTAINER_IDS.overview,
+					});
+				}, 300);
+			})
+			.catch(error => {
+				console.log(error);
+				this.store.update({
+					error,
+					isRemoving: false,
+				});
+
+				alertService.danger(getAlertMessages(body).delete.error, {
+					containerId: ALERT_CONTAINER_IDS.settings,
+				});
+
+				throw new Error('Deleting view failed!');
 			});
 	}
 

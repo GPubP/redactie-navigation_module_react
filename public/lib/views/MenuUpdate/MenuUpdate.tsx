@@ -6,6 +6,7 @@ import {
 	LoadingState,
 	RenderChildRoutes,
 	useNavigate,
+	useOnNextRender,
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
@@ -51,6 +52,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	const {
 		fetchingState: menuLoadingState,
 		upsertingState: upsertMenuLoadingState,
+		removingState: removeMenuLoadingState,
 		menu,
 	} = useMenu();
 	const [
@@ -74,8 +76,14 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 			upsertMenuLoadingState === LoadingState.Loading
 		);
 	}, [upsertMenuLoadingState, menuLoadingState]);
+	const isRemoving = useMemo(() => {
+		return removeMenuLoadingState === LoadingState.Loading;
+	}, [removeMenuLoadingState]);
 	const [menuDraft] = useMenuDraft();
 	const activeTabs = useActiveTabs(MENU_DETAIL_TABS, location.pathname);
+	const [forceNavigateToOverview] = useOnNextRender(() =>
+		navigate(MODULE_PATHS.site.overview, { siteId })
+	);
 
 	useEffect(() => {
 		if (
@@ -125,6 +133,16 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 		return menusFacade.updateMenu(siteId, updatedMenu, ALERT_CONTAINER_IDS.settings);
 	};
 
+	const deleteMenu = async (menu: Menu): Promise<void> => {
+		return (
+			menusFacade
+				.deleteMenu(siteId, menu)
+				.then(forceNavigateToOverview)
+				// eslint-disable-next-line @typescript-eslint/no-empty-function
+				.catch(() => {})
+		);
+	};
+
 	/**
 	 * Render
 	 */
@@ -147,8 +165,10 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 				extraOptions={{
 					onCancel,
 					onSubmit: update,
+					onDelete: deleteMenu,
 					routes: route.routes,
 					loading: isLoading,
+					removing: isRemoving,
 					rights,
 				}}
 			/>

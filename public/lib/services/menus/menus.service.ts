@@ -71,6 +71,10 @@ export class MenusApiService {
 			return null;
 		}
 	}
+
+	public async deleteMenu(siteId: string, menu: Menu): Promise<void> {
+		return api.delete(`${siteId}/trees/${menu.id}`).json();
+	}
 }
 
 export const menusApiService = new MenusApiService();
