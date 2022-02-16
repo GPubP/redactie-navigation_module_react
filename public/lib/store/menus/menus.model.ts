@@ -1,4 +1,4 @@
-import { BaseEntityState, Page } from '@redactie/utils';
+import { BaseEntityState, LoadingState, Page } from '@redactie/utils';
 
 import { Menu } from '../../services/menus';
 
@@ -12,4 +12,6 @@ export interface MenusState extends BaseEntityState<MenuModel, string> {
 	meta?: Page;
 	menu?: MenuModel;
 	menuDraft?: MenuModel;
+	occurrences?: MenuModel[];
+	isFetchingOccurrences: LoadingState;
 }

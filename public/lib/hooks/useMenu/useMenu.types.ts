@@ -6,4 +6,5 @@ export type UseMenu = {
 	fetchingState: LoadingState;
 	upsertingState: LoadingState;
 	menu: Menu | undefined;
+	occurrences: Menu[] | undefined;
 };

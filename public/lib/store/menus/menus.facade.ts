@@ -1,10 +1,6 @@
-import { alertService, BaseEntityFacade } from '@redactie/utils';
+import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
 
-import {
-	menusApiService,
-	MenusApiService,
-	Menu
-} from '../../services/menus';
+import { menusApiService, MenusApiService, Menu } from '../../services/menus';
 import { getAlertMessages } from './menus.messages';
 
 import { MenusQuery, menusQuery } from './menus.query';
@@ -15,6 +11,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly menus$ = this.query.menus$;
 	public readonly menu$ = this.query.menu$;
 	public readonly menuDraft$ = this.query.menuDraft$;
+	public readonly occurrences$ = this.query.occurrences$;
+	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 
 	public getMenus(siteId: string): void {
 		const { isFetching } = this.query.getValue();
@@ -46,8 +44,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	}
 
 	public getMenu(siteId: string, uuid: string): void {
-		const { isFetchingOne, contentType } = this.query.getValue();
-		if (isFetchingOne || contentType?.uuid === uuid) {
+		const { isFetchingOne } = this.query.getValue();
+		if (isFetchingOne) {
 			return;
 		}
 
@@ -142,6 +140,37 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 				alertService.danger(getAlertMessages(body).update.error, {
 					containerId: alertId,
+				});
+			});
+	}
+
+	public getOccurrences(siteId: string, uuid: string): void {
+		const { isFetchingOccurrences } = this.query.getValue();
+
+		if (isFetchingOccurrences === LoadingState.Loading) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingOccurrences: LoadingState.Loading,
+		});
+
+		this.service
+			.getOccurrences(siteId, uuid)
+			.then(response => {
+				if (!response) {
+					throw new Error(`Getting occurrences failed!`);
+				}
+
+				this.store.update({
+					occurrences: response._embedded.menus,
+					isFetchingOccurrences: LoadingState.Loaded,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingOccurrences: LoadingState.Error,
 				});
 			});
 	}

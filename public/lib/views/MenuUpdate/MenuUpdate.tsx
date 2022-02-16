@@ -97,6 +97,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	useEffect(() => {
 		if (menuUuid) {
 			menusFacade.getMenu(siteId, menuUuid);
+			menusFacade.getOccurrences(siteId, menuUuid)
 		}
 
 		return () => {
