@@ -1,6 +1,5 @@
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
 	ContextHeaderTab,
 	DataLoader,
@@ -9,16 +8,24 @@ import {
 	useNavigate,
 	useRoutes,
 } from '@redactie/utils';
-import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 
-import { useCoreTranslation } from '../../connectors/translations';
-import { MODULE_PATHS, BREADCRUMB_OPTIONS, SITES_ROOT, MENU_DETAIL_TABS, ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
-import { MenuModuleProps, MenuMatchProps } from '../../menu.types';
-import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
-import { menusFacade } from '../../store/menus';
-import { generateEmptyMenu } from '../../menu.helpers';
-import { Menu } from '../../services/menus';
 import sitesConnector from '../../connectors/sites';
+import { useCoreTranslation } from '../../connectors/translations';
+import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
+import { generateEmptyMenu } from '../../menu.helpers';
+import { MenuMatchProps, MenuModuleProps } from '../../menu.types';
+import {
+	ALERT_CONTAINER_IDS,
+	BREADCRUMB_OPTIONS,
+	MENU_DETAIL_TAB_MAP,
+	MENU_DETAIL_TABS,
+	MODULE_PATHS,
+	SITES_ROOT,
+} from '../../navigation.const';
+import { Menu } from '../../services/menus';
+import { menusFacade } from '../../store/menus';
 
 const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, match }) => {
 	const { siteId } = match.params;
@@ -88,7 +95,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 					siteId,
 					{
 						...generateEmptyMenu(site?.data.name),
-						...sectionData
+						...sectionData,
 					} as Menu,
 					alertId
 				);

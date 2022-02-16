@@ -1,12 +1,8 @@
 import { alertService, BaseEntityFacade } from '@redactie/utils';
 
-import {
-	menusApiService,
-	MenusApiService,
-	Menu
-} from '../../services/menus';
-import { getAlertMessages } from './menus.messages';
+import { Menu, MenusApiService, menusApiService } from '../../services/menus';
 
+import { getAlertMessages } from './menus.messages';
 import { MenusQuery, menusQuery } from './menus.query';
 import { menusStore, MenusStore } from './menus.store';
 

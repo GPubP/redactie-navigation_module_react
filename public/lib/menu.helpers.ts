@@ -1,4 +1,4 @@
-import { Menu } from "./services/menus";
+import { Menu } from './services/menus';
 
 export const generateEmptyMenu = (siteName: string | undefined): Menu => ({
 	label: '',

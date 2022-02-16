@@ -53,9 +53,7 @@ export const MENU_DETAIL_TAB_MAP: {
 	},
 };
 
-export const MENU_DETAIL_TABS: ContextHeaderTab[] = [
-	MENU_DETAIL_TAB_MAP.settings,
-];
+export const MENU_DETAIL_TABS: ContextHeaderTab[] = [MENU_DETAIL_TAB_MAP.settings];
 
 export const CONFIG: Readonly<{ name: string; module: string }> = {
 	name: 'navigation',
