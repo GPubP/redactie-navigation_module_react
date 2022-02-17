@@ -3,10 +3,10 @@ import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import {
 	Menu,
-	MenuItem,
 	MenuItemsResponse,
 	MenusApiService,
 	menusApiService,
+	MenusResponse,
 } from '../../services/menus';
 
 import { getAlertMessages } from './menus.messages';
@@ -35,13 +35,14 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 		this.service
 			.getMenus(siteId, siteName)
-			.then((response: Menu[] | null) => {
+			.then((response: MenusResponse | null) => {
 				if (!response) {
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.set(response);
+				this.store.set(response._embedded.resourceList);
 				this.store.update({
+					meta: response._page,
 					isFetching: false,
 				});
 			})

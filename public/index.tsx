@@ -12,7 +12,7 @@ import {
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
-import { registerCTDetailTab } from './lib/connectors/contentTypes';
+import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
 import { isEmpty } from './lib/helpers';
@@ -131,10 +131,11 @@ registerContentDetailCompartment(CONFIG.name, {
 	},
 });
 
-registerCTDetailTab(CONFIG.name, {
+contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	label: 'Navigatie',
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
+	disabled: false,
 } as any);

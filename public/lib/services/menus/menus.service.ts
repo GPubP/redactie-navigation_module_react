@@ -3,7 +3,7 @@ import { api } from '../api';
 import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
-	public async getMenus(siteId: string, siteName: string): Promise<Menu[] | null> {
+	public async getMenus(siteId: string, siteName: string): Promise<MenusResponse | null> {
 		try {
 			const response: MenusResponse = await api
 				.get(`${siteId}/menus?category=menu_${siteName}_nl`)
@@ -13,7 +13,7 @@ export class MenusApiService {
 				throw new Error('Failed to get menus');
 			}
 
-			return response._embedded.resourceList;
+			return response;
 		} catch (err) {
 			console.error(err);
 			return null;
