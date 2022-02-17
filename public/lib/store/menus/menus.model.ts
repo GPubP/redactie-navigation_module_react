@@ -1,6 +1,7 @@
+import { ContentTypeSchema } from '@redactie/content-module';
 import { BaseEntityState, LoadingState, Page } from '@redactie/utils';
 
-import { Menu } from '../../services/menus';
+import { Menu, MenuItem } from '../../services/menus';
 
 export interface InternalState {
 	readonly menu: Menu | null;
@@ -12,6 +13,8 @@ export interface MenusState extends BaseEntityState<MenuModel, string> {
 	meta?: Page;
 	menu?: MenuModel;
 	menuDraft?: MenuModel;
-	occurrences?: MenuModel[];
+	occurrences?: ContentTypeSchema[];
+	menuItems?: MenuItem[];
 	isFetchingOccurrences: LoadingState;
+	isFetchingMenuItems: LoadingState;
 }

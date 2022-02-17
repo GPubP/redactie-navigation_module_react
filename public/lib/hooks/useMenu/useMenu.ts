@@ -11,8 +11,13 @@ const useMenu = (): UseMenu => {
 	const isRemoving = useObservable(menusFacade.isRemoving$, LoadingState.Loaded);
 	const menu = useObservable(menusFacade.menu$);
 	const occurrences = useObservable(menusFacade.occurrences$);
+	const menuItems = useObservable(menusFacade.menuItems$);
 	const isFetchingOccurrences = useObservable(
 		menusFacade.isFetchingOccurrences$,
+		LoadingState.Loading
+	);
+	const isFetchingMenuItems = useObservable(
+		menusFacade.isFetchingMenuItems$,
 		LoadingState.Loading
 	);
 	const error = useObservable(menusFacade.error$);
@@ -23,7 +28,7 @@ const useMenu = (): UseMenu => {
 
 	const fetchingState = error
 		? LoadingState.Error
-		: [isFetching, isFetchingOccurrences].includes(LoadingState.Loading)
+		: [isFetching, isFetchingOccurrences, isFetchingMenuItems].includes(LoadingState.Loading)
 			? LoadingState.Loading
 			: LoadingState.Loaded;
 
@@ -36,6 +41,7 @@ const useMenu = (): UseMenu => {
 		removingState,
 		menu,
 		occurrences,
+		menuItems,
 	};
 };
 
