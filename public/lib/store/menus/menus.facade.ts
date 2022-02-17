@@ -1,7 +1,13 @@
 import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
 
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { Menu, MenusApiService, menusApiService } from '../../services/menus';
+import {
+	Menu,
+	MenuItem,
+	MenuItemsResponse,
+	MenusApiService,
+	menusApiService,
+} from '../../services/menus';
 
 import { getAlertMessages } from './menus.messages';
 import { MenusQuery, menusQuery } from './menus.query';
@@ -13,7 +19,10 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly menu$ = this.query.menu$;
 	public readonly menuDraft$ = this.query.menuDraft$;
 	public readonly occurrences$ = this.query.occurrences$;
+	public readonly menuItems$ = this.query.menuItems$;
+	public readonly menuItemsCount$ = this.query.menuItemsCount$;
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
+	public readonly isFetchingMenuItems$ = this.query.isFetchingMenuItems$;
 
 	public getMenus(siteId: string, siteName: string): void {
 		const { isFetching } = this.query.getValue();
@@ -70,6 +79,36 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				this.store.update({
 					error,
 					isFetchingOne: false,
+				});
+			});
+	}
+
+	public getMenuItems(siteId: string, menuUuid: string): void {
+		const { isFetchingMenuItems } = this.query.getValue();
+		if (isFetchingMenuItems) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingMenuItems: LoadingState.Loading,
+		});
+		this.service
+			.getMenuItems(siteId, menuUuid)
+			.then((response: MenuItemsResponse | null) => {
+				if (!response) {
+					throw new Error(`Getting menu items for menu '${menuUuid}' failed!`);
+				}
+
+				this.store.update({
+					menuItems: response._embedded.resourceList,
+					menuItemsCount: response._page.totalElements,
+					isFetchingMenuItems: LoadingState.Loaded,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingMenuItems: LoadingState.Error,
 				});
 			});
 	}
@@ -173,7 +212,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}
 
 				this.store.update({
-					occurrences: response._embedded.menus,
+					occurrences: response._embedded.contentTypes,
 					isFetchingOccurrences: LoadingState.Loaded,
 				});
 			})
@@ -201,6 +240,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					menu: undefined,
 					menuDraft: undefined,
 					occurrences: undefined,
+					menuItems: undefined,
+					menuItemsCount: undefined,
 					isRemoving: false,
 				});
 

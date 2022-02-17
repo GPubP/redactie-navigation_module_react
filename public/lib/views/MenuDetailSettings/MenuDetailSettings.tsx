@@ -1,4 +1,5 @@
 import {
+	Link as AUILink,
 	Button,
 	Card,
 	CardBody,
@@ -16,11 +17,12 @@ import {
 import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC, ReactElement, useState } from 'react';
+import { generatePath, Link } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useMenu, useMenuDraft } from '../../hooks';
 import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
-import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const';
+import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP, MODULE_PATHS } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
@@ -31,6 +33,7 @@ import {
 } from './MenuDetailSettings.const';
 
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
+	match,
 	loading,
 	isCreating,
 	isRemoving,
@@ -38,8 +41,9 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	onSubmit,
 	onDelete,
 }) => {
+	const { siteId } = match.params;
 	const [menu] = useMenuDraft();
-	const { menu: values, occurrences } = useMenu();
+	const { menu: values, occurrences, menuItemsCount } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -82,6 +86,65 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 		return null;
 	}
 
+	const renderOccurrences = (): ReactElement => {
+		const pluralSingularText =
+			occurrences && occurrences.length === 1 ? 'content type' : 'content types';
+		return (
+			<>
+				<p>
+					Deze workflow wordt gebruikt op{' '}
+					<strong>
+						{occurrences?.length || 0} {pluralSingularText}
+					</strong>
+				</p>
+				{occurrences && occurrences.length > 0 && (
+					<ul>
+						{occurrences.map((occurrence: any, index: number) => (
+							<li key={`${index}_${occurrence.uuid}`}>
+								<AUILink
+									to={generatePath(`${MODULE_PATHS.site.contentTypeMenu}`, {
+										siteId,
+										contentTypeId: occurrence.uuid,
+									})}
+									component={Link}
+								>
+									{occurrence.meta.label}
+								</AUILink>
+							</li>
+						))}
+					</ul>
+				)}
+			</>
+		);
+	};
+
+	const renderMenuItems = (): ReactElement => {
+		const pluralSingularItems =
+			menuItemsCount && menuItemsCount === 1 ? 'menu item' : 'menu items';
+
+		return (
+			<>
+				{menuItemsCount && menuItemsCount > 0 ? (
+					<p>
+						Dit menu heeft{' '}
+						<strong>
+							{menuItemsCount ? menuItemsCount : 0} {pluralSingularItems}
+						</strong>
+						. Verwijder deze items als je het menu wil verwijderen.
+					</p>
+				) : (
+					<p>
+						Er zijn{' '}
+						<strong>
+							{menuItemsCount ? menuItemsCount : 0} {pluralSingularItems}
+						</strong>
+						. Je kan het menu verwijderen.
+					</p>
+				)}
+			</>
+		);
+	};
+
 	const renderDelete = (): ReactElement => {
 		return (
 			<>
@@ -89,32 +152,22 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					<CardBody>
 						<CardTitle>Verwijderen</CardTitle>
 						<CardDescription>
-							{occurrences && occurrences.length > 0 ? (
-								<span>
-									Dit menu heeft{' '}
-									<b>{occurrences ? occurrences.length : 0} menu items</b>.
-									Verwijder deze items als je het menu wil verwijderen.
-								</span>
-							) : (
-								<span>
-									Er zijn <b>{occurrences ? occurrences.length : 0} menu items</b>
-									. Je kan het menu verwijderen.
-								</span>
-							)}
+							{renderOccurrences()}
+							{renderMenuItems()}
 						</CardDescription>
 						<Button
 							onClick={() => setShowDeleteModal(true)}
 							className="u-margin-top"
 							type="danger"
 							iconLeft="trash-o"
-							disabled={occurrences && occurrences.length > 0}
+							disabled={menuItemsCount && menuItemsCount > 0}
 						>
 							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
 						</Button>
 					</CardBody>
 				</Card>
 				<DeletePrompt
-					body="Ben je zeker dat je deze view wil verwijderen? Dit kan niet ongedaan gemaakt worden."
+					body="Ben je zeker dat je dit menu wil verwijderen? Dit kan niet ongedaan gemaakt worden."
 					isDeleting={isRemoving}
 					show={showDeleteModal}
 					onCancel={onDeletePromptCancel}

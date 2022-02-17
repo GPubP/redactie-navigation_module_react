@@ -1,6 +1,6 @@
 import { api } from '../api';
 
-import { Menu, MenusResponse, OccurrencesResponse } from './menus.service.types';
+import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(siteId: string, siteName: string): Promise<Menu[] | null> {
@@ -23,6 +23,19 @@ export class MenusApiService {
 	public async getMenu(siteId: string, id: string): Promise<Menu | null> {
 		try {
 			const response: Menu = await api.get(`${siteId}/menus/${id}`).json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async getMenuItems(siteId: string, menuId: string): Promise<MenuItemsResponse | null> {
+		try {
+			const response: MenuItemsResponse = await api
+				.get(`${siteId}/menus/${menuId}/items`)
+				.json();
 
 			return response;
 		} catch (err) {

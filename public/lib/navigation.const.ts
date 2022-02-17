@@ -25,6 +25,7 @@ export const MODULE_PATHS = {
 		createSettings: `${urlSiteParam}/menus/aanmaken/instellingen`,
 		detail: `${urlSiteParam}/menus/:menuUuid`,
 		detailSettings: `${urlSiteParam}/menus/:menuUuid/instellingen`,
+		contentTypeMenu: `${urlSiteParam}/content-types/:contentTypeId`,
 	},
 };
 

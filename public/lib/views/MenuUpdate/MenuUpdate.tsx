@@ -108,6 +108,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 		if (menuUuid) {
 			menusFacade.getMenu(siteId, menuUuid);
 			menusFacade.getOccurrences(siteId, menuUuid);
+			menusFacade.getMenuItems(siteId, menuUuid);
 		}
 
 		return () => {
