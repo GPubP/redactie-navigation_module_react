@@ -1,5 +1,6 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
 import { ContextHeaderTab } from '@redactie/utils';
+
 import { Menu } from './services/menus';
 import { InternalState } from './store/menus';
 
@@ -20,7 +21,7 @@ export interface MenuRouteProps<
 	Params extends {
 		[K in keyof Params]?: string;
 	} = {}
-> extends RouteConfigComponentProps<Params> {
+	> extends RouteConfigComponentProps<Params> {
 	basePath: string;
 	routes: ModuleRouteConfig[];
 	tenantId: string;
@@ -38,4 +39,3 @@ export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentP
 	state: InternalState;
 	tenantId: string;
 }
-
