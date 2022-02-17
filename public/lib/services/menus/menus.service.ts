@@ -74,8 +74,8 @@ export class MenusApiService {
 		}
 	}
 
-	public async deleteMenu(siteId: string, menu: Menu): Promise<void> {
-		return api.delete(`${siteId}/trees/${menu.id}`).json();
+	public async deleteMenu(siteId: string, menu: Menu): Promise<Response> {
+		return await api.delete(`${siteId}/trees/${menu.id}`);
 	}
 }
 

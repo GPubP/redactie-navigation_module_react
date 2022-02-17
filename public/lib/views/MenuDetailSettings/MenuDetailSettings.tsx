@@ -63,6 +63,8 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 			return;
 		}
 
+		resetIsChanged();
+
 		await onDelete(values);
 		setShowDeleteModal(false);
 	};

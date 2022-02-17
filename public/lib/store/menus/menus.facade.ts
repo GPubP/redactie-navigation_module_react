@@ -59,7 +59,10 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}
 
 				this.store.update({
-					menu: response,
+					menu: {
+						...response,
+						lang: 'nl',
+					},
 					isFetchingOne: false,
 				});
 			})
@@ -124,8 +127,14 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}
 
 				this.store.update({
-					menu: response,
-					menuDraft: response,
+					menu: {
+						...response,
+						lang: 'nl',
+					},
+					menuDraft: {
+						...response,
+						lang: 'nl',
+					},
 					isUpdating: false,
 				});
 
@@ -203,7 +212,6 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}, 300);
 			})
 			.catch(error => {
-				console.log(error);
 				this.store.update({
 					error,
 					isRemoving: false,
@@ -213,7 +221,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					containerId: ALERT_CONTAINER_IDS.settings,
 				});
 
-				throw new Error('Deleting view failed!');
+				throw new Error('Deleting menu failed!');
 			});
 	}
 
