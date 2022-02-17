@@ -39,14 +39,14 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		menusFacade.getMenus(siteId, site?.data.name);
 	}, [site, siteId]);
 
-	const onFormSubmit = (values: any): void => {
+	const onFormSubmit = async (values: any): Promise<void> => {
 		const config = {
 			...values,
 			allowMenus: values.allowMenus === 'true',
 		};
 
 		isEmpty(value.config)
-			? contentTypeConnector.metadataFacade.createMetadata(
+			? await contentTypeConnector.metadataFacade.createMetadata(
 					siteId,
 					contentType,
 					{
@@ -59,7 +59,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					},
 					'update'
 			  )
-			: contentTypeConnector.metadataFacade.updateMetadata(
+			: await contentTypeConnector.metadataFacade.updateMetadata(
 					siteId,
 					contentType,
 					value.uuid,
