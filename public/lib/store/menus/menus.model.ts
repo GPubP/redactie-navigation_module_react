@@ -15,6 +15,7 @@ export interface MenusState extends BaseEntityState<MenuModel, string> {
 	menuDraft?: MenuModel;
 	occurrences?: ContentTypeSchema[];
 	menuItems?: MenuItem[];
+	menuItemsCount?: number;
 	isFetchingOccurrences: LoadingState;
 	isFetchingMenuItems: LoadingState;
 }

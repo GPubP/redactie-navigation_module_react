@@ -20,6 +20,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly menuDraft$ = this.query.menuDraft$;
 	public readonly occurrences$ = this.query.occurrences$;
 	public readonly menuItems$ = this.query.menuItems$;
+	public readonly menuItemsCount$ = this.query.menuItemsCount$;
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 	public readonly isFetchingMenuItems$ = this.query.isFetchingMenuItems$;
 
@@ -100,6 +101,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 				this.store.update({
 					menuItems: response._embedded.resourceList,
+					menuItemsCount: response._page.totalElements,
 					isFetchingMenuItems: LoadingState.Loaded,
 				});
 			})
@@ -239,6 +241,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					menuDraft: undefined,
 					occurrences: undefined,
 					menuItems: undefined,
+					menuItemsCount: undefined,
 					isRemoving: false,
 				});
 

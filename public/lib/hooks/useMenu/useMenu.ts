@@ -12,6 +12,7 @@ const useMenu = (): UseMenu => {
 	const menu = useObservable(menusFacade.menu$);
 	const occurrences = useObservable(menusFacade.occurrences$);
 	const menuItems = useObservable(menusFacade.menuItems$);
+	const menuItemsCount = useObservable(menusFacade.menuItemsCount$);
 	const isFetchingOccurrences = useObservable(
 		menusFacade.isFetchingOccurrences$,
 		LoadingState.Loading
@@ -42,6 +43,7 @@ const useMenu = (): UseMenu => {
 		menu,
 		occurrences,
 		menuItems,
+		menuItemsCount,
 	};
 };
 

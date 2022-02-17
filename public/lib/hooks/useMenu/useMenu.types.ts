@@ -10,4 +10,5 @@ export type UseMenu = {
 	menu: Menu | undefined;
 	occurrences: ContentTypeSchema[] | undefined;
 	menuItems: MenuItem[] | undefined;
+	menuItemsCount: number | undefined;
 };

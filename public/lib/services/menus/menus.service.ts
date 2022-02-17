@@ -1,12 +1,6 @@
 import { api } from '../api';
 
-import {
-	Menu,
-	MenuItem,
-	MenuItemsResponse,
-	MenusResponse,
-	OccurrencesResponse,
-} from './menus.service.types';
+import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(siteId: string, siteName: string): Promise<Menu[] | null> {
