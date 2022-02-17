@@ -17,6 +17,7 @@ export const MODULE_PATHS = {
 	// SITE
 	site: {
 		contentTypes: `${urlSiteParam}/:ctType(content-types|content-blokken)`,
+		explicitContentTypes: `${urlSiteParam}/content-types`,
 		admin: `${urlSiteParam}/content/overzicht`,
 		dashboard: `${urlSiteParam}/content`,
 		root: `${urlSiteParam}/menus`,
