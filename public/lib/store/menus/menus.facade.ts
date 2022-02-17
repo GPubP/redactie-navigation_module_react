@@ -28,8 +28,9 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.set(response);
+				this.store.set(response._embedded.resourceList);
 				this.store.update({
+					meta: response._page,
 					isFetching: false,
 				});
 			})

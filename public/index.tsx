@@ -124,5 +124,5 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
-	disabled: (context: any) => !context.isActive,
+	disabled: false,
 } as any);
