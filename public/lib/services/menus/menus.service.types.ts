@@ -1,11 +1,14 @@
+import { ContentTypeSchema } from '@redactie/content-module';
+import { Links, Page } from '@redactie/utils';
+
 import { ListApiResponse } from '../../navigation.types';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
 /////////////////////////////////
-export type MenusResponse = ListApiResponse<Embedded>;
+export type MenusResponse = ListApiResponse<EmbeddedMenu>;
 
-export interface Embedded {
+export interface EmbeddedMenu {
 	resourceList: Menu[];
 }
 
@@ -53,6 +56,12 @@ export interface MenuDetailItem {
 ///////////////////////////////////////
 // GET MENU ITEM TYPES ----------------
 ///////////////////////////////////////
+export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;
+
+export interface EmbeddedMenuItems {
+	resourceList: MenuItem[];
+}
+
 export interface MenuItem extends Omit<MenuDetailItem, 'items'> {
 	parentId?: number;
 }
@@ -68,3 +77,14 @@ export type CreateMenuItemPayload = Omit<MenuItem, 'id'>;
 ///////////////////////////////////////
 
 export type UpdateMenuItemPayload = CreateMenuItemPayload;
+
+///////////////////////////////////////
+// GET MENU OCCURRENCES ---------------------
+///////////////////////////////////////
+export interface OccurrencesResponse {
+	_links: Links;
+	_embedded: {
+		contentTypes: ContentTypeSchema[];
+	};
+	_page: Page;
+}

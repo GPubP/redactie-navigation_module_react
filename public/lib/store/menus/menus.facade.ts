@@ -1,6 +1,13 @@
-import { alertService, BaseEntityFacade } from '@redactie/utils';
+import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
 
-import { Menu, MenusApiService, menusApiService, MenusResponse } from '../../services/menus';
+import { ALERT_CONTAINER_IDS } from '../../navigation.const';
+import {
+	Menu,
+	MenuItemsResponse,
+	MenusApiService,
+	menusApiService,
+	MenusResponse,
+} from '../../services/menus';
 
 import { getAlertMessages } from './menus.messages';
 import { MenusQuery, menusQuery } from './menus.query';
@@ -11,6 +18,11 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly menus$ = this.query.menus$;
 	public readonly menu$ = this.query.menu$;
 	public readonly menuDraft$ = this.query.menuDraft$;
+	public readonly occurrences$ = this.query.occurrences$;
+	public readonly menuItems$ = this.query.menuItems$;
+	public readonly menuItemsCount$ = this.query.menuItemsCount$;
+	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
+	public readonly isFetchingMenuItems$ = this.query.isFetchingMenuItems$;
 
 	public getMenus(siteId: string, siteName: string): void {
 		const { isFetching } = this.query.getValue();
@@ -43,8 +55,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	}
 
 	public getMenu(siteId: string, uuid: string): void {
-		const { isFetchingOne, contentType } = this.query.getValue();
-		if (isFetchingOne || contentType?.uuid === uuid) {
+		const { isFetchingOne } = this.query.getValue();
+		if (isFetchingOne) {
 			return;
 		}
 
@@ -57,7 +69,10 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}
 
 				this.store.update({
-					menu: response,
+					menu: {
+						...response,
+						lang: 'nl',
+					},
 					isFetchingOne: false,
 				});
 			})
@@ -65,6 +80,36 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				this.store.update({
 					error,
 					isFetchingOne: false,
+				});
+			});
+	}
+
+	public getMenuItems(siteId: string, menuUuid: string): void {
+		const { isFetchingMenuItems } = this.query.getValue();
+		if (isFetchingMenuItems) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingMenuItems: LoadingState.Loading,
+		});
+		this.service
+			.getMenuItems(siteId, menuUuid)
+			.then((response: MenuItemsResponse | null) => {
+				if (!response) {
+					throw new Error(`Getting menu items for menu '${menuUuid}' failed!`);
+				}
+
+				this.store.update({
+					menuItems: response._embedded.resourceList,
+					menuItemsCount: response._page.totalElements,
+					isFetchingMenuItems: LoadingState.Loaded,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingMenuItems: LoadingState.Error,
 				});
 			});
 	}
@@ -122,8 +167,14 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				}
 
 				this.store.update({
-					menu: response,
-					menuDraft: response,
+					menu: {
+						...response,
+						lang: 'nl',
+					},
+					menuDraft: {
+						...response,
+						lang: 'nl',
+					},
 					isUpdating: false,
 				});
 
@@ -140,6 +191,79 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				alertService.danger(getAlertMessages(body).update.error, {
 					containerId: alertId,
 				});
+			});
+	}
+
+	public getOccurrences(siteId: string, uuid: string): void {
+		const { isFetchingOccurrences } = this.query.getValue();
+
+		if (isFetchingOccurrences === LoadingState.Loading) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingOccurrences: LoadingState.Loading,
+		});
+
+		this.service
+			.getOccurrences(siteId, uuid)
+			.then(response => {
+				if (!response) {
+					throw new Error(`Getting occurrences failed!`);
+				}
+
+				this.store.update({
+					occurrences: response._embedded.contentTypes,
+					isFetchingOccurrences: LoadingState.Loaded,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingOccurrences: LoadingState.Error,
+				});
+			});
+	}
+
+	public async deleteMenu(siteId: string, body: Menu): Promise<void> {
+		const { isRemoving } = this.query.getValue();
+
+		if (isRemoving || !body) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsRemoving(true);
+
+		return this.service
+			.deleteMenu(siteId, body)
+			.then(() => {
+				this.store.update({
+					menu: undefined,
+					menuDraft: undefined,
+					occurrences: undefined,
+					menuItems: undefined,
+					menuItemsCount: undefined,
+					isRemoving: false,
+				});
+
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					alertService.success(getAlertMessages(body).delete.success, {
+						containerId: ALERT_CONTAINER_IDS.overview,
+					});
+				}, 300);
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isRemoving: false,
+				});
+
+				alertService.danger(getAlertMessages(body).delete.error, {
+					containerId: ALERT_CONTAINER_IDS.settings,
+				});
+
+				throw new Error('Deleting menu failed!');
 			});
 	}
 

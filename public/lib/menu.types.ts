@@ -21,7 +21,7 @@ export interface MenuRouteProps<
 	Params extends {
 		[K in keyof Params]?: string;
 	} = {}
-	> extends RouteConfigComponentProps<Params> {
+> extends RouteConfigComponentProps<Params> {
 	basePath: string;
 	routes: ModuleRouteConfig[];
 	tenantId: string;
@@ -43,4 +43,5 @@ export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentP
 
 export interface MenuRights {
 	canUpdate: boolean;
+	canDelete: boolean;
 }

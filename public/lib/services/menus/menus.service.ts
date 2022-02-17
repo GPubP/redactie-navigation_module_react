@@ -1,6 +1,6 @@
 import { api } from '../api';
 
-import { Menu, MenusResponse } from './menus.service.types';
+import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(siteId: string, siteName: string): Promise<MenusResponse | null> {
@@ -23,6 +23,19 @@ export class MenusApiService {
 	public async getMenu(siteId: string, id: string): Promise<Menu | null> {
 		try {
 			const response: Menu = await api.get(`${siteId}/menus/${id}`).json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async getMenuItems(siteId: string, menuId: string): Promise<MenuItemsResponse | null> {
+		try {
+			const response: MenuItemsResponse = await api
+				.get(`${siteId}/menus/${menuId}/items`)
+				.json();
 
 			return response;
 		} catch (err) {
@@ -59,6 +72,23 @@ export class MenusApiService {
 			console.error(err);
 			return null;
 		}
+	}
+
+	public async getOccurrences(siteId: string, id: string): Promise<OccurrencesResponse | null> {
+		try {
+			const response: OccurrencesResponse = await api
+				.get(`${siteId}/menus/${id}/content-type-occurrences`)
+				.json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async deleteMenu(siteId: string, menu: Menu): Promise<Response> {
+		return await api.delete(`${siteId}/trees/${menu.id}`);
 	}
 }
 
