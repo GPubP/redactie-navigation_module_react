@@ -64,10 +64,10 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	const rights = useMemo(
 		() => ({
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.update,
+				rolesRightsConnector.menuSecurityRights.update,
 			]),
 			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.securityRights.delete,
+				rolesRightsConnector.menuSecurityRights.delete,
 			]),
 		}),
 		[mySecurityrights]
