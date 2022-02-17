@@ -1,17 +1,17 @@
 import { api } from '../api';
 
-import { Menu } from './menus.service.types';
+import { Menu, MenusResponse } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(siteId: string): Promise<Menu[] | null> {
 		try {
-			const response: Menu[] = await api.get(`${siteId}/menus`).json();
+			const response: MenusResponse = await api.get(`${siteId}/menus`).json();
 
 			if (!response) {
 				throw new Error('Failed to get menus');
 			}
 
-			return response;
+			return response._embedded.resourceList;
 		} catch (err) {
 			console.error(err);
 			return null;
