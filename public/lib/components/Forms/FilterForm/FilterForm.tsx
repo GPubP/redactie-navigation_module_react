@@ -49,7 +49,7 @@ const FilterForm: FC<FilterFormProps> = ({
 							onFilterRemove={clearActiveFilter}
 						>
 							<FilterBody>
-								<div className="col-xs-12 col-md-6 u-margin-bottom">
+								<div className="col-xs-24 col-md-12 u-margin-bottom">
 									<Field
 										as={TextField}
 										label="Zoeken"
