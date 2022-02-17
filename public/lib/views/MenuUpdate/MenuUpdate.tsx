@@ -1,6 +1,6 @@
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
-	ContextHeaderTab,
 	ContextHeaderTabLinkProps,
 	DataLoader,
 	LoadingState,
@@ -15,17 +15,16 @@ import { Link, useParams } from 'react-router-dom';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
-import { Menu } from '../../services/menus';
+import { MenuRouteProps } from '../../menu.types';
 import {
-	MODULE_PATHS,
-	SITES_ROOT,
-	MENU_DETAIL_TABS,
 	ALERT_CONTAINER_IDS,
 	BREADCRUMB_OPTIONS,
+	MENU_DETAIL_TABS,
+	MODULE_PATHS,
+	SITES_ROOT,
 } from '../../navigation.const';
-import { MenuRouteProps } from '../../menu.types';
+import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
-import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 
 const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	location,
@@ -105,7 +104,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	useEffect(() => {
 		if (menuUuid) {
 			menusFacade.getMenu(siteId, menuUuid);
-			menusFacade.getOccurrences(siteId, menuUuid)
+			menusFacade.getOccurrences(siteId, menuUuid);
 		}
 
 		return () => {
@@ -125,7 +124,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 		menusFacade.setMenuDraft(menu);
 	};
 
-	const update = (updatedMenu: Menu) => {
+	const update = (updatedMenu: Menu): Promise<void> => {
 		if (!updatedMenu) {
 			return Promise.resolve();
 		}

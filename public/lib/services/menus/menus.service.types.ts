@@ -1,4 +1,5 @@
 import { Links, Page } from '@redactie/utils';
+
 import { ListApiResponse } from '../../navigation.types';
 
 /////////////////////////////////
@@ -74,9 +75,9 @@ export type UpdateMenuItemPayload = CreateMenuItemPayload;
 // GET MENU OCCURRENCES ---------------------
 ///////////////////////////////////////
 export interface OccurrencesResponse {
-	_links: Links
+	_links: Links;
 	_embedded: {
-		menus: Menu[]
-	},
-	_page: Page
+		menus: Menu[];
+	};
+	_page: Page;
 }

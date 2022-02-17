@@ -22,7 +22,7 @@ export class MenusQuery extends BaseEntityQuery<MenusState> {
 	public isFetchingOccurrences$ = this.select(state => state.isFetchingOccurrences).pipe(
 		occurrences => occurrences,
 		distinctUntilChanged()
-	)
+	);
 }
 
 export const menusQuery = new MenusQuery(menusStore);

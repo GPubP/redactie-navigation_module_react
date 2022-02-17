@@ -1,9 +1,9 @@
 import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
+
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
+import { Menu, MenusApiService, menusApiService } from '../../services/menus';
 
-import { menusApiService, MenusApiService, Menu } from '../../services/menus';
 import { getAlertMessages } from './menus.messages';
-
 import { MenusQuery, menusQuery } from './menus.query';
 import { menusStore, MenusStore } from './menus.store';
 
@@ -15,7 +15,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly occurrences$ = this.query.occurrences$;
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 
-	public getMenus(siteId: string): void {
+	public getMenus(siteId: string, siteName: string): void {
 		const { isFetching } = this.query.getValue();
 
 		if (isFetching) {
@@ -25,8 +25,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetching(true);
 
 		this.service
-			.getMenus(siteId)
-			.then(response => {
+			.getMenus(siteId, siteName)
+			.then((response: Menu[] | null) => {
 				if (!response) {
 					throw new Error('Getting menus failed!');
 				}
@@ -53,7 +53,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getMenu(siteId, uuid)
-			.then(response => {
+			.then((response: Menu | null) => {
 				if (!response) {
 					throw new Error(`Getting menu '${uuid}' failed!`);
 				}
@@ -82,7 +82,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 		this.service
 			.createMenu(siteId, body)
-			.then(response => {
+			.then((response: Menu | null) => {
 				if (!response) {
 					throw new Error(`Creating menu '${body?.label}' failed!`);
 				}
@@ -118,7 +118,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 		return this.service
 			.updateMenu(siteId, body)
-			.then(response => {
+			.then((response: Menu | null) => {
 				if (!response) {
 					throw new Error(`Updating menu '${body.id}' failed!`);
 				}

@@ -1,4 +1,3 @@
-import React, { FC, ReactElement } from 'react';
 import { Button } from '@acpaas-ui/react-components';
 import {
 	Container,
@@ -8,10 +7,11 @@ import {
 } from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import { DataLoader, useNavigate, useRoutes } from '@redactie/utils';
+import React, { FC, ReactElement } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { MenuMatchProps, MenuRouteProps } from '../../menu.types';
 import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
-import { MenuRouteProps, MenuMatchProps } from '../../menu.types';
 
 const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 	const { siteId } = match.params;

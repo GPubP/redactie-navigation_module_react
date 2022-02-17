@@ -30,7 +30,7 @@ export const MODULE_PATHS = {
 
 export const BREADCRUMB_OPTIONS = (
 	generatePath: NavigateGenerateFn,
-	extraBreadcrumbs: Breadcrumb[] = [],
+	extraBreadcrumbs: Breadcrumb[] = []
 ): BreadcrumbOptions => ({
 	excludePaths: ['/', `${TENANT_ROOT}`, `${TENANT_ROOT}${root}`, `${TENANT_ROOT}/sites`],
 	extraBreadcrumbs: [
@@ -42,7 +42,7 @@ export const BREADCRUMB_OPTIONS = (
 			name: 'Structuur',
 			target: '',
 		},
-		...extraBreadcrumbs
+		...extraBreadcrumbs,
 	],
 });
 

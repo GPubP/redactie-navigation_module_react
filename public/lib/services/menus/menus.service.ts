@@ -3,9 +3,11 @@ import { api } from '../api';
 import { Menu, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
-	public async getMenus(siteId: string): Promise<Menu[] | null> {
+	public async getMenus(siteId: string, siteName: string): Promise<Menu[] | null> {
 		try {
-			const response: Menu[] = await api.get(`${siteId}/menus`).json();
+			const response: Menu[] = await api
+				.get(`${siteId}/menus?category=menu_${siteName}_nl`)
+				.json();
 
 			if (!response) {
 				throw new Error('Failed to get menus');
