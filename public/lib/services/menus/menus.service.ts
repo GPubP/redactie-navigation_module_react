@@ -43,10 +43,6 @@ export class MenusApiService {
 				.get(`${siteId}/menus/${menuId}/items`)
 				.json();
 
-			if (!response) {
-				throw new Error('Failed to get menus');
-			}
-
 			return response;
 		} catch (err) {
 			console.error(err);
