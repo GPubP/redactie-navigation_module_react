@@ -33,14 +33,13 @@ import { MenuRouteProps, MenusMatchProps } from '../../menu.types';
 import { OverviewTableRow } from './MenuOverview.types';
 import { menusFacade } from '../../store/menus';
 
-
 const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
-	const { siteId } = match.params;
+	const { siteId, id } = match.params;
 	/**
 	 * Hooks
 	 */
 
-	 const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
+	const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
 	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [query, setQuery] = useAPIQueryParams(DEFAULT_OVERVIEW_QUERY_PARAMS);
 	const [t] = useCoreTranslation();
@@ -53,9 +52,7 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 
 	const [loadingsState, menus, menuPaging] = useMenus();
 	const isLoading = useMemo(() => {
-		return (
-			loadingsState === LoadingState.Loading
-		);
+		return loadingsState === LoadingState.Loading;
 	}, [loadingsState]);
 
 	useEffect(() => {
@@ -65,7 +62,6 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 
 		setInitialLoading(LoadingState.Loading);
 	}, [loadingsState]);
-
 
 	useEffect(() => menusFacade.getMenus(siteId), [siteId]);
 
@@ -79,12 +75,12 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 				key: 'label',
 				valuePrefix: 'Zoekterm',
 				value: values.label,
-			}
+			},
 		].filter(f => !!f.value);
 	};
 
 	const clearAllFilters = (): void => {
-		setQuery({ label: ''});
+		setQuery({ label: '' });
 		setFilterFormState(DEFAULT_FILTER_FORM);
 	};
 
@@ -117,14 +113,13 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 			return null;
 		}
 		const customMenuRows: OverviewTableRow[] = menus.map(menu => ({
-				label: menu.label || undefined,
-				description: menu.description || undefined,
-				quantity: menu.quantity,
-				lang: `${menu.lang}`,
-				settingsPath: generatePath(MODULE_PATHS.detailSettings),
-				navigate: (menuId: string) =>
-				navigate(MODULE_PATHS.detailSettings, { siteId, menuId }),
-
+			id: menu.id as string,
+			label: menu.label || undefined,
+			description: menu.description || undefined,
+			quantity: menu.quantity,
+			lang: 'NL',
+			navigate: (id: string) =>
+				navigate(MODULE_PATHS.site.detailSettings, { siteId, id }),
 		}));
 
 		return (
@@ -160,7 +155,7 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 			<ContextHeader title="Menu">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				<ContextHeaderActionsSection>
-					<Button iconLeft="plus" onClick={() => navigate(MODULE_PATHS.create)}>
+					<Button iconLeft="plus" onClick={() => navigate(MODULE_PATHS.site.create, { siteId })}>
 						{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
 					</Button>
 				</ContextHeaderActionsSection>

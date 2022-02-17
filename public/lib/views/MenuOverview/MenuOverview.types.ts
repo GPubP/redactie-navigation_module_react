@@ -3,6 +3,6 @@ export interface OverviewTableRow {
 	description: string | null | undefined ;
 	quantity: number;
 	lang: string;
-	settingsPath: string;
-	navigate: (menuId: string) => void;
+	navigate: (id: string) => void;
+	id: string;
 }
