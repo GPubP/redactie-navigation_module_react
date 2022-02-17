@@ -43,18 +43,18 @@ sitesConnector.registerRoutes({
 	redirect: MODULE_PATHS.site.overview,
 	guards: [
 		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.securityRights.read,
+			rolesRightsConnector.menuSecurityRights.read,
 		]),
 	],
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
 		label: 'Menu',
-		order: 0,
+		order: 2,
 		parentPath: MODULE_PATHS.site.contentTypes,
 		canShown: [
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-				rolesRightsConnector.securityRights.read,
+				rolesRightsConnector.menuSecurityRights.read,
 			]),
 		],
 	},
