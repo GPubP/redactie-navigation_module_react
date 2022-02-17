@@ -1,4 +1,3 @@
-import React, { FC, ReactElement, useState, useEffect, useMemo } from 'react';
 import { Button } from '@acpaas-ui/react-components';
 import {
 	Container,
@@ -12,29 +11,33 @@ import {
 	AlertContainer,
 	DataLoader,
 	FilterItem,
+	LoadingState,
 	OrderBy,
 	parseOrderByToString,
 	parseStringToOrderBy,
-	LoadingState,
 	useAPIQueryParams,
 	useNavigate,
 	useRoutes,
 } from '@redactie/utils';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+
 import { FilterForm, FilterFormState } from '../../components';
-import { useMenus } from '../../hooks/useMenus';
+import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { useMenus } from '../../hooks/useMenus';
+import { MenuMatchProps, MenuRouteProps } from '../../menu.types';
 import { BREADCRUMB_OPTIONS, MODULE_PATHS } from '../../navigation.const';
+import { menusFacade } from '../../store/menus';
+
 import {
 	DEFAULT_FILTER_FORM,
 	DEFAULT_OVERVIEW_QUERY_PARAMS,
 	OVERVIEW_COLUMNS,
 } from './MenuOverview.const';
-import { MenuRouteProps, MenusMatchProps } from '../../menu.types';
 import { OverviewTableRow } from './MenuOverview.types';
-import { menusFacade } from '../../store/menus';
 
-const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
-	const { siteId, id } = match.params;
+const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
+	const { siteId } = match.params;
 	/**
 	 * Hooks
 	 */
@@ -49,6 +52,7 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath)
 	);
+	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	const [loadingsState, menus, menuPaging] = useMenus();
 	const isLoading = useMemo(() => {
@@ -63,7 +67,13 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 		setInitialLoading(LoadingState.Loading);
 	}, [loadingsState]);
 
-	useEffect(() => menusFacade.getMenus(siteId), [siteId]);
+	useEffect(() => {
+		if (!siteId || !site?.data.name) {
+			return;
+		}
+
+		menusFacade.getMenus(siteId, site?.data.name);
+	}, [site, siteId]);
 
 	/**
 	 * Methods
@@ -113,13 +123,11 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 			return null;
 		}
 		const customMenuRows: OverviewTableRow[] = menus.map(menu => ({
-			id: menu.id as string,
+			id: menu.id?.toString() || '',
 			label: menu.label || undefined,
 			description: menu.description || undefined,
-			quantity: menu.quantity,
 			lang: 'NL',
-			navigate: (id: string) =>
-				navigate(MODULE_PATHS.site.detailSettings, { siteId, id }),
+			navigate: (id: string) => navigate(MODULE_PATHS.site.detailSettings, { siteId, id }),
 		}));
 
 		return (
@@ -155,7 +163,10 @@ const MenuOverview: FC<MenuRouteProps<MenusMatchProps>> = ({ match }) => {
 			<ContextHeader title="Menu">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				<ContextHeaderActionsSection>
-					<Button iconLeft="plus" onClick={() => navigate(MODULE_PATHS.site.create, { siteId })}>
+					<Button
+						iconLeft="plus"
+						onClick={() => navigate(MODULE_PATHS.site.create, { siteId })}
+					>
 						{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
 					</Button>
 				</ContextHeaderActionsSection>
