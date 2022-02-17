@@ -34,11 +34,11 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 		label: t(CORE_TRANSLATIONS.TABLE_NAME),
 		value: 'label',
 		width: '50%',
-		component(label: string, { description, settingsPath }) {
+		component(value: string, { description, id }) {
 			return (
 				<>
-					<Link to={settingsPath}>
-						<EllipsisWithTooltip>{label}</EllipsisWithTooltip>
+					<Link to={`${id}/instellingen`}>
+						<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
 					</Link>
 					<p className="small">
 						{description ? (
@@ -52,12 +52,6 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 				</>
 			);
 		},
-	},
-	{
-		label: 'Aantal menu-items',
-		value: 'quantity',
-		width: '20%',
-		disableSorting: true,
 	},
 	{
 		label: 'Taal',
