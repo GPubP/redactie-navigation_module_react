@@ -66,6 +66,9 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 				rolesRightsConnector.securityRights.update,
 			]),
+			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.securityRights.delete,
+			]),
 		}),
 		[mySecurityrights]
 	);

@@ -56,7 +56,8 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 		menusFacade.setMenuDraft(newMenuValue);
 	};
 
-	const readonly = isCreating ? false : !rights.canUpdate;
+	const canEdit = isCreating ? false : !rights.canUpdate;
+	const canDelete = isCreating ? false : !rights.canDelete;
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
 		if (!values) {
@@ -142,7 +143,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 								<div className="col-xs-12">
 									<Field
 										as={TextField}
-										disabled={readonly}
+										disabled={canEdit}
 										label="Naam"
 										name="label"
 										required
@@ -162,7 +163,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 								<div className="col-xs-12">
 									<Field
 										as={Textarea}
-										disabled={readonly}
+										disabled={canEdit}
 										className="a-input--small"
 										label="Beschrijving"
 										name="description"
@@ -197,7 +198,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 									/>
 								</div>
 							</div>
-							<ActionBar className="o-action-bar--fixed" isOpen={!readonly}>
+							<ActionBar className="o-action-bar--fixed" isOpen={!canEdit}>
 								<ActionBarContentSection>
 									<div className="u-wrapper row end-xs">
 										<Button
@@ -232,7 +233,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					);
 				}}
 			</Formik>
-			{!isCreating && renderDelete()}
+			{!isCreating && canDelete && renderDelete()}
 		</Container>
 	);
 };

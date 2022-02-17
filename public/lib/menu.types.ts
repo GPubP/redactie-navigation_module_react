@@ -43,4 +43,5 @@ export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentP
 
 export interface MenuRights {
 	canUpdate: boolean;
+	canDelete: boolean;
 }
