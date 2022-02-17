@@ -4,7 +4,7 @@ import {
 	ActionBarContentSection,
 	Container,
 } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, useDetectValueChanges } from '@redactie/utils';
+import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC } from 'react';
 
@@ -15,22 +15,22 @@ import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP } from '../../navigation.const
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
-import { LANG_OPTIONS, MENU_SETTINGS_VALIDATION_SCHEMA } from './MenuDetailSettings.const';
+import {
+	LANG_OPTIONS,
+	MENU_SETTINGS_VALIDATION_SCHEMA,
+	SETTINGS_ALLOWED_LEAVE_PATHS,
+} from './MenuDetailSettings.const';
 
 const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	loading,
 	isCreating,
+	rights,
 	onSubmit,
 }) => {
 	const [menu] = useMenuDraft();
 	const { menu: values } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
-
-	const initialValues: Menu | undefined = {
-		...values,
-		lang: values?.lang || LANG_OPTIONS[0].value,
-	};
 
 	/**
 	 * Methods
@@ -44,13 +44,13 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 		menusFacade.setMenuDraft(newMenuValue);
 	};
 
-	const readonly = isCreating ? false : true; //TODO: replace 'true' with '!rights.canUpdate';
+	const readonly = isCreating ? false : !rights.canUpdate;
 
 	/**
 	 * Render
 	 */
 
-	if (!menu || !initialValues) {
+	if (!menu || !values) {
 		return null;
 	}
 
@@ -60,7 +60,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<Formik
-				initialValues={initialValues}
+				initialValues={values}
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
@@ -153,6 +153,12 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 									</div>
 								</ActionBarContentSection>
 							</ActionBar>
+							<LeavePrompt
+								allowedPaths={SETTINGS_ALLOWED_LEAVE_PATHS}
+								when={isChanged}
+								shouldBlockNavigationOnConfirm
+								onConfirm={submitForm}
+							/>
 						</>
 					);
 				}}

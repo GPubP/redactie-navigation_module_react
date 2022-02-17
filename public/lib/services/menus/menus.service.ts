@@ -3,9 +3,11 @@ import { api } from '../api';
 import { Menu, MenusResponse } from './menus.service.types';
 
 export class MenusApiService {
-	public async getMenus(siteId: string): Promise<MenusResponse | null> {
+	public async getMenus(siteId: string, siteName: string): Promise<MenusResponse | null> {
 		try {
-			const response: MenusResponse = await api.get(`${siteId}/menus`).json();
+			const response: MenusResponse = await api
+				.get(`${siteId}/menus?category=menu_${siteName}_nl`)
+				.json();
 
 			if (!response) {
 				throw new Error('Failed to get menus');
@@ -33,6 +35,21 @@ export class MenusApiService {
 		try {
 			const response: Menu = await api
 				.post(`${siteId}/menus`, {
+					json: menu,
+				})
+				.json();
+
+			return response;
+		} catch (err) {
+			console.error(err);
+			return null;
+		}
+	}
+
+	public async updateMenu(siteId: string, menu: Menu): Promise<Menu | null> {
+		try {
+			const response: Menu = await api
+				.put(`${siteId}/trees/${menu.id}`, {
 					json: menu,
 				})
 				.json();

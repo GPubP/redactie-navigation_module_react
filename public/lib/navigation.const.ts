@@ -1,4 +1,4 @@
-import { BreadcrumbOptions } from '@redactie/redactie-core';
+import { Breadcrumb, BreadcrumbOptions } from '@redactie/redactie-core';
 import { ContextHeaderTab, NavigateGenerateFn } from '@redactie/utils';
 
 export const TENANT_ROOT = '/:tenantId';
@@ -28,7 +28,10 @@ export const MODULE_PATHS = {
 	},
 };
 
-export const BREADCRUMB_OPTIONS = (generatePath: NavigateGenerateFn): BreadcrumbOptions => ({
+export const BREADCRUMB_OPTIONS = (
+	generatePath: NavigateGenerateFn,
+	extraBreadcrumbs: Breadcrumb[] = []
+): BreadcrumbOptions => ({
 	excludePaths: ['/', `${TENANT_ROOT}`, `${TENANT_ROOT}${root}`, `${TENANT_ROOT}/sites`],
 	extraBreadcrumbs: [
 		{
@@ -39,6 +42,7 @@ export const BREADCRUMB_OPTIONS = (generatePath: NavigateGenerateFn): Breadcrumb
 			name: 'Structuur',
 			target: '',
 		},
+		...extraBreadcrumbs,
 	],
 });
 

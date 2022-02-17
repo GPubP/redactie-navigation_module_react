@@ -35,7 +35,12 @@ export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentP
 	isCreating?: boolean;
 	isRemoving?: boolean;
 	loading: boolean;
+	rights: MenuRights;
 	routes: ModuleRouteConfig[];
 	state: InternalState;
 	tenantId: string;
+}
+
+export interface MenuRights {
+	canUpdate: boolean;
 }

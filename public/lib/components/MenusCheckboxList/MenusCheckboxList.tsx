@@ -36,23 +36,27 @@ const MenusCheckboxList: FC = () => {
 
 	const renderCheckboxList = (): ReactElement => (
 		<>
-			<CheckBoxList
-				fieldSchema={{
-					name: 'menus',
-					module: 'core',
-					type: 'string',
-					dataType: '',
-					semanticType: '',
-					config: {
-						options: menuOptions,
-					},
-				}}
-				fieldProps={{
-					field,
-					meta,
-				}}
-				fieldHelperProps={helpers}
-			/>
+			{menuOptions.length ? (
+				<CheckBoxList
+					fieldSchema={{
+						name: 'menus',
+						module: 'core',
+						type: 'string',
+						dataType: '',
+						semanticType: '',
+						config: {
+							options: menuOptions,
+						},
+					}}
+					fieldProps={{
+						field,
+						meta,
+					}}
+					fieldHelperProps={helpers}
+				/>
+			) : (
+				<p>Er zijn geen menu&apos;s geconfigureerd voor deze site.</p>
+			)}
 		</>
 	);
 

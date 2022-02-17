@@ -7,6 +7,7 @@ import { isEmpty } from 'ramda';
 import React, { FC, useEffect, useState } from 'react';
 
 import contentTypeConnector from '../../connectors/contentTypes';
+import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { menusFacade } from '../../store/menus';
 import { MenusCheckboxList } from '../MenusCheckboxList';
@@ -28,10 +29,15 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	const [t] = useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
+	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
-		menusFacade.getMenus(siteId);
-	}, [siteId]);
+		if (!siteId || !site) {
+			return;
+		}
+
+		menusFacade.getMenus(siteId, site?.data.name);
+	}, [site, siteId]);
 
 	const onFormSubmit = (values: any): void => {
 		const config = {
