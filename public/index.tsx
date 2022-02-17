@@ -1,10 +1,9 @@
 // import { akitaDevtools } from '@datorama/akita';
-import Core from '@redactie/redactie-core';
-import { RenderChildRoutes, TenantContext, SiteContext } from '@redactie/utils';
-import React, { FC, useMemo } from 'react';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
+import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
+import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
 
 import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
@@ -13,13 +12,13 @@ import {
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
 import { registerContentDetailCompartment } from './lib/connectors/content';
-import { registerCTDetailTab } from './lib/connectors/contentTypes';
-import sitesConnector from './lib/connectors/sites';
+import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
+import sitesConnector from './lib/connectors/sites';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
-import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import { MenuModuleProps } from './lib/menu.types';
+import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import { MenuCreate, MenuDetailSettings, MenuOverview } from './lib/views';
 
 // akitaDevtools();
@@ -27,7 +26,6 @@ import { MenuCreate, MenuDetailSettings, MenuOverview } from './lib/views';
 const MenuComponent: FC<MenuModuleProps<{ siteId: string }>> = ({ route, tenantId, match }) => {
 	const { siteId } = match.params;
 	const guardsMeta = useMemo(() => ({ tenantId, siteId }), [siteId, tenantId]);
-
 
 	return (
 		<TenantContext.Provider value={{ tenantId }}>
@@ -120,10 +118,11 @@ registerContentDetailCompartment(CONFIG.name, {
 	},
 });
 
-registerCTDetailTab(CONFIG.name, {
+contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	label: 'Navigatie',
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
+	disabled: (context: any) => !context.isActive,
 } as any);
