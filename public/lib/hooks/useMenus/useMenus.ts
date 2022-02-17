@@ -4,9 +4,9 @@ import { LoadingState, Page } from '@redactie/utils';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
-const useMenus = (): [LoadingState, Menu[] | null | undefined, Page | null | undefined] => {
+const useMenus = (): [LoadingState, Menu[], Page | null | undefined] => {
 	const [loading] = useObservable(menusFacade.isFetching$, LoadingState.Loading);
-	const [menus] = useObservable(menusFacade.menus$, null);
+	const [menus] = useObservable(menusFacade.menus$, []);
 	const [menuPaging] = useObservable(menusFacade.meta$, null);
 	const [error] = useObservable(menusFacade.error$, null);
 
