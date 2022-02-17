@@ -174,7 +174,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					</CardBody>
 				</Card>
 				<DeletePrompt
-					body="Ben je zeker dat je deze view wil verwijderen? Dit kan niet ongedaan gemaakt worden."
+					body="Ben je zeker dat je dit menu wil verwijderen? Dit kan niet ongedaan gemaakt worden."
 					isDeleting={isRemoving}
 					show={showDeleteModal}
 					onCancel={onDeletePromptCancel}
