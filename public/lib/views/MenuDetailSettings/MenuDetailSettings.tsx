@@ -91,35 +91,28 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 			occurrences && occurrences.length === 1 ? 'content type' : 'content types';
 		return (
 			<>
-				{occurrences && (
-					<>
-						<p>
-							Deze workflow wordt gebruikt op{' '}
-							<strong>
-								{occurrences.length} {pluralSingularText}
-							</strong>
-						</p>
-						{occurrences.length > 0 && (
-							<ul>
-								{occurrences.map((occurrence: any, index: number) => (
-									<li key={`${index}_${occurrence.uuid}`}>
-										<AUILink
-											to={generatePath(
-												`${MODULE_PATHS.site.contentTypeMenu}`,
-												{
-													siteId,
-													contentTypeId: occurrence.uuid,
-												}
-											)}
-											component={Link}
-										>
-											{occurrence.meta.label}
-										</AUILink>
-									</li>
-								))}
-							</ul>
-						)}
-					</>
+				<p>
+					Deze workflow wordt gebruikt op{' '}
+					<strong>
+						{occurrences?.length || 0} {pluralSingularText}
+					</strong>
+				</p>
+				{occurrences && occurrences.length > 0 && (
+					<ul>
+						{occurrences.map((occurrence: any, index: number) => (
+							<li key={`${index}_${occurrence.uuid}`}>
+								<AUILink
+									to={generatePath(`${MODULE_PATHS.site.contentTypeMenu}`, {
+										siteId,
+										contentTypeId: occurrence.uuid,
+									})}
+									component={Link}
+								>
+									{occurrence.meta.label}
+								</AUILink>
+							</li>
+						))}
+					</ul>
 				)}
 			</>
 		);
@@ -132,21 +125,21 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 		return (
 			<>
 				{menuItems && menuItems.length > 0 ? (
-					<span>
+					<p>
 						Dit menu heeft{' '}
 						<strong>
 							{menuItems ? menuItems.length : 0} {pluralSingularItems}
 						</strong>
 						. Verwijder deze items als je het menu wil verwijderen.
-					</span>
+					</p>
 				) : (
-					<span>
+					<p>
 						Er zijn{' '}
 						<strong>
 							{menuItems ? menuItems.length : 0} {pluralSingularItems}
 						</strong>
 						. Je kan het menu verwijderen.
-					</span>
+					</p>
 				)}
 			</>
 		);
