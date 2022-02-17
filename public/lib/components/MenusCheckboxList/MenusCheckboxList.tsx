@@ -4,7 +4,7 @@ import { useField } from 'formik';
 import React, { FC, ReactElement, useMemo } from 'react';
 
 import formRendererConnector from '../../connectors/formRenderer';
-import { useMenus } from '../../hooks/useMenus';
+import { useMenus } from '../../hooks';
 
 const MenusCheckboxList: FC = () => {
 	const [menusLoadingState, menus] = useMenus();
