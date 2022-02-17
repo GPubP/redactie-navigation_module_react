@@ -12,7 +12,6 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
 import sitesConnector from '../../connectors/sites';
-import { useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { generateEmptyMenu } from '../../menu.helpers';
 import { MenuMatchProps, MenuModuleProps } from '../../menu.types';
@@ -34,13 +33,17 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 	 * Hooks
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
-	const [t] = useCoreTranslation();
 	const [site] = sitesConnector.hooks.useSite(siteId);
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
-		BREADCRUMB_OPTIONS(generatePath)
+		BREADCRUMB_OPTIONS(generatePath, [
+			{
+				name: "Menu's",
+				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
+			},
+		])
 	);
 	const activeTabs = useActiveTabs(MENU_DETAIL_TABS, location.pathname);
 	const [menuDraft] = useMenuDraft();

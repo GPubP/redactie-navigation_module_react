@@ -1,7 +1,6 @@
 // import { akitaDevtools } from '@datorama/akita';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
-import Core from '@redactie/redactie-core';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
@@ -20,7 +19,7 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { MenuModuleProps } from './lib/menu.types';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
-import { MenuCreate, MenuDetailSettings, MenuOverview } from './lib/views';
+import { MenuCreate, MenuDetailSettings, MenuOverview, MenuUpdate } from './lib/views';
 
 // akitaDevtools();
 
@@ -73,6 +72,19 @@ sitesConnector.registerRoutes({
 			routes: [
 				{
 					path: MODULE_PATHS.site.createSettings,
+					breadcrumb: null,
+					component: MenuDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.detail,
+			breadcrumb: null,
+			component: MenuUpdate,
+			redirect: MODULE_PATHS.site.detailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.detailSettings,
 					breadcrumb: null,
 					component: MenuDetailSettings,
 				},

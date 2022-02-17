@@ -12,7 +12,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly menu$ = this.query.menu$;
 	public readonly menuDraft$ = this.query.menuDraft$;
 
-	public getMenus(siteId: string): void {
+	public getMenus(siteId: string, siteName: string): void {
 		const { isFetching } = this.query.getValue();
 
 		if (isFetching) {
@@ -22,8 +22,8 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetching(true);
 
 		this.service
-			.getMenus(siteId)
-			.then(response => {
+			.getMenus(siteId, siteName)
+			.then((response: Menu[] | null) => {
 				if (!response) {
 					throw new Error('Getting menus failed!');
 				}
@@ -50,7 +50,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getMenu(siteId, uuid)
-			.then(response => {
+			.then((response: Menu | null) => {
 				if (!response) {
 					throw new Error(`Getting menu '${uuid}' failed!`);
 				}
@@ -79,7 +79,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 		this.service
 			.createMenu(siteId, body)
-			.then(response => {
+			.then((response: Menu | null) => {
 				if (!response) {
 					throw new Error(`Creating menu '${body?.label}' failed!`);
 				}
@@ -99,6 +99,44 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					isCreating: false,
 				});
 				alertService.danger(getAlertMessages(body).create.error, {
+					containerId: alertId,
+				});
+			});
+	}
+
+	public updateMenu(siteId: string, body: Menu, alertId: string): Promise<void> {
+		const { isUpdating } = this.query.getValue();
+
+		if (isUpdating) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsUpdating(true);
+
+		return this.service
+			.updateMenu(siteId, body)
+			.then((response: Menu | null) => {
+				if (!response) {
+					throw new Error(`Updating menu '${body.id}' failed!`);
+				}
+
+				this.store.update({
+					menu: response,
+					menuDraft: response,
+					isUpdating: false,
+				});
+
+				alertService.success(getAlertMessages(response).update.success, {
+					containerId: alertId,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isUpdating: false,
+				});
+
+				alertService.danger(getAlertMessages(body).update.error, {
 					containerId: alertId,
 				});
 			});
