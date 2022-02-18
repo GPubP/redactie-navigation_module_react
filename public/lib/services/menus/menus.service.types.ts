@@ -27,6 +27,7 @@ export interface Menu {
 	slug?: string;
 	meta?: MenuMeta;
 	itemCount?: number;
+	items?: MenuDetailItem[];
 }
 
 export interface MenuCategory {

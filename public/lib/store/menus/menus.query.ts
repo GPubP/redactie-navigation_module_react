@@ -19,19 +19,8 @@ export class MenusQuery extends BaseEntityQuery<MenusState> {
 	public occurrences$ = this.select(state => state.occurrences).pipe(
 		filter(occurrences => !isNil(occurrences), distinctUntilChanged())
 	);
-	public menuItems$ = this.select(state => state.menuItems).pipe(
-		filter(menuItems => !isNil(menuItems), distinctUntilChanged())
-	);
-	public menuItemsCount$ = this.select(state => state.menuItemsCount).pipe(
-		menuItemsCount => menuItemsCount,
-		distinctUntilChanged()
-	);
 	public isFetchingOccurrences$ = this.select(state => state.isFetchingOccurrences).pipe(
 		occurrences => occurrences,
-		distinctUntilChanged()
-	);
-	public isFetchingMenuItems$ = this.select(state => state.isFetchingMenuItems).pipe(
-		menuItems => menuItems,
 		distinctUntilChanged()
 	);
 }
