@@ -11,7 +11,7 @@ export class MenusApiService {
 	): Promise<MenusResponse | null> {
 		try {
 			const response: MenusResponse = await api
-				.get(`${siteId}/menus?category=`, {
+				.get(`${siteId}/menus`, {
 					searchParams,
 				})
 				.json();
