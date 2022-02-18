@@ -15,6 +15,7 @@ import {
 	OrderBy,
 	parseOrderByToString,
 	parseStringToOrderBy,
+	SearchParams,
 	useAPIQueryParams,
 	useNavigate,
 	useRoutes,
@@ -24,14 +25,16 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { FilterForm, FilterFormState } from '../../components';
 import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { useMenus } from '../../hooks/useMenus';
 import { MenuMatchProps, MenuRouteProps } from '../../menu.types';
-import { BREADCRUMB_OPTIONS, MODULE_PATHS } from '../../navigation.const';
+import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 import { menusFacade } from '../../store/menus';
 
 import {
 	DEFAULT_FILTER_FORM,
 	DEFAULT_OVERVIEW_QUERY_PARAMS,
+	DEFAULT_QUERY_PARAMS,
 	OVERVIEW_COLUMNS,
 } from './MenuOverview.const';
 import { OverviewTableRow } from './MenuOverview.types';
@@ -46,7 +49,7 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [query, setQuery] = useAPIQueryParams(DEFAULT_OVERVIEW_QUERY_PARAMS);
 	const [t] = useCoreTranslation();
-	const { generatePath, navigate } = useNavigate();
+	const { generatePath, navigate } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
@@ -55,6 +58,7 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	const [loadingsState, menus, menuPaging] = useMenus();
+
 	const isLoading = useMemo(() => {
 		return loadingsState === LoadingState.Loading;
 	}, [loadingsState]);
@@ -63,8 +67,6 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 		if (loadingsState !== LoadingState.Loading) {
 			return setInitialLoading(LoadingState.Loaded);
 		}
-
-		setInitialLoading(LoadingState.Loading);
 	}, [loadingsState]);
 
 	useEffect(() => {
@@ -72,8 +74,12 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 			return;
 		}
 
-		menusFacade.getMenus(siteId, site?.data.name);
-	}, [site, siteId]);
+		menusFacade.getMenus(siteId, {
+			...query,
+			category: formatMenuCategory(site?.data.name),
+			includeItemCount: true,
+		} as SearchParams);
+	}, [query, site, siteId]);
 
 	/**
 	 * Methods
@@ -111,6 +117,13 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 		setQuery(values);
 	};
 
+	const handlePageChange = (pageNumber: number): void => {
+		setQuery({
+			page: pageNumber,
+			pagesize: DEFAULT_QUERY_PARAMS.pagesize,
+		});
+	};
+
 	const activeSorting = parseStringToOrderBy(query.sort ?? '');
 	const activeFilters = createFilters(filterFormState);
 
@@ -126,8 +139,10 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 			id: menu.id?.toString() || '',
 			label: menu.label || undefined,
 			description: menu.description || undefined,
-			lang: 'NL',
-			navigate: (id: string) => navigate(MODULE_PATHS.site.detailSettings, { siteId, id }),
+			itemCount: menu.itemCount,
+			lang: 'nl',
+			navigate: (menuUuid: string) =>
+				navigate(MODULE_PATHS.site.detailSettings, { siteId, menuUuid }),
 		}));
 
 		return (
@@ -147,6 +162,9 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 					tableClassName="a-table--fixed--xs"
 					columns={OVERVIEW_COLUMNS(t)}
 					rows={customMenuRows}
+					currentPage={query.page}
+					itemsPerPage={DEFAULT_QUERY_PARAMS.pagesize}
+					onPageChange={handlePageChange}
 					orderBy={onOrderBy}
 					activeSorting={activeSorting}
 					totalValues={menuPaging?.totalElements || 0}

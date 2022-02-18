@@ -9,6 +9,7 @@ import React, { FC, useEffect, useState } from 'react';
 import contentTypeConnector from '../../connectors/contentTypes';
 import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { menusFacade } from '../../store/menus';
 import { MenusCheckboxList } from '../MenusCheckboxList';
 
@@ -36,7 +37,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			return;
 		}
 
-		menusFacade.getMenus(siteId, site?.data.name);
+		menusFacade.getMenus(siteId, {
+			category: formatMenuCategory(site?.data.name),
+		});
 	}, [site, siteId]);
 
 	const onFormSubmit = async (values: any): Promise<void> => {
