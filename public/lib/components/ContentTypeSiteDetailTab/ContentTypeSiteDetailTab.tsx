@@ -36,7 +36,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			return;
 		}
 
-		menusFacade.getMenus(siteId, site?.data.name);
+		menusFacade.getMenus(siteId, {
+			category: `menu_${site?.data.name}_nl`,
+		});
 	}, [site, siteId]);
 
 	const onFormSubmit = async (values: any): Promise<void> => {

@@ -1,12 +1,19 @@
+import { SearchParams } from '@redactie/utils';
+
 import { api } from '../api';
 
 import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
-	public async getMenus(siteId: string, siteName: string): Promise<MenusResponse | null> {
+	public async getMenus(
+		siteId: string,
+		searchParams: SearchParams
+	): Promise<MenusResponse | null> {
 		try {
 			const response: MenusResponse = await api
-				.get(`${siteId}/menus?category=menu_${siteName}_nl`)
+				.get(`${siteId}/menus?category=`, {
+					searchParams,
+				})
 				.json();
 
 			if (!response) {
