@@ -1,4 +1,4 @@
-import { alertService, BaseEntityFacade, LoadingState } from '@redactie/utils';
+import { alertService, BaseEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
 
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { Menu, MenusApiService, menusApiService, MenusResponse } from '../../services/menus';
@@ -15,7 +15,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly occurrences$ = this.query.occurrences$;
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 
-	public getMenus(siteId: string, siteName: string): void {
+	public getMenus(siteId: string, searchParams: SearchParams): void {
 		const { isFetching } = this.query.getValue();
 
 		if (isFetching) {
@@ -25,7 +25,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetching(true);
 
 		this.service
-			.getMenus(siteId, siteName)
+			.getMenus(siteId, searchParams)
 			.then((response: MenusResponse | null) => {
 				if (!response) {
 					throw new Error('Getting menus failed!');

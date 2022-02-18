@@ -10,18 +10,35 @@ import { CORE_TRANSLATIONS } from '../../connectors/translations';
 
 import { OverviewTableRow } from './MenuOverview.types';
 
+export const DEFAULT_QUERY_PARAMS = {
+	page: 1,
+	pagesize: 10,
+};
+
 export const DEFAULT_OVERVIEW_QUERY_PARAMS = {
+	page: {
+		defaultValue: DEFAULT_QUERY_PARAMS.page,
+		type: 'number',
+	},
+	pagesize: {
+		defaultValue: DEFAULT_QUERY_PARAMS.pagesize,
+		type: 'number',
+	},
 	label: {
 		defaultValue: '',
 		type: 'string',
 	},
-	quantity: {
-		defaultValue: '',
-		type: 'number',
-	},
 	lang: {
 		defaultValue: '',
 		type: 'string',
+	},
+	sort: {
+		defaultValue: 'label',
+		type: 'string',
+	},
+	direction: {
+		defaultValue: 1,
+		type: 'number',
 	},
 } as const;
 
@@ -54,6 +71,12 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 		},
 	},
 	{
+		label: 'Aantal menu-items',
+		value: 'itemCount',
+		width: '20%',
+		disableSorting: true,
+	},
+	{
 		label: 'Taal',
 		value: 'lang',
 		width: '10%',
@@ -64,8 +87,8 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 		classList: ['u-text-right'],
 		disableSorting: true,
 		width: '20%',
-		component(value, { navigate }) {
-			return <Button ariaLabel="Edit" icon="edit" onClick={navigate} transparent />;
+		component(value, { navigate, id }) {
+			return <Button ariaLabel="Edit" icon="edit" onClick={() => navigate(id)} transparent />;
 		},
 	},
 ];
