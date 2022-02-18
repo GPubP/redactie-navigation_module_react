@@ -43,7 +43,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 }) => {
 	const { siteId } = match.params;
 	const [menu] = useMenuDraft();
-	const { menu: values, occurrences, menuItemsCount } = useMenu();
+	const { menu: values, occurrences } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -120,15 +120,15 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 
 	const renderMenuItems = (): ReactElement => {
 		const pluralSingularItems =
-			menuItemsCount && menuItemsCount === 1 ? 'menu item' : 'menu items';
+			values.itemCount && values.itemCount === 1 ? 'menu item' : 'menu items';
 
 		return (
 			<>
-				{menuItemsCount && menuItemsCount > 0 ? (
+				{values.itemCount && values.itemCount > 0 ? (
 					<p>
 						Dit menu heeft{' '}
 						<strong>
-							{menuItemsCount ? menuItemsCount : 0} {pluralSingularItems}
+							{values.itemCount ? values.itemCount : 0} {pluralSingularItems}
 						</strong>
 						. Verwijder deze items als je het menu wil verwijderen.
 					</p>
@@ -136,7 +136,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 					<p>
 						Er zijn{' '}
 						<strong>
-							{menuItemsCount ? menuItemsCount : 0} {pluralSingularItems}
+							{values.itemCount ? values.itemCount : 0} {pluralSingularItems}
 						</strong>
 						. Je kan het menu verwijderen.
 					</p>
@@ -160,7 +160,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 							className="u-margin-top"
 							type="danger"
 							iconLeft="trash-o"
-							disabled={menuItemsCount && menuItemsCount > 0}
+							disabled={values.itemCount && values.itemCount > 0}
 						>
 							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
 						</Button>
@@ -187,7 +187,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ errors, submitForm, values, resetForm }) => {
+				{({ errors, submitForm, values, resetForm, setFieldValue }) => {
 					onChange(values);
 
 					return (
@@ -241,7 +241,12 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 										label="Taal"
 										name="lang"
 										required
-										options={LANG_OPTIONS}
+										options={LANG_OPTIONS.map(option => {
+											return {
+												...option,
+												disabled: !canEdit,
+											};
+										})}
 										state={errors.lang && 'error'}
 									/>
 									<ErrorMessage

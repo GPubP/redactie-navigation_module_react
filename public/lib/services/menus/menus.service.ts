@@ -31,19 +31,6 @@ export class MenusApiService {
 		}
 	}
 
-	public async getMenuItems(siteId: string, menuId: string): Promise<MenuItemsResponse | null> {
-		try {
-			const response: MenuItemsResponse = await api
-				.get(`${siteId}/menus/${menuId}/items`)
-				.json();
-
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
-	}
-
 	public async createMenu(siteId: string, menu: Menu): Promise<Menu | null> {
 		try {
 			const response: Menu = await api
