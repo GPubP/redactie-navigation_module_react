@@ -4,6 +4,12 @@ import { api } from '../api';
 
 import { MenuItem, MenuItemsResponse } from './menuItems.service.types';
 
+const ITEM_MOCK: MenuItem = {
+	id: 1,
+	label: 'test',
+	description: 'dit is een test',
+};
+
 export class MenuItemsApiService {
 	public async getMenuItems(
 		siteId: string,
@@ -12,13 +18,13 @@ export class MenuItemsApiService {
 	): Promise<MenuItemsResponse | null> {
 		try {
 			const response: MenuItemsResponse = await api
-				.get(`${siteId}/menus/${menuId}/menuItems`, {
+				.get(`${siteId}/menus/${menuId}/items`, {
 					searchParams,
 				})
 				.json();
 
 			if (!response) {
-				throw new Error('Failed to get menuItems');
+				throw new Error('Failed to get items');
 			}
 
 			return response;
@@ -30,11 +36,11 @@ export class MenuItemsApiService {
 
 	public async getMenuItem(siteId: string, menuId: string, id: string): Promise<MenuItem | null> {
 		try {
-			const response: MenuItem = await api
-				.get(`${siteId}/menus/${menuId}/menuItems/${id}`)
-				.json();
+			/* const response: MenuItem = await api
+				.get(`${siteId}/menus/${menuId}/items/${id}`)
+				.json(); */
 
-			return response;
+			return ITEM_MOCK;
 		} catch (err) {
 			console.error(err);
 			return null;
@@ -47,13 +53,13 @@ export class MenuItemsApiService {
 		menuItem: MenuItem
 	): Promise<MenuItem | null> {
 		try {
-			const response: MenuItem = await api
-				.post(`${siteId}/menus/${menuId}/menuItems`, {
+			/* const response: MenuItem = await api
+				.post(`${siteId}/menus/${menuId}/items`, {
 					json: menuItem,
 				})
-				.json();
+				.json(); */
 
-			return response;
+			return ITEM_MOCK;
 		} catch (err) {
 			console.error(err);
 			return null;
@@ -66,13 +72,13 @@ export class MenuItemsApiService {
 		menuItem: MenuItem
 	): Promise<MenuItem | null> {
 		try {
-			const response: MenuItem = await api
-				.put(`${siteId}/menus/${menuId}/menuItems/${menuItem.id}`, {
+			/* const response: MenuItem = await api
+				.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
 					json: menuItem,
 				})
-				.json();
+				.json(); */
 
-			return response;
+			return ITEM_MOCK;
 		} catch (err) {
 			console.error(err);
 			return null;
@@ -84,7 +90,7 @@ export class MenuItemsApiService {
 		menuId: string,
 		menuItem: MenuItem
 	): Promise<Response> {
-		return await api.delete(`${siteId}/menus/${menuId}/menuItems/${menuItem.id}`);
+		return await api.delete(`${siteId}/menus/${menuId}/items/${menuItem.id}`);
 	}
 }
 
