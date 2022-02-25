@@ -17,6 +17,11 @@ export interface MenuMatchProps {
 	siteId: string;
 }
 
+export interface MenuItemMatchProps {
+	siteId: string;
+	menuUuid: string;
+}
+
 export interface MenuRouteProps<
 	Params extends {
 		[K in keyof Params]?: string;

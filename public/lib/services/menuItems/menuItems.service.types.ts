@@ -4,13 +4,13 @@ import { ListApiResponse } from '../../navigation.types';
 // GET MENU ITEM TYPES ----------------
 ///////////////////////////////////////
 export interface MenuDetailItem {
-	id: number;
-	label: string;
-	description: string;
-	publishStatus: string;
-	slug: string;
+	id?: number;
+	label?: string;
+	description?: string;
+	publishStatus?: string;
+	slug?: string;
 	externalUrl?: string;
-	items: MenuDetailItem[];
+	items?: MenuDetailItem[];
 }
 
 export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;
@@ -20,6 +20,6 @@ export interface EmbeddedMenuItems {
 }
 
 export interface MenuItem extends MenuDetailItem {
-	parentId?: number;
+	parentId?: string;
 	lang?: string;
 }

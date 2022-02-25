@@ -27,6 +27,10 @@ export const MODULE_PATHS = {
 		detail: `${urlSiteParam}/menus/:menuUuid`,
 		detailSettings: `${urlSiteParam}/menus/:menuUuid/instellingen`,
 		contentTypeMenu: `${urlSiteParam}/content-types/:contentTypeId`,
+		menuItemCreate: `${urlSiteParam}/menus/:menuUuid/menu-items/aanmaken`,
+		menuItemCreateSettings: `${urlSiteParam}/menus/:menuUuid/menu-items/aanmaken/instellingen`,
+		menuItemDetail: `${urlSiteParam}/menus/:menuUuid/menu-items/:menuItemUuid`,
+		menuItemDetailSettings: `${urlSiteParam}/menus/:menuUuid/menu-items/:menuItemUuid/instellingen`,
 	},
 };
 
