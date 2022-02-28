@@ -12,7 +12,7 @@ export class MenuItemsApiService {
 	): Promise<MenuItemsResponse | null> {
 		try {
 			const response: MenuItemsResponse = await api
-				.get(`${siteId}/menus/${menuId}/menuItems`, {
+				.get(`${siteId}/menus/${menuId}/items`, {
 					searchParams,
 				})
 				.json();
@@ -31,7 +31,7 @@ export class MenuItemsApiService {
 	public async getMenuItem(siteId: string, menuId: string, id: string): Promise<MenuItem | null> {
 		try {
 			const response: MenuItem = await api
-				.get(`${siteId}/menus/${menuId}/menuItems/${id}`)
+				.get(`${siteId}/menus/${menuId}/items/${id}`)
 				.json();
 
 			return response;
@@ -48,7 +48,7 @@ export class MenuItemsApiService {
 	): Promise<MenuItem | null> {
 		try {
 			const response: MenuItem = await api
-				.post(`${siteId}/menus/${menuId}/menuItems`, {
+				.post(`${siteId}/menus/${menuId}/items`, {
 					json: menuItem,
 				})
 				.json();
@@ -67,7 +67,7 @@ export class MenuItemsApiService {
 	): Promise<MenuItem | null> {
 		try {
 			const response: MenuItem = await api
-				.put(`${siteId}/menus/${menuId}/menuItems/${menuItem.id}`, {
+				.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
 					json: menuItem,
 				})
 				.json();
@@ -84,7 +84,7 @@ export class MenuItemsApiService {
 		menuId: string,
 		menuItem: MenuItem
 	): Promise<Response> {
-		return await api.delete(`${siteId}/menus/${menuId}/menuItems/${menuItem.id}`);
+		return await api.delete(`${siteId}/menus/${menuId}/items/${menuItem.id}`);
 	}
 }
 
