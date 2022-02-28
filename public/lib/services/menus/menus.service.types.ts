@@ -2,6 +2,7 @@ import { ContentTypeSchema } from '@redactie/content-module';
 import { Links, Page } from '@redactie/utils';
 
 import { ListApiResponse } from '../../navigation.types';
+import { MenuDetailItem } from '../menuItems';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
@@ -38,47 +39,6 @@ export interface MenuCategory {
 export interface MenuMeta {
 	lastEditor: null;
 }
-///////////////////////////////////////
-// GET MENU TYPES ---------------------
-///////////////////////////////////////
-export interface MenuDetail extends Menu {
-	items: MenuDetailItem[];
-}
-
-export interface MenuDetailItem {
-	id: number;
-	label: string;
-	description: string;
-	publishStatus: string;
-	slug: string;
-	externalUrl?: string;
-	items: MenuDetailItem[];
-}
-
-///////////////////////////////////////
-// GET MENU ITEM TYPES ----------------
-///////////////////////////////////////
-export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;
-
-export interface EmbeddedMenuItems {
-	resourceList: MenuItem[];
-}
-
-export interface MenuItem extends Omit<MenuDetailItem, 'items'> {
-	parentId?: number;
-}
-
-///////////////////////////////////////
-// CREATE MENU ITEM TYPES -------------
-///////////////////////////////////////
-
-export type CreateMenuItemPayload = Omit<MenuItem, 'id'>;
-
-///////////////////////////////////////
-// UPDATE MENU ITEM TYPES -------------
-///////////////////////////////////////
-
-export type UpdateMenuItemPayload = CreateMenuItemPayload;
 
 ///////////////////////////////////////
 // GET MENU OCCURRENCES ---------------------
