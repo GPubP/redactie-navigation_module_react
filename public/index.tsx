@@ -98,8 +98,6 @@ sitesConnector.registerRoutes({
 	],
 });
 
-console.log('nav check');
-
 registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
 	getDescription: contentItem => contentItem?.meta.slug.nl || '',
