@@ -9,11 +9,7 @@ import {
 	Textarea,
 	TextField,
 } from '@acpaas-ui/react-components';
-import {
-	ActionBar,
-	ActionBarContentSection,
-	Container,
-} from '@acpaas-ui/react-editorial-components';
+import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC, ReactElement, useState } from 'react';
@@ -178,7 +174,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	};
 
 	return (
-		<Container>
+		<>
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
@@ -187,7 +183,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ errors, submitForm, values, resetForm, setFieldValue }) => {
+				{({ errors, submitForm, values, resetForm }) => {
 					onChange(values);
 
 					return (
@@ -292,7 +288,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				}}
 			</Formik>
 			{!isCreating && canDelete && renderDelete()}
-		</Container>
+		</>
 	);
 };
 

@@ -26,6 +26,7 @@ export const MODULE_PATHS = {
 		createSettings: `${urlSiteParam}/menus/aanmaken/instellingen`,
 		detail: `${urlSiteParam}/menus/:menuUuid`,
 		detailSettings: `${urlSiteParam}/menus/:menuUuid/instellingen`,
+		menuItems: `${urlSiteParam}/menus/:menuUuid/menu-items`,
 		contentTypeMenu: `${urlSiteParam}/content-types/:contentTypeId`,
 	},
 };
@@ -49,7 +50,7 @@ export const BREADCRUMB_OPTIONS = (
 });
 
 export const MENU_DETAIL_TAB_MAP: {
-	[key in 'settings']: ContextHeaderTab;
+	[key in 'settings' | 'menuItems']: ContextHeaderTab;
 } = {
 	settings: {
 		name: 'Instellingen',
@@ -57,9 +58,18 @@ export const MENU_DETAIL_TAB_MAP: {
 		active: true,
 		disabled: false,
 	},
+	menuItems: {
+		name: 'Menu-items',
+		target: 'menu-items',
+		active: false,
+		disabled: false,
+	},
 };
 
-export const MENU_DETAIL_TABS: ContextHeaderTab[] = [MENU_DETAIL_TAB_MAP.settings];
+export const MENU_DETAIL_TABS: ContextHeaderTab[] = [
+	MENU_DETAIL_TAB_MAP.settings,
+	MENU_DETAIL_TAB_MAP.menuItems,
+];
 
 export const CONFIG: Readonly<{ name: string; module: string }> = {
 	name: 'navigation',

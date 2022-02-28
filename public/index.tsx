@@ -19,7 +19,7 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { MenuModuleProps } from './lib/menu.types';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
-import { MenuCreate, MenuDetailSettings, MenuOverview, MenuUpdate } from './lib/views';
+import { MenuCreate, MenuDetailSettings, MenuItems, MenuOverview, MenuUpdate } from './lib/views';
 
 // akitaDevtools();
 
@@ -52,11 +52,11 @@ sitesConnector.registerRoutes({
 		label: 'Menu',
 		order: 2,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
-		canShown: [
-			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-				rolesRightsConnector.menuSecurityRights.read,
-			]),
-		],
+		// canShown: [
+		// 	rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+		// 		rolesRightsConnector.menuSecurityRights.read,
+		// 	]),
+		// ],
 	},
 	routes: [
 		{
@@ -88,10 +88,17 @@ sitesConnector.registerRoutes({
 					breadcrumb: null,
 					component: MenuDetailSettings,
 				},
+				{
+					path: MODULE_PATHS.site.menuItems,
+					breadcrumb: null,
+					component: MenuItems,
+				},
 			],
 		},
 	],
 });
+
+console.log('nav check');
 
 registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',

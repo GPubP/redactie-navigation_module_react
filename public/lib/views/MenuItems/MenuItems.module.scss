@@ -1,0 +1,69 @@
+@import '~@a-ui/core/dist/assets/styles/_quarks';
+
+.m-menu-items-table {
+	&__header {
+		display: grid;
+		grid-template-columns: ($spacer * 3) auto;
+	}
+
+	&__item {
+		display: grid;
+		grid-template-columns: $spacer-md auto;
+		align-items: center;
+	}
+
+	&__collapse {
+		width: $spacer-md;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+
+		&__icon {
+			&--rotate {
+				transform: rotate(90deg);
+			}
+		}
+	}
+
+	&__label {
+		padding: $spacer-xs;
+		overflow: hidden;
+
+		&__icon {
+			transform: translateY(1px);
+		}
+	}
+
+	&__url {
+		display: flex;
+		flex-direction: row;
+	}
+
+	&__indent-block {
+		background-color: $grey-lighter;
+		width: $spacer-md;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border-right: 1px solid $white;
+		pointer-events: none;
+
+		&:nth-last-child(2) {
+			pointer-events: all;
+			cursor: pointer;
+
+			&:hover {
+				background-color: $brand-primary;
+
+				.m-menu-items-table__indent-block__icon {
+					display: inline-block;
+				}
+			}
+		}
+
+		&__icon {
+			display: none;
+			color: $white;
+		}
+	}
+}
