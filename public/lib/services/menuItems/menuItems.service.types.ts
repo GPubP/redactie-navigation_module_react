@@ -11,9 +11,11 @@ export interface MenuItem {
 	slug: string;
 	externalUrl: string;
 	logicalId: string;
+	items: MenuItem[];
 	parentId?: number;
 	weight?: number;
-	items: MenuItem[];
+	parents?: MenuItem[];
+	childItemCount?: number;
 }
 
 export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;

@@ -1,17 +1,36 @@
-import { useObservable } from '@mindspace-io/react';
-import { LoadingState } from '@redactie/utils';
+import { LoadingState, useObservable } from '@redactie/utils';
 
-import { MenuItem } from '../../services/menuItems';
 import { menuItemsFacade } from '../../store/menuItems';
 
-const useMenuItems = (): [LoadingState, MenuItem[] | null | undefined] => {
-	const [loading] = useObservable(menuItemsFacade.isFetching$, LoadingState.Loading);
-	const [menuItems] = useObservable(menuItemsFacade.menuItems$, []);
-	const [error] = useObservable(menuItemsFacade.error$, null);
+import { UseMenuItems } from './useMenuItems.type';
 
-	const loadingState = error ? LoadingState.Error : loading;
+const useMenuItems = (): UseMenuItems => {
+	const isFetching = useObservable(menuItemsFacade.isFetchingOne$, LoadingState.Loading);
+	const isUpdating = useObservable(menuItemsFacade.isUpdating$, LoadingState.Loaded);
+	const isCreating = useObservable(menuItemsFacade.isCreating$, LoadingState.Loaded);
+	const isRemoving = useObservable(menuItemsFacade.isRemoving$, LoadingState.Loaded);
+	const menuItems = useObservable(menuItemsFacade.menuItems$, []);
+	const error = useObservable(menuItemsFacade.error$);
 
-	return [loadingState, menuItems];
+	const upsertingState = [isUpdating, isCreating].includes(LoadingState.Loading)
+		? LoadingState.Loading
+		: LoadingState.Loaded;
+
+	const fetchingState = error
+		? LoadingState.Error
+		: isFetching === LoadingState.Loading
+		? LoadingState.Loading
+		: LoadingState.Loaded;
+
+	const removingState =
+		isRemoving === LoadingState.Loading ? LoadingState.Loading : LoadingState.Loaded;
+
+	return {
+		fetchingState,
+		upsertingState,
+		removingState,
+		menuItems,
+	};
 };
 
 export default useMenuItems;

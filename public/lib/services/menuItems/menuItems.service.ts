@@ -17,6 +17,22 @@ export class MenuItemsApiService {
 			.json();
 	}
 
+	public async getSubset(
+		siteId: string,
+		menuId: string,
+		startitem: number,
+		depth: number
+	): Promise<MenuItemsResponse> {
+		return api
+			.get(`${siteId}/menus/${menuId}/subset`, {
+				searchParams: {
+					startitem,
+					depth,
+				},
+			})
+			.json();
+	}
+
 	public async getMenuItem(siteId: string, menuId: string, id: string): Promise<MenuItem> {
 		return api.get(`${siteId}/menus/${menuId}/items/${id}`).json();
 	}

@@ -1,17 +1,21 @@
 import { Button, Icon } from '@acpaas-ui/react-components';
-import { EllipsisWithTooltip } from '@acpaas-ui/react-editorial-components';
+import { EllipsisWithTooltip, Status } from '@acpaas-ui/react-editorial-components';
+import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import React from 'react';
 
-import styles from './MenuItems.module.scss';
-import { MenuItemsTableRow } from './MenuItems.types';
+import { CORE_TRANSLATIONS } from '../../connectors/translations';
+
+import styles from './MenuItemsOverview.module.scss';
+import { MenuItemsTableRow } from './MenuItemsOverview.types';
 const cx = classnames.bind(styles);
 
 export const MENU_ITEMS_COLUMNS = (
-	expandRow: (id: string | number) => void,
-	openRearrangeModal: (id: string | number) => void,
-	openRows: (string | number)[]
+	t: TranslateFunc,
+	expandRow: (id: number) => void,
+	openRearrangeModal: (id: number) => void,
+	openRows: string[]
 ): TableColumn<MenuItemsTableRow>[] =>
 	[
 		{
@@ -27,11 +31,14 @@ export const MENU_ITEMS_COLUMNS = (
 					</div>
 				);
 			},
-			component(value: string, { id, url, label, rows }: MenuItemsTableRow) {
+			component(
+				value: string,
+				{ id, url, label, rows, parents, childItemCount }: MenuItemsTableRow
+			) {
 				return (
 					<div className={cx('m-menu-items-table__item')}>
 						<div className={cx('m-menu-items-table__collapse')}>
-							{rows && (
+							{(rows || []).length || (parents || []).length || childItemCount > 0 ? (
 								<Button
 									onClick={() => expandRow(id)}
 									icon="chevron-right"
@@ -46,19 +53,21 @@ export const MENU_ITEMS_COLUMNS = (
 										),
 									})}
 								/>
-							)}
+							) : null}
 						</div>
 						<div className={cx('m-menu-items-table__label')}>
 							<p>{label}</p>
-							<EllipsisWithTooltip>
-								<a href={url} className="has-icon-right">
-									{url}
-									<Icon
-										name="external-link"
-										className={cx('m-menu-items-table__label__icon')}
-									/>
-								</a>
-							</EllipsisWithTooltip>
+							{url && (
+								<EllipsisWithTooltip>
+									<a href={url} className="has-icon-right">
+										{url}
+										<Icon
+											name="external-link"
+											className={cx('m-menu-items-table__label__icon')}
+										/>
+									</a>
+								</EllipsisWithTooltip>
+							)}
 						</div>
 					</div>
 				);
@@ -87,9 +96,15 @@ export const MENU_ITEMS_COLUMNS = (
 		},
 		{
 			label: 'Status menu item',
-			value: 'status',
+			value: 'active',
 			width: '25%',
 			disableSorting: true,
+			component(active: boolean) {
+				const activeLabel = active
+					? t(CORE_TRANSLATIONS.STATUS_ACTIVE)
+					: t(CORE_TRANSLATIONS['STATUS_NON-ACTIVE']);
+				return <Status label={activeLabel} type={active ? 'ACTIVE' : 'INACTIVE'} />;
+			},
 		},
 		{
 			label: '',
@@ -109,88 +124,5 @@ export const MENU_ITEMS_COLUMNS = (
 				);
 			},
 		},
-		// TODO: remove any
+		// TODO: BUMP UTILS
 	] as any;
-
-export const MENU_ITEMS_MOCK_NESTED_ROWS = [
-	{
-		id: 0,
-		label: 'Wyatt',
-		url: 'https://www.google.com',
-		status: 'Cooper',
-	},
-	{
-		id: 1,
-		label: 'Mullen',
-		url: 'https://www.google.com',
-		status: 'Ballard',
-		rows: [
-			{
-				id: 11,
-				label: 'Jerri',
-				url: 'https://www.google.comddddddddfdfdfdfdfdfdfdfdfdfddfdfdfdfdfddfdfdffd',
-				status: 'Hicks',
-			},
-			{
-				id: 12,
-				label: 'Sharron',
-				url: 'https://www.google.com',
-				status: 'Castro',
-				rows: [
-					{
-						id: 121,
-						label: 'Jo',
-						url: 'https://www.google.com',
-						status: 'Smets',
-					},
-				],
-			},
-		],
-	},
-	{
-		id: 2,
-		label: 'Sonia',
-		url: 'https://www.google.com',
-		status: 'Bass',
-		rows: [
-			{
-				id: 21,
-				label: 'Harriett',
-				url: 'https://www.google.com',
-				status: 'Horton',
-			},
-		],
-	},
-	{
-		id: 3,
-		label: 'Kristen',
-		url: 'https://www.google.com',
-		status: 'Moore',
-	},
-	{
-		id: 4,
-		label: 'Moss',
-		url: 'https://www.google.com',
-		status: 'Bowen',
-		rows: [
-			{
-				id: 41,
-				label: 'Griffin',
-				url: 'https://www.google.com',
-				status: 'Navarro',
-			},
-			{
-				id: 42,
-				label: 'Lebron',
-				url: 'https://www.google.com',
-				status: 'James',
-			},
-		],
-	},
-	{
-		id: 5,
-		label: 'Elaine',
-		url: 'https://www.google.com',
-		status: 'Michael',
-	},
-];

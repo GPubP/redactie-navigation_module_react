@@ -1,5 +1,7 @@
 import { alertService, BaseEntityFacade, SearchParams } from '@redactie/utils';
+import { take } from 'rxjs/operators';
 
+import { buildSubset } from '../../helpers';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import {
 	MenuItem,
@@ -38,6 +40,52 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.set(response?._embedded.resourceList);
+				this.store.update({
+					isFetching: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetching: false,
+				});
+			});
+	}
+
+	public async getSubset(
+		siteId: string,
+		menuId: string,
+		startitem = 0,
+		depth = 0
+	): Promise<void> {
+		const { isFetching } = this.query.getValue();
+
+		if (isFetching) {
+			return Promise.resolve();
+		}
+
+		if (startitem === 0) {
+			this.store.setIsFetching(true);
+		}
+
+		return this.service
+			.getSubset(siteId, menuId, startitem, depth)
+			.then(async (response: MenuItemsResponse) => {
+				if (!response) {
+					throw new Error('Getting menuItems subset failed!');
+				}
+
+				const result = await this.menuItems$.pipe(take(1)).toPromise();
+
+				this.store.set(
+					startitem === 0
+						? response?._embedded.resourceList
+						: buildSubset(
+								result,
+								response?._embedded.resourceList[0].items,
+								response?._embedded.resourceList[0].items[0].parentId as number
+						  )
+				);
 				this.store.update({
 					isFetching: false,
 				});
@@ -103,9 +151,13 @@ export class MenuItemsFacade extends BaseEntityFacade<
 					menuItemDraft: response,
 					isCreating: false,
 				});
-				alertService.success(getAlertMessages(response).create.success, {
-					containerId: alertId,
-				});
+
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					alertService.success(getAlertMessages(response).create.success, {
+						containerId: alertId,
+					});
+				}, 300);
 
 				return response;
 			})

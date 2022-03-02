@@ -28,7 +28,7 @@ export const MODULE_PATHS = {
 		detail: `${SITE_ROOT}/menus/:menuId`,
 		detailSettings: `${SITE_ROOT}/menus/:menuId/instellingen`,
 		contentTypeMenu: `${SITE_ROOT}/content-types/:contentTypeId`,
-		menuItems: `${SITE_ROOT}/menus/:menuUuid/menu-items`,
+		menuItems: `${SITE_ROOT}/menus/:menuId/menu-items`,
 		menuItemCreate: `${SITE_ROOT}/menus/:menuId/menu-items/aanmaken`,
 		menuItemCreateSettings: `${SITE_ROOT}/menus/:menuId/menu-items/aanmaken/instellingen`,
 		menuItemDetail: `${SITE_ROOT}/menus/:menuId/menu-items/:menuItemId`,
@@ -90,4 +90,5 @@ export const CONFIG: Readonly<{ name: string; module: string }> = {
 export const ALERT_CONTAINER_IDS = {
 	settings: 'settings',
 	overview: 'overview',
+	menuItemsOverview: 'menu-items-overview',
 };

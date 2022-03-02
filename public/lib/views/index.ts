@@ -5,4 +5,4 @@ export * from './MenuUpdate';
 export * from './MenuItemCreate';
 export * from './MenuItemDetailSettings';
 export * from './MenuItemUpdate';
-export * from './MenuItems';
+export * from './MenuItemsOverview';

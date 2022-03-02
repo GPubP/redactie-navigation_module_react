@@ -22,6 +22,7 @@ import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
 import formRendererConnector from '../../connectors/formRenderer';
+import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { getPositionInputValue } from '../../helpers/getPositionInputValue';
 import { getTreeConfig } from '../../helpers/getTreeConfig';
@@ -48,10 +49,11 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	loading,
 	removing,
 }) => {
+	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
+	const [site] = sitesConnector.hooks.useSite(siteId);
 	const [menuItemDraft] = useMenuItemDraft();
 	const { menuItem, upsertingState } = useMenuItem();
 	const { menu } = useMenu();
-	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(
 		!loading && !!menuItemDraft,
@@ -69,9 +71,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	}, [menuId, siteId]);
 
 	const canEdit = useMemo(() => {
-		// return menuItem?.id ? rights?.canUpdate : true;
-		return menuItem?.id ? true : true;
-	}, [menuItem]);
+		return menuItem?.id ? rights?.canUpdate : true;
+	}, [menuItem, rights]);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -99,8 +100,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	/**
 	 * Methods
 	 */
-	const onSave = async (): Promise<void> => {
-		await onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
+	const onSave = (): void => {
+		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
 
@@ -163,27 +164,37 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									</small>
 								</div>
 								<div className="col-xs-12 col-md-6">
-									<Field name="logicalId">
+									<Field name="slug">
 										{(fieldProps: FieldProps<any, {}>) => {
 											return (
 												<ContentSelect
+													key={values.slug}
 													fieldProps={fieldProps}
 													fieldHelperProps={{
-														...getFieldHelpers('logicalId'),
+														...getFieldHelpers('slug'),
 														setValue: (value: ContentModel) => {
 															setContentItemPublished(
 																!!value.meta.published
 															);
-															setFieldValue('logicalId', value.uuid);
+															setFieldValue(
+																'slug',
+																value.meta.slug.nl
+															);
+															setFieldValue(
+																'externalUrl',
+																`${site?.data.url}${value.meta.urlPath?.nl.value}`
+															);
 														},
 													}}
 													fieldSchema={
 														{
 															label: 'Link',
-															name: 'logicalId',
+															name: 'slug',
 															config: {
 																returnByValue: true,
 																disabled: !canEdit,
+																bySlug: true,
+																required: true,
 															},
 														} as any
 													}
@@ -191,7 +202,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											);
 										}}
 									</Field>
-									<ErrorMessage name="logicalId" />
+									<ErrorMessage name="slug" />
 									<small className="u-block u-margin-top-xs">
 										Zoek en selecteer een content item
 									</small>
@@ -272,7 +283,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									</small>
 								</div>
 							</div>
-							{values.logicalId && (
+							{values.slug && (
 								<div className="row u-margin-top">
 									<div className="col-xs-12">
 										<label className="u-block u-margin-bottom-xs">Status</label>
@@ -282,7 +293,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												values.publishStatus === NAV_STATUSES.PUBLISHED
 											}
 											id="publishStatus"
-											disabled={!canEdit}
+											disabled={!canEdit || !contentItemPublished}
 											name="publishStatus"
 											label="Je kan de status bewerken indien het content item online is"
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {

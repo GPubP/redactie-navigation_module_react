@@ -1,9 +1,16 @@
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
-import { RenderChildRoutes, useNavigate, useRoutes } from '@redactie/utils';
-import React, { FC, ReactElement, useEffect } from 'react';
+import {
+	LoadingState,
+	RenderChildRoutes,
+	useNavigate,
+	useOnNextRender,
+	useRoutes,
+} from '@redactie/utils';
+import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { useMenuItems } from '../../hooks';
 import { generateEmptyMenuItem } from '../../menu.helpers';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
@@ -22,6 +29,7 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	 */
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const { upsertingState, fetchingState } = useMenuItems();
 	const [t] = useCoreTranslation();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
@@ -32,6 +40,16 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 			},
 		])
 	);
+	const isLoading = useMemo(() => {
+		return upsertingState === LoadingState.Loading || fetchingState === LoadingState.Loading;
+	}, [fetchingState, upsertingState]);
+	const [forceNavigateToOverview] = useOnNextRender(() =>
+		navigate(MODULE_PATHS.site.menuItems, {
+			siteId,
+			menuId,
+		})
+	);
+
 	useEffect(() => {
 		menuItemsFacade.setMenuItem(generateEmptyMenuItem());
 		menuItemsFacade.setMenuItemDraft(generateEmptyMenuItem());
@@ -40,16 +58,12 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	/**
 	 * Methods
 	 */
-	const createItem = async (payload: MenuItemModel): Promise<void> => {
-		await menuItemsFacade
-			.createMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.settings)
+	const createItem = (payload: MenuItemModel): void => {
+		menuItemsFacade
+			.createMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.menuItemsOverview)
 			.then(response => {
 				if (response && response.id) {
-					navigate(MODULE_PATHS.site.menuItemDetailSettings, {
-						siteId,
-						menuId,
-						menuItemId: response.id,
-					});
+					forceNavigateToOverview();
 				}
 			});
 	};
@@ -63,6 +77,7 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 		<RenderChildRoutes
 			routes={route.routes}
 			extraOptions={{
+				loading: isLoading,
 				onCancel: () => navigate(MODULE_PATHS.overview),
 				onSubmit: createItem,
 			}}

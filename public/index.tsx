@@ -24,7 +24,7 @@ import {
 	MenuDetailSettings,
 	MenuItemCreate,
 	MenuItemDetailSettings,
-	MenuItems,
+	MenuItemsOverview,
 	MenuItemUpdate,
 	MenuOverview,
 	MenuUpdate,
@@ -126,7 +126,7 @@ sitesConnector.registerRoutes({
 				{
 					path: MODULE_PATHS.site.menuItems,
 					breadcrumb: null,
-					component: MenuItems,
+					component: MenuItemsOverview,
 				},
 			],
 		},

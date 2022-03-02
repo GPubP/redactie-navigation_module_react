@@ -48,6 +48,7 @@
 		border-right: 1px solid $white;
 		pointer-events: none;
 		flex-shrink: 0;
+		min-height: 4rem;
 
 		&:nth-last-child(2) {
 			pointer-events: all;
