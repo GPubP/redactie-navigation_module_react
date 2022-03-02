@@ -2,6 +2,7 @@ import { ContentTypeSchema } from '@redactie/content-module';
 import { Links, Page } from '@redactie/utils';
 
 import { ListApiResponse } from '../../navigation.types';
+import { MenuItem } from '../menuItems';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
@@ -15,19 +16,19 @@ export interface EmbeddedMenu {
 export interface Menu {
 	id?: number;
 	logicalId?: string;
-	label?: string;
-	description?: string;
-	lang?: string;
-	category?: string;
-	publishStatus?: string;
+	label: string;
+	description: string;
+	lang: string;
+	category: string;
+	publishStatus: string;
 	createdBy?: string;
 	createdAt?: Date;
 	updatedBy?: string;
 	updatedAt?: Date;
-	slug?: string;
+	slug: string;
 	meta?: MenuMeta;
 	itemCount?: number;
-	items?: MenuDetailItem[];
+	items: MenuItem[];
 }
 
 export interface MenuCategory {
@@ -38,47 +39,6 @@ export interface MenuCategory {
 export interface MenuMeta {
 	lastEditor: null;
 }
-///////////////////////////////////////
-// GET MENU TYPES ---------------------
-///////////////////////////////////////
-export interface MenuDetail extends Menu {
-	items: MenuDetailItem[];
-}
-
-export interface MenuDetailItem {
-	id: number;
-	label: string;
-	description: string;
-	publishStatus: string;
-	slug: string;
-	externalUrl?: string;
-	items: MenuDetailItem[];
-}
-
-///////////////////////////////////////
-// GET MENU ITEM TYPES ----------------
-///////////////////////////////////////
-export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;
-
-export interface EmbeddedMenuItems {
-	resourceList: MenuItem[];
-}
-
-export interface MenuItem extends Omit<MenuDetailItem, 'items'> {
-	parentId?: number;
-}
-
-///////////////////////////////////////
-// CREATE MENU ITEM TYPES -------------
-///////////////////////////////////////
-
-export type CreateMenuItemPayload = Omit<MenuItem, 'id'>;
-
-///////////////////////////////////////
-// UPDATE MENU ITEM TYPES -------------
-///////////////////////////////////////
-
-export type UpdateMenuItemPayload = CreateMenuItemPayload;
 
 ///////////////////////////////////////
 // GET MENU OCCURRENCES ---------------------

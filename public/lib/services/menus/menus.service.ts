@@ -2,7 +2,7 @@ import { SearchParams } from '@redactie/utils';
 
 import { api } from '../api';
 
-import { Menu, MenuItemsResponse, MenusResponse, OccurrencesResponse } from './menus.service.types';
+import { Menu, MenusResponse, OccurrencesResponse } from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(

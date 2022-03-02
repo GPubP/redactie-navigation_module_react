@@ -11,7 +11,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { registerContentDetailCompartment } from './lib/connectors/content';
+import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
@@ -19,7 +19,16 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { MenuModuleProps } from './lib/menu.types';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
-import { MenuCreate, MenuDetailSettings, MenuItems, MenuOverview, MenuUpdate } from './lib/views';
+import {
+	MenuCreate,
+	MenuDetailSettings,
+	MenuItemCreate,
+	MenuItemDetailSettings,
+	MenuItems,
+	MenuItemUpdate,
+	MenuOverview,
+	MenuUpdate,
+} from './lib/views';
 
 // akitaDevtools();
 
@@ -78,6 +87,32 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.menuItemCreate,
+			breadcrumb: null,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.menuItemCreateSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.menuItemCreateSettings,
+					breadcrumb: null,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.menuItemDetail,
+			breadcrumb: null,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.menuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.menuItemDetailSettings,
+					breadcrumb: null,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.detail,
 			breadcrumb: null,
 			component: MenuUpdate,
@@ -98,7 +133,7 @@ sitesConnector.registerRoutes({
 	],
 });
 
-registerContentDetailCompartment(CONFIG.name, {
+contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
 	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: CONFIG.module,

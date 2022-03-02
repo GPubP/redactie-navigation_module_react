@@ -141,8 +141,8 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 			description: menu.description || undefined,
 			itemCount: menu.itemCount,
 			lang: 'nl',
-			navigate: (menuUuid: string) =>
-				navigate(MODULE_PATHS.site.detailSettings, { siteId, menuUuid }),
+			navigate: (menuId: string) =>
+				navigate(MODULE_PATHS.site.detailSettings, { siteId, menuId }),
 		}));
 
 		return (

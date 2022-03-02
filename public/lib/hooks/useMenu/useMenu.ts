@@ -24,8 +24,8 @@ const useMenu = (): UseMenu => {
 	const fetchingState = error
 		? LoadingState.Error
 		: [isFetching, isFetchingOccurrences].includes(LoadingState.Loading)
-			? LoadingState.Loading
-			: LoadingState.Loaded;
+		? LoadingState.Loading
+		: LoadingState.Loaded;
 
 	const removingState =
 		isRemoving === LoadingState.Loading ? LoadingState.Loading : LoadingState.Loaded;

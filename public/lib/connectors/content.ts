@@ -1,12 +1,26 @@
-import { ContentAPI } from '@redactie/content-module';
-import { ModuleValue } from '@redactie/content-module/dist/lib/services/content';
-import { ExternalCompartmentOptions } from '@redactie/content-module/dist/lib/store/api/externalCompartments';
+import { ContentAPI, ExternalCompartmentOptions } from '@redactie/content-module';
 import Core from '@redactie/redactie-core';
 
-const contentModuleAPI: ContentAPI = Core.modules.getModuleAPI('content-module') as ContentAPI;
+class ContentConnector {
+	public api: ContentAPI;
 
-export const registerContentDetailCompartment = <M = ModuleValue>(
-	key: string,
-	options: ExternalCompartmentOptions
-): any | false =>
-	contentModuleAPI ? contentModuleAPI.registerContentDetailCompartment<M>(key, options) : false;
+	public readonly apiName: string = 'content-module';
+
+	constructor() {
+		this.api = Core.modules.getModuleAPI<ContentAPI>(this.apiName);
+	}
+
+	public registerContentDetailCompartment(
+		name: string,
+		options: ExternalCompartmentOptions
+	): void | false {
+		return this.api ? this.api.registerContentDetailCompartment(name, options) : false;
+	}
+
+	public getContentItem = (siteId: string, contentItemId: string): void | false =>
+		this.api ? this.api.store.content.facade.getContentItem(siteId, contentItemId) : false;
+}
+
+const contentConnector = new ContentConnector();
+
+export default contentConnector;

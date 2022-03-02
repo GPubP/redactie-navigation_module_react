@@ -13,6 +13,7 @@ import { DataLoader, ErrorMessage, FormikOnChangeHandler, useSiteContext } from 
 import { Field, FieldProps, Formik, FormikBag, FormikProps, FormikValues } from 'formik';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
+import { getPositionInputValue, getTreeConfig } from '../../helpers';
 import { useNavigationRights, useTree, useTreeItem, useTreeOptions } from '../../hooks';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
@@ -21,9 +22,7 @@ import { ReplaceConfirmModal } from '../ReplaceConfirmModal';
 import { VALIDATION_SCHEMA } from './ContentDetailCompartment.const';
 import {
 	getInitialFormValues,
-	getPositionInputValue,
 	getStatusOptions,
-	getTreeConfig,
 	hasTreeItemHasChildItems,
 } from './contentDetailCompartment.helpers';
 
@@ -57,6 +56,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
 	}>(() => getTreeConfig(tree, value.id), [tree, value.id]);
+
 	const initialValues = useMemo(
 		() => getInitialFormValues(value, treeItem, treeConfig.options),
 		// eslint-disable-next-line react-hooks/exhaustive-deps

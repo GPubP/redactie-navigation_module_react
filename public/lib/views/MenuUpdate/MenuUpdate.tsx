@@ -30,7 +30,7 @@ import {
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
-const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
+const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	location,
 	route,
 	tenantId,
@@ -40,7 +40,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [t] = useCoreTranslation();
-	const { siteId, menuUuid } = useParams<{ menuUuid?: string; siteId: string }>();
+	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
@@ -109,16 +109,16 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	}, [siteId, menu, menuLoadingState]);
 
 	useEffect(() => {
-		if (menuUuid) {
-			menusFacade.getMenu(siteId, menuUuid);
-			menusFacade.getOccurrences(siteId, menuUuid);
+		if (menuId) {
+			menusFacade.getMenu(siteId, menuId);
+			menusFacade.getOccurrences(siteId, menuId);
 		}
 
 		return () => {
 			menusFacade.unsetMenu();
 			menusFacade.unsetMenuDraft();
 		};
-	}, [siteId, menuUuid]);
+	}, [siteId, menuId]);
 
 	/**
 	 * Methods
@@ -189,7 +189,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 					...props,
 					to: generatePath(`${MODULE_PATHS.site.detail}/${props.href}`, {
 						siteId,
-						menuUuid,
+						menuId,
 					}),
 					component: Link,
 				})}
