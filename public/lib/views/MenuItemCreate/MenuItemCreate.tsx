@@ -1,125 +1,70 @@
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
-import {
-	ContextHeaderTab,
-	DataLoader,
-	LoadingState,
-	RenderChildRoutes,
-	useNavigate,
-	useRoutes,
-} from '@redactie/utils';
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { RenderChildRoutes, useNavigate, useRoutes } from '@redactie/utils';
+import React, { FC, ReactElement, useEffect } from 'react';
 
-import sitesConnector from '../../connectors/sites';
-import { useMenuItem, useMenuItemDraft } from '../../hooks';
+import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { generateEmptyMenuItem } from '../../menu.helpers';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
 	ALERT_CONTAINER_IDS,
 	BREADCRUMB_OPTIONS,
-	MENU_DETAIL_TAB_MAP,
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../navigation.const';
-import { MenuItem } from '../../services/menuItems';
-import { menuItemsFacade } from '../../store/menuItems';
+import { MenuItemModel, menuItemsFacade } from '../../store/menuItems';
 
-const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ tenantId, route, match }) => {
-	const { siteId, menuUuid } = match.params;
+const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match }) => {
+	const { siteId, menuId } = match.params;
 
 	/**
 	 * Hooks
 	 */
-	const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
-	const [site] = sitesConnector.hooks.useSite(siteId);
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const [t] = useCoreTranslation();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
 			{
-				name: 'Menus',
+				name: "Menu's",
 				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
 			},
 		])
 	);
-	const [menuItemDraft] = useMenuItemDraft();
-	const {
-		fetchingState: menuItemLoadingState,
-		menuItem,
-		upsertingState: upsertMenuItemLoadingState,
-	} = useMenuItem();
-	const isLoading = useMemo(() => {
-		return (
-			menuItemLoadingState === LoadingState.Loading ||
-			upsertMenuItemLoadingState === LoadingState.Loading
-		);
-	}, [upsertMenuItemLoadingState, menuItemLoadingState]);
-
 	useEffect(() => {
-		if (menuItemLoadingState !== LoadingState.Loading) {
-			return setInitialLoading(LoadingState.Loaded);
-		}
-
-		setInitialLoading(LoadingState.Loading);
-	}, [menuItemLoadingState]);
-
-	useEffect(() => {
-		if (menuItem?.id) {
-			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuItemUuid: menuItem.id });
-		}
-	}, [navigate, siteId, menuItem]);
-
-	useEffect(() => {
-		if (!menuItemDraft && site) {
-			menuItemsFacade.setMenuItem(generateEmptyMenuItem(site?.data.name));
-			menuItemsFacade.setMenuItemDraft(generateEmptyMenuItem(site?.data.name));
-		}
-	}, [menuItemDraft, site]);
+		menuItemsFacade.setMenuItem(generateEmptyMenuItem());
+		menuItemsFacade.setMenuItemDraft(generateEmptyMenuItem());
+	}, []);
 
 	/**
 	 * Methods
 	 */
-	const navigateToOverview = (): void => {
-		navigate(`${MODULE_PATHS.root}`, { siteId });
-	};
-
-	const upsertView = (
-		sectionData: any,
-		tab: ContextHeaderTab,
-		alertId = ALERT_CONTAINER_IDS.settings
-	): void => {
-		switch (tab.name) {
-			case MENU_DETAIL_TAB_MAP.settings.name:
-				menuItemsFacade.createMenuItem(
-					siteId,
-					menuUuid,
-					{
-						...generateEmptyMenuItem(menuUuid),
-						...sectionData,
-					} as MenuItem,
-					alertId
-				);
-				break;
-		}
+	const createItem = async (payload: MenuItemModel): Promise<void> => {
+		await menuItemsFacade
+			.createMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.settings)
+			.then(response => {
+				if (response && response.id) {
+					navigate(MODULE_PATHS.site.menuItemDetailSettings, {
+						siteId,
+						menuId,
+						menuItemId: response.id,
+					});
+				}
+			});
 	};
 
 	/**
 	 * Render
 	 */
-	const pageTitle = `Menu item aanmaken`;
+	const pageTitle = `Menu-item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
 
 	const renderChildRoutes = (): ReactElement => (
 		<RenderChildRoutes
 			routes={route.routes}
 			extraOptions={{
-				tenantId,
-				routes: route.routes,
-				menuItem: menuItem || generateEmptyMenuItem(menuUuid),
-				loading: isLoading,
-				isCreating: true,
-				onCancel: navigateToOverview,
-				onSubmit: (sectionData: any, tab: ContextHeaderTab) => upsertView(sectionData, tab),
+				onCancel: () => navigate(MODULE_PATHS.overview),
+				onSubmit: createItem,
 			}}
 		/>
 	);
@@ -137,9 +82,7 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ tenantId, rou
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
-			<div className="u-margin-top">
-				<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
-			</div>
+			<div className="u-margin-top">{renderChildRoutes()}</div>
 		</>
 	);
 };

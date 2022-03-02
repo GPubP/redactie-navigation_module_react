@@ -1,6 +1,7 @@
 import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
 import { ContextHeaderTab } from '@redactie/utils';
 
+import { MenuItem } from './services/menuItems';
 import { Menu } from './services/menus';
 import { InternalState } from './store/menus';
 
@@ -19,7 +20,8 @@ export interface MenuMatchProps {
 
 export interface MenuItemMatchProps {
 	siteId: string;
-	menuUuid: string;
+	menuId: string;
+	menuItemId: string;
 }
 
 export interface MenuRouteProps<
@@ -44,6 +46,15 @@ export interface MenuDetailRouteProps<Params = {}> extends RouteConfigComponentP
 	routes: ModuleRouteConfig[];
 	state: InternalState;
 	tenantId: string;
+}
+
+export interface MenuItemDetailRouteProps<Params = MenuRouteParams>
+	extends RouteConfigComponentProps<Params> {
+	onSubmit: (data: MenuItem) => Promise<void>;
+	onDelete: (data: MenuItem) => Promise<void>;
+	rights: MenuRights;
+	loading: boolean;
+	removing: boolean;
 }
 
 export interface MenuRights {

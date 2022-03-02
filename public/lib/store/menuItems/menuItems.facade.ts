@@ -32,12 +32,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		this.service
 			.getMenuItems(siteId, menuId, searchParams)
-			.then((response: MenuItemsResponse | null) => {
+			.then((response: MenuItemsResponse) => {
 				if (!response) {
 					throw new Error('Getting menuItems failed!');
 				}
 
-				this.store.set(response._embedded.resourceList);
+				this.store.set(response?._embedded.resourceList);
 				this.store.update({
 					isFetching: false,
 				});
@@ -59,16 +59,13 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getMenuItem(siteId, menuId, uuid)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Getting menuItem '${uuid}' failed!`);
 				}
 
 				this.store.update({
-					menuItem: {
-						...response,
-						lang: 'nl',
-					},
+					menuItem: response,
 					isFetchingOne: false,
 				});
 			})
@@ -80,7 +77,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public createMenuItem(siteId: string, menuId: string, body: MenuItem, alertId: string): void {
+	public async createMenuItem(
+		siteId: string,
+		menuId: string,
+		body: MenuItem,
+		alertId: string
+	): Promise<MenuItem | undefined> {
 		const { isCreating } = this.query.getValue();
 
 		if (isCreating) {
@@ -89,9 +91,9 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		this.store.setIsCreating(true);
 
-		this.service
+		return this.service
 			.createMenuItem(siteId, menuId, body)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Creating menuItem '${body?.label}' failed!`);
 				}
@@ -104,6 +106,8 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				alertService.success(getAlertMessages(response).create.success, {
 					containerId: alertId,
 				});
+
+				return response;
 			})
 			.catch(error => {
 				this.store.update({
@@ -113,10 +117,11 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				alertService.danger(getAlertMessages(body).create.error, {
 					containerId: alertId,
 				});
+				return undefined;
 			});
 	}
 
-	public updateMenuItem(
+	public async updateMenuItem(
 		siteId: string,
 		menuId: string,
 		body: MenuItem,
@@ -132,20 +137,14 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		return this.service
 			.updateMenuItem(siteId, menuId, body)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Updating menuItem '${body.id}' failed!`);
 				}
 
 				this.store.update({
-					menuItem: {
-						...response,
-						lang: 'nl',
-					},
-					menuItemDraft: {
-						...response,
-						lang: 'nl',
-					},
+					menuItem: response,
+					menuItemDraft: response,
 					isUpdating: false,
 				});
 

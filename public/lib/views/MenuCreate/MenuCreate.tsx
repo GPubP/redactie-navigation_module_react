@@ -69,7 +69,7 @@ const MenuCreate: FC<MenuModuleProps<MenuMatchProps>> = ({ tenantId, route, matc
 
 	useEffect(() => {
 		if (menu?.id) {
-			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuUuid: menu.id });
+			navigate(`${MODULE_PATHS.site.detailSettings}`, { siteId, menuId: menu.id });
 		}
 	}, [navigate, siteId, menu]);
 

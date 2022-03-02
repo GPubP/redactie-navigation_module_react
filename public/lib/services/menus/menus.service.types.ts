@@ -2,7 +2,7 @@ import { ContentTypeSchema } from '@redactie/content-module';
 import { Links, Page } from '@redactie/utils';
 
 import { ListApiResponse } from '../../navigation.types';
-import { MenuDetailItem } from '../menuItems';
+import { MenuItem } from '../menuItems';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
@@ -16,19 +16,19 @@ export interface EmbeddedMenu {
 export interface Menu {
 	id?: number;
 	logicalId?: string;
-	label?: string;
-	description?: string;
-	lang?: string;
-	category?: string;
-	publishStatus?: string;
+	label: string;
+	description: string;
+	lang: string;
+	category: string;
+	publishStatus: string;
 	createdBy?: string;
 	createdAt?: Date;
 	updatedBy?: string;
 	updatedAt?: Date;
-	slug?: string;
+	slug: string;
 	meta?: MenuMeta;
 	itemCount?: number;
-	items?: MenuDetailItem[];
+	items: MenuItem[];
 }
 
 export interface MenuCategory {

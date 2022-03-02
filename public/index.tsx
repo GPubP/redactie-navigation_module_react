@@ -11,7 +11,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { registerContentDetailCompartment } from './lib/connectors/content';
+import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
@@ -27,6 +27,7 @@ import {
 	MenuOverview,
 	MenuUpdate,
 } from './lib/views';
+import { MenuItemUpdate } from './lib/views/MenuItemUpdate';
 
 // akitaDevtools();
 
@@ -60,9 +61,9 @@ sitesConnector.registerRoutes({
 		order: 2,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
 		canShown: [
-			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-				rolesRightsConnector.menuSecurityRights.read,
-			]),
+			// rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+			// 	rolesRightsConnector.menuSecurityRights.read,
+			// ]),
 		],
 	},
 	routes: [
@@ -98,6 +99,19 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.menuItemDetail,
+			breadcrumb: null,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.menuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.menuItemDetailSettings,
+					breadcrumb: null,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.detail,
 			breadcrumb: null,
 			component: MenuUpdate,
@@ -113,7 +127,7 @@ sitesConnector.registerRoutes({
 	],
 });
 
-registerContentDetailCompartment(CONFIG.name, {
+contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
 	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: CONFIG.module,

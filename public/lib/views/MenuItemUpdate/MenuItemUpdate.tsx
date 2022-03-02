@@ -1,7 +1,6 @@
 import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
-	ContextHeaderTabLinkProps,
 	DataLoader,
 	LoadingState,
 	RenderChildRoutes,
@@ -10,35 +9,30 @@ import {
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
 
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
-import { MenuRouteProps } from '../../menu.types';
+import { useMenuItem, useMenuItemDraft } from '../../hooks';
+import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
 	ALERT_CONTAINER_IDS,
 	BREADCRUMB_OPTIONS,
-	MENU_DETAIL_TABS,
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../navigation.const';
-import { Menu } from '../../services/menus';
-import { menusFacade } from '../../store/menus';
+import { MenuItem } from '../../services/menuItems';
+import { menuItemsFacade } from '../../store/menuItems';
 
-const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
-	location,
-	route,
-	tenantId,
-}) => {
+const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match }) => {
+	const { siteId, menuId, menuItemId } = match.params;
+
 	/**
 	 * Hooks
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
-	const [t] = useCoreTranslation();
-	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const [t] = useCoreTranslation();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -49,11 +43,16 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 		])
 	);
 	const {
-		fetchingState: menuLoadingState,
-		upsertingState: upsertMenuLoadingState,
-		removingState: removeMenuLoadingState,
-		menu,
-	} = useMenu();
+		fetchingState: menuItemLoadingState,
+		upsertingState: upsertMenuItemLoadingState,
+		removingState: removeMenuItemLoadingState,
+		menuItem,
+	} = useMenuItem();
+	const [menuItemDraft] = useMenuItemDraft();
+	const [forceNavigateToOverview] = useOnNextRender(() =>
+		navigate(MODULE_PATHS.site.detail, { siteId, menuId })
+	);
+
 	const [
 		mySecurityRightsLoadingState,
 		mySecurityrights,
@@ -74,71 +73,63 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	);
 	const isLoading = useMemo(() => {
 		return (
-			menuLoadingState === LoadingState.Loading ||
-			upsertMenuLoadingState === LoadingState.Loading
+			menuItemLoadingState === LoadingState.Loading ||
+			upsertMenuItemLoadingState === LoadingState.Loading
 		);
-	}, [upsertMenuLoadingState, menuLoadingState]);
+	}, [menuItemLoadingState, upsertMenuItemLoadingState]);
 	const isRemoving = useMemo(() => {
-		return removeMenuLoadingState === LoadingState.Loading;
-	}, [removeMenuLoadingState]);
-	const [menuDraft] = useMenuDraft();
-	const activeTabs = useActiveTabs(MENU_DETAIL_TABS, location.pathname);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
-		navigate(MODULE_PATHS.site.overview, { siteId })
-	);
+		return removeMenuItemLoadingState === LoadingState.Loading;
+	}, [removeMenuItemLoadingState]);
 
 	useEffect(() => {
 		if (
-			menuLoadingState !== LoadingState.Loading &&
+			menuItemLoadingState !== LoadingState.Loading &&
 			mySecurityRightsLoadingState !== LoadingState.Loading
 		) {
 			return setInitialLoading(LoadingState.Loaded);
 		}
 
 		setInitialLoading(LoadingState.Loading);
-	}, [mySecurityRightsLoadingState, menuLoadingState]);
+	}, [mySecurityRightsLoadingState, menuItemLoadingState]);
 
 	useEffect(() => {
-		if (menuLoadingState !== LoadingState.Loading && menu) {
-			menusFacade.setMenuDraft(menu);
+		if (menuItemLoadingState !== LoadingState.Loading && menuItem) {
+			menuItemsFacade.setMenuItemDraft(menuItem);
 		}
-	}, [siteId, menu, menuLoadingState]);
+	}, [siteId, menuItemLoadingState, menuItem]);
 
 	useEffect(() => {
-		if (menuId) {
-			menusFacade.getMenu(siteId, menuId);
-			menusFacade.getOccurrences(siteId, menuId);
+		if (menuItemId) {
+			menuItemsFacade.getMenuItem(siteId, menuId, menuItemId);
 		}
 
 		return () => {
-			menusFacade.unsetMenu();
-			menusFacade.unsetMenuDraft();
+			menuItemsFacade.unsetMenuItem();
+			menuItemsFacade.unsetMenuItemDraft();
 		};
-	}, [siteId, menuId]);
+	}, [siteId, menuId, menuItemId]);
 
 	/**
 	 * Methods
 	 */
-	const onCancel = (): void => {
-		if (!menu) {
-			return;
-		}
 
-		menusFacade.setMenuDraft(menu);
-	};
-
-	const update = (updatedMenu: Menu): Promise<void> => {
-		if (!updatedMenu) {
+	const update = (updatedMenuItem: MenuItem): Promise<void> => {
+		if (!updatedMenuItem) {
 			return Promise.resolve();
 		}
 
-		return menusFacade.updateMenu(siteId, updatedMenu, ALERT_CONTAINER_IDS.settings);
+		return menuItemsFacade.updateMenuItem(
+			siteId,
+			menuId,
+			updatedMenuItem,
+			ALERT_CONTAINER_IDS.settings
+		);
 	};
 
-	const deleteMenu = async (menu: Menu): Promise<void> => {
+	const deleteMenuItem = async (menuItem: MenuItem): Promise<void> => {
 		return (
-			menusFacade
-				.deleteMenu(siteId, menu)
+			menuItemsFacade
+				.deleteMenuItem(siteId, menuId, menuItem)
 				.then(forceNavigateToOverview)
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				.catch(() => {})
@@ -148,27 +139,21 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	/**
 	 * Render
 	 */
-
-	const pageTitle = `${menuDraft?.label ? `'${menuDraft?.label}'` : 'Menu'} ${t(
+	const pageTitle = `${menuItemDraft?.label ? `'${menuItemDraft?.label}'` : 'Menu-item'} ${t(
 		CORE_TRANSLATIONS.ROUTING_UPDATE
 	)}`;
 
 	const renderChildRoutes = (): ReactElement | null => {
-		if (!menuDraft) {
+		if (!menuItemDraft) {
 			return null;
 		}
 
 		return (
 			<RenderChildRoutes
 				routes={route.routes}
-				guardsMeta={{
-					tenantId,
-				}}
 				extraOptions={{
-					onCancel,
 					onSubmit: update,
-					onDelete: deleteMenu,
-					routes: route.routes,
+					onDelete: deleteMenuItem,
 					loading: isLoading,
 					removing: isRemoving,
 					rights,
@@ -180,16 +165,13 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	return (
 		<>
 			<ContextHeader
-				tabs={activeTabs}
-				linkProps={(props: ContextHeaderTabLinkProps) => ({
-					...props,
-					to: generatePath(`${MODULE_PATHS.site.detail}/${props.href}`, {
-						siteId,
-						menuId,
-					}),
-					component: Link,
-				})}
 				title={pageTitle}
+				badges={[
+					{
+						name: 'Menu-item',
+						type: 'primary',
+					},
+				]}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
@@ -198,4 +180,4 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	);
 };
 
-export default MenuUpdate;
+export default MenuItemUpdate;

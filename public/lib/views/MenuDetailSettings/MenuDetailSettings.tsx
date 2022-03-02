@@ -187,7 +187,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ errors, submitForm, values, resetForm, setFieldValue }) => {
+				{({ errors, submitForm, values, resetForm }) => {
 					onChange(values);
 
 					return (
