@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 import { useNavigate } from '@redactie/utils';
 
@@ -17,7 +17,7 @@ const menuItems = [
 	},
 ];
 
-const FlyoutMenu = (siteId: any, menuUuid: any): JSX.Element => {
+const FlyoutMenu: FC<{ menuUuid?: string; siteId: string }> = ({menuUuid, siteId}) => {
 	const { navigate } = useNavigate(SITES_ROOT);
 
 	return (
