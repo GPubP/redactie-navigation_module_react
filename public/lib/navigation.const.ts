@@ -5,6 +5,7 @@ export const TENANT_ROOT = '/:tenantId';
 export const SITES_ROOT = 'sites';
 export const urlSiteParam = `/:siteId`;
 export const root = '/menus';
+export const detail = `${urlSiteParam}${root}/:menuUuid`;
 
 export const MODULE_PATHS = {
 	admin: `/content/overzicht`,
@@ -26,7 +27,13 @@ export const MODULE_PATHS = {
 		createSettings: `${urlSiteParam}/menus/aanmaken/instellingen`,
 		detail: `${urlSiteParam}/menus/:menuUuid`,
 		detailSettings: `${urlSiteParam}/menus/:menuUuid/instellingen`,
+		detailMenuItems: `${urlSiteParam}/menus/:menuUuid/menu-items`,
 		contentTypeMenu: `${urlSiteParam}/content-types/:contentTypeId`,
+		menuItems: {
+			createContentRef: `${detail}/menu-items/content-referentie/aanmaken`,
+			createHyperlink: `${detail}/menu-items/hyperlink/aanmaken`,
+			createTitle: `${detail}/menu-items/tussentitel/aanmaken`,
+		},
 	},
 };
 
@@ -34,7 +41,20 @@ export const BREADCRUMB_OPTIONS = (
 	generatePath: NavigateGenerateFn,
 	extraBreadcrumbs: Breadcrumb[] = []
 ): BreadcrumbOptions => ({
-	excludePaths: ['/', `${TENANT_ROOT}`, `${TENANT_ROOT}${root}`, `${TENANT_ROOT}/sites`],
+	excludePaths: [
+		'/',
+		`${TENANT_ROOT}`,
+		`${TENANT_ROOT}${root}`,
+		`${TENANT_ROOT}/sites`,
+		`${TENANT_ROOT}/sites${detail}/menu-items`,
+		`${TENANT_ROOT}/sites${detail}/menu-items`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/content-referentie/aanmaken`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/content-referentie`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/hyperlink/aanmaken`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/hyperlink`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/tussentitel/aanmaken`,
+		`${TENANT_ROOT}/sites${detail}/menu-items/tussentitel`,
+	],
 	extraBreadcrumbs: [
 		{
 			name: 'Home',
@@ -49,7 +69,7 @@ export const BREADCRUMB_OPTIONS = (
 });
 
 export const MENU_DETAIL_TAB_MAP: {
-	[key in 'settings']: ContextHeaderTab;
+	[key in 'settings' | 'menuItems']: ContextHeaderTab;
 } = {
 	settings: {
 		name: 'Instellingen',
@@ -57,9 +77,18 @@ export const MENU_DETAIL_TAB_MAP: {
 		active: true,
 		disabled: false,
 	},
+	menuItems: {
+		name: 'Menu-items',
+		target: 'menu-items',
+		active: true,
+		disabled: false,
+	},
 };
 
-export const MENU_DETAIL_TABS: ContextHeaderTab[] = [MENU_DETAIL_TAB_MAP.settings];
+export const MENU_DETAIL_TABS: ContextHeaderTab[] = [
+	MENU_DETAIL_TAB_MAP.settings,
+	MENU_DETAIL_TAB_MAP.menuItems,
+];
 
 export const CONFIG: Readonly<{ name: string; module: string }> = {
 	name: 'navigation',
