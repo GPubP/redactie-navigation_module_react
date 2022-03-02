@@ -1,4 +1,10 @@
-import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import { FlyoutButton } from '@acpaas-ui/react-components';
+import { FlyoutMenu } from '../../components/FlyoutMenu'
+import {
+	ContextHeader,
+	ContextHeaderActionsSection,
+	ContextHeaderTopSection,
+} from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
 	ContextHeaderTabLinkProps,
@@ -10,7 +16,7 @@ import {
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, matchPath, useParams } from 'react-router-dom';
 
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
@@ -39,6 +45,14 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	const { siteId, menuUuid } = useParams<{ menuUuid?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const isMenuItemsOverview = useMemo(
+		() =>
+			!!matchPath(location.pathname, {
+				path: `/:tenantId/sites${MODULE_PATHS.site.detailMenuItems}`,
+				exact: true,
+			}),
+		[location.pathname]
+	);
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -192,6 +206,18 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 				title={pageTitle}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
+				{isMenuItemsOverview && (
+					<ContextHeaderActionsSection>
+						<FlyoutButton
+							label="Nieuw maken"
+							flyoutDirection="right"
+							flyoutSize="small"
+							iconLeft="plus"
+						>
+							<FlyoutMenu siteId={siteId} menuUuid={menuUuid} />
+						</FlyoutButton>
+					</ContextHeaderActionsSection>
+				)}
 			</ContextHeader>
 			<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
 		</>
