@@ -64,9 +64,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			return Promise.resolve();
 		}
 
-		if (startitem === 0) {
-			this.store.setIsFetching(true);
-		}
+		this.store.setIsFetching(true);
 
 		return this.service
 			.getSubset(siteId, menuId, startitem, depth)
