@@ -63,10 +63,10 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const rights = useMemo(
 		() => ({
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.menuSecurityRights.update,
+				rolesRightsConnector.menuItemSecurityRights.update,
 			]),
 			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.menuSecurityRights.delete,
+				rolesRightsConnector.menuItemSecurityRights.delete,
 			]),
 		}),
 		[mySecurityrights]
