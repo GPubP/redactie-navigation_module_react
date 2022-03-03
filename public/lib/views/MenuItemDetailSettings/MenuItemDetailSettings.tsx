@@ -418,7 +418,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												/>
 											</div>
 										)}
-										<small className="u-block">
+										<small className="u-block u-margin-top-xs">
 											Je kan de status bewerken indien het content item online
 											is
 										</small>

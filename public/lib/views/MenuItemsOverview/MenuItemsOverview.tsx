@@ -123,7 +123,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				expandNested={false}
 				striped={false}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={menuItemsLoadingState === LoadingState.Loading}
+				loading={menuItemsLoadingState === LoadingState.Loading && !nestedLoadingId}
 			/>
 		);
 	};
@@ -133,7 +133,10 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.menuItemsOverview} />
 			</div>
-			<DataLoader loadingState={initialLoading} render={renderTable} />
+			<DataLoader
+				loadingState={initialLoading === LoadingState.Loading && !nestedLoadingId}
+				render={renderTable}
+			/>
 		</>
 	);
 };
