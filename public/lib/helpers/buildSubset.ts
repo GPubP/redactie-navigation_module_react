@@ -47,7 +47,5 @@ export const buildSubset = (
 		items: [],
 	});
 
-	console.log(res);
-
 	return res.parentFound ? res.items : itemsToAppend;
 };

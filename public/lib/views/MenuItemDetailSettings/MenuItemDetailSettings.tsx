@@ -385,7 +385,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											disabled={!canEdit || !contentItemPublished}
 											name="publishStatus"
 											label=""
-											onChange={(e: ChangeEvent<HTMLInputElement>) => {
+											onClick={(e: ChangeEvent<HTMLInputElement>) => {
 												setFieldValue(
 													'publishStatus',
 													e.target.checked
