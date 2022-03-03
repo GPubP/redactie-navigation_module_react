@@ -1,14 +1,24 @@
-import { Button, Checkbox, Switch, Textarea, TextField } from '@acpaas-ui/react-components';
+import {
+	Button,
+	Card,
+	CardBody,
+	CardDescription,
+	CardTitle,
+	Checkbox,
+	Switch,
+	Textarea,
+	TextField,
+} from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
 	Cascader,
-	Container,
 } from '@acpaas-ui/react-editorial-components';
 import { ContentModel } from '@redactie/content-module';
 import { InputFieldProps } from '@redactie/form-renderer-module';
 import {
 	AlertContainer,
+	DeletePrompt,
 	ErrorMessage,
 	FormikOnChangeHandler,
 	LeavePrompt,
@@ -16,7 +26,7 @@ import {
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
 import { omit } from 'ramda';
-import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
@@ -59,6 +69,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		menuItemDraft
 	);
 	const [contentItemPublished, setContentItemPublished] = useState(false);
+	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
 	useEffect(() => {
 		if (!menuId || !siteId) {
@@ -72,7 +83,11 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		return menuItem?.id ? rights?.canUpdate : true;
 	}, [menuItem, rights]);
 
-	const isEdit = useMemo(() => {
+	const canDelete = useMemo(() => {
+		return menuItem?.id ? rights?.canDelete : false;
+	}, [menuItem, rights]);
+
+	const isUpdate = useMemo(() => {
 		return !!menuItem?.id;
 	}, [menuItem]);
 
@@ -126,6 +141,21 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		setFieldValue('position', value);
 	};
 
+	const onDeletePromptConfirm = async (): Promise<void> => {
+		if (!menuItem) {
+			return;
+		}
+
+		resetIsChanged();
+
+		await onDelete(menuItem);
+		setShowDeleteModal(false);
+	};
+
+	const onDeletePromptCancel = (): void => {
+		setShowDeleteModal(false);
+	};
+
 	/**
 	 * Render
 	 */
@@ -134,8 +164,39 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		return null;
 	}
 
+	const renderDelete = (): ReactElement => {
+		return (
+			<>
+				<Card className="u-margin-top">
+					<CardBody>
+						<CardTitle>Verwijderen</CardTitle>
+						<CardDescription>
+							Opgelet: Reeds bestaande verwijzingen naar dit menu-item worden
+							ongeldig.
+						</CardDescription>
+						<Button
+							onClick={() => setShowDeleteModal(true)}
+							className="u-margin-top"
+							type="danger"
+							iconLeft="trash-o"
+						>
+							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
+						</Button>
+					</CardBody>
+				</Card>
+				<DeletePrompt
+					body="Ben je zeker dat je dit menu-item wil verwijderen? Dit kan niet ongedaan gemaakt worden."
+					isDeleting={removing}
+					show={showDeleteModal}
+					onCancel={onDeletePromptCancel}
+					onConfirm={onDeletePromptConfirm}
+				/>
+			</>
+		);
+	};
+
 	return (
-		<Container>
+		<>
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
@@ -271,15 +332,16 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												</div>
 											</Cascader>
 										</div>
-										{isEdit && (
+										{isUpdate && (
 											<Button
 												className="u-margin-left-xs"
+												disabled={!canEdit}
 												onClick={() => {
 													console.log(menuItemDraft?.parentId);
 												}}
 												type="primary"
 											>
-												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+												Sorteren
 											</Button>
 										)}
 									</div>
@@ -396,7 +458,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 					);
 				}}
 			</Formik>
-		</Container>
+			{isUpdate && canDelete && renderDelete()}
+		</>
 	);
 };
 

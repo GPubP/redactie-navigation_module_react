@@ -219,7 +219,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public async deleteMenuItem(siteId: string, menuId: string, body: MenuItem): Promise<void> {
+	public async deleteMenuItem(
+		siteId: string,
+		menuId: string,
+		body: MenuItem,
+		alertId: string
+	): Promise<void> {
 		const { isRemoving } = this.query.getValue();
 
 		if (isRemoving || !body) {
@@ -240,7 +245,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				// Timeout because the alert should be visible on the overview page
 				setTimeout(() => {
 					alertService.success(getAlertMessages(body).delete.success, {
-						containerId: ALERT_CONTAINER_IDS.overview,
+						containerId: alertId,
 					});
 				}, 300);
 			})
