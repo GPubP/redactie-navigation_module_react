@@ -95,7 +95,7 @@ export const MENU_ITEMS_COLUMNS = (
 		},
 	},
 	{
-		label: 'Status menu item',
+		label: 'Status menu-item',
 		value: 'active',
 		width: '25%',
 		disableSorting: true,

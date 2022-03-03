@@ -100,6 +100,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			return {} as MenuItemDetailForm;
 		}
 
+		setContentItemPublished(menuItem.publishStatus === NAV_STATUSES.PUBLISHED);
 		return getInitialFormValues(menuItem, treeConfig.options);
 	}, [menuItem, treeConfig.options]);
 
@@ -116,8 +117,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	/**
 	 * Methods
 	 */
-	const onSave = (): void => {
-		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
+	const onSave = async (): Promise<void> => {
+		await onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
 
@@ -127,8 +128,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			: undefined;
 
 		menuItemsFacade.setMenuItemDraft({
-			...menuItemDraft,
-			...omit(['position'], formValue),
+			...omit(['parentId'], menuItemDraft),
+			...omit(['position', 'parentId'], formValue),
 			...(parentId && { parentId }),
 		} as MenuItem);
 	};
@@ -237,12 +238,16 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 													fieldHelperProps={{
 														...getFieldHelpers('slug'),
 														setValue: (value: ContentModel) => {
-															setContentItemPublished(
-																!!value.meta.published
-															);
 															setFieldValue(
 																'slug',
 																value.meta.slug.nl
+															);
+															setFieldValue(
+																'publishStatus',
+																NAV_STATUSES.DRAFT
+															);
+															setContentItemPublished(
+																!!value.meta.published
 															);
 
 															if (value.meta.urlPath?.nl.value) {
@@ -375,9 +380,10 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									<div className="col-xs-12">
 										<label className="u-block u-margin-bottom-xs">Status</label>
 										<Field
+											key={values.publishStatus}
 											as={Switch}
 											checked={
-												values.publishStatus === NAV_STATUSES.PUBLISHED
+												values?.publishStatus === NAV_STATUSES.PUBLISHED
 											}
 											labelFalse="Uit"
 											labelTrue="Aan"
@@ -399,7 +405,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												<Field
 													as={Checkbox}
 													checked={
-														values.publishStatus === NAV_STATUSES.READY
+														values?.publishStatus === NAV_STATUSES.READY
 													}
 													id="readyStatus"
 													disabled={!canEdit}
