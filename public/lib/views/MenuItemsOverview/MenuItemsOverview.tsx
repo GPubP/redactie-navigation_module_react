@@ -64,7 +64,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 
 	const rows = useMemo(() => {
 		if (!menuItems || !menuItems.length) {
-			return undefined;
+			return [];
 		}
 
 		setNestedLoadingId(undefined);
@@ -123,7 +123,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				expandNested={false}
 				striped={false}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={!rows}
+				loading={menuItemsLoadingState === LoadingState.Loading}
 			/>
 		);
 	};

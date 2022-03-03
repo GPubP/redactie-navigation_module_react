@@ -56,7 +56,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	onDelete,
 	loading,
 	removing,
-	upserting,
 	menu,
 	menuItem,
 	menuItemDraft,
@@ -245,10 +244,13 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 																'slug',
 																value.meta.slug.nl
 															);
-															setFieldValue(
-																'externalUrl',
-																`${site?.data.url}${value.meta.urlPath?.nl.value}`
-															);
+
+															if (value.meta.urlPath?.nl.value) {
+																setFieldValue(
+																	'externalUrl',
+																	`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																);
+															}
 														},
 													}}
 													fieldSchema={
@@ -267,7 +269,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											);
 										}}
 									</Field>
-									<ErrorMessage name="slug" />
 									<small className="u-block u-margin-top-xs">
 										Zoek en selecteer een content item
 									</small>
@@ -294,7 +295,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												<div className="a-input__wrapper">
 													<input
 														onChange={() => null}
-														disabled={!canEdit}
+														disabled={
+															!canEdit || !treeConfig.options.length
+														}
 														placeholder="Kies een positie in de boom"
 														value={getPositionInputValue(
 															treeConfig.options,
@@ -436,8 +439,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
 										<Button
-											iconLeft={upserting ? 'circle-o-notch fa-spin' : null}
-											disabled={upserting || !isChanged}
+											iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+											disabled={loading || !isChanged}
 											onClick={submitForm}
 											type="success"
 										>
