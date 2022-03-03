@@ -1,4 +1,8 @@
-import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import {
+	Container,
+	ContextHeader,
+	ContextHeaderTopSection,
+} from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
 	DataLoader,
@@ -59,7 +63,7 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	} = useMenuItem();
 	const [menuItemDraft] = useMenuItemDraft();
 	const [forceNavigateToOverview] = useOnNextRender(() =>
-		navigate(MODULE_PATHS.site.detail, { siteId, menuId })
+		navigate(MODULE_PATHS.site.menuItems, { siteId, menuId })
 	);
 
 	const [
@@ -141,7 +145,7 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const deleteMenuItem = async (menuItem: MenuItem): Promise<void> => {
 		return (
 			menuItemsFacade
-				.deleteMenuItem(siteId, menuId, menuItem)
+				.deleteMenuItem(siteId, menuId, menuItem, ALERT_CONTAINER_IDS.menuItemsOverview)
 				.then(forceNavigateToOverview)
 				// eslint-disable-next-line @typescript-eslint/no-empty-function
 				.catch(() => {})
@@ -191,7 +195,9 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
-			<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
+			<Container>
+				<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
+			</Container>
 		</>
 	);
 };

@@ -1,4 +1,8 @@
-import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import {
+	Container,
+	ContextHeader,
+	ContextHeaderTopSection,
+} from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
 	LoadingState,
@@ -111,7 +115,9 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 			</ContextHeader>
-			<div className="u-margin-top">{renderChildRoutes()}</div>
+			<Container>
+				<div className="u-margin-top">{renderChildRoutes()}</div>
+			</Container>
 		</>
 	);
 };
