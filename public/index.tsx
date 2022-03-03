@@ -61,11 +61,11 @@ sitesConnector.registerRoutes({
 		label: 'Menu',
 		order: 2,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
-		// canShown: [
-		// 	rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-		// 		rolesRightsConnector.menuSecurityRights.read,
-		// 	]),
-		// ],
+		canShown: [
+			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
+		],
 	},
 	routes: [
 		{

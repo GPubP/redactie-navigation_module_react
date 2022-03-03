@@ -1,9 +1,10 @@
 import { Table } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DataLoader, useNavigate } from '@redactie/utils';
+import { AlertContainer, DataLoader, LoadingState, useNavigate } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
+import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useMenuItems } from '../../hooks';
 import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
@@ -21,6 +22,25 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 	const { menuItems, fetchingState: menuItemsLoadingState } = useMenuItems();
 	const { navigate } = useNavigate(SITES_ROOT);
 	const [nestedLoadingId, setNestedLoadingId] = useState<number | undefined>();
+	const [
+		mySecurityRightsLoadingState,
+		mySecurityrights,
+	] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
+	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+
+	useEffect(() => {
+		if (
+			menuItemsLoadingState !== LoadingState.Loading &&
+			mySecurityRightsLoadingState !== LoadingState.Loading
+		) {
+			return setInitialLoading(LoadingState.Loaded);
+		}
+
+		setInitialLoading(LoadingState.Loading);
+	}, [menuItemsLoadingState, mySecurityRightsLoadingState]);
 
 	const transformItemsToRows = (menuItems: MenuItem[]): MenuItemsTableRow[] => {
 		return (menuItems || []).map(menuItem => {
@@ -90,7 +110,13 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<Table
 				fixed
 				dataKey="id"
-				columns={MENU_ITEMS_COLUMNS(t, onRowExpand, openRearrangeModal, openRows)}
+				columns={MENU_ITEMS_COLUMNS(
+					t,
+					mySecurityrights,
+					onRowExpand,
+					openRearrangeModal,
+					openRows
+				)}
 				rows={rows}
 				nestedLoadingId={nestedLoadingId}
 				expandedRows={expandedRows}
@@ -107,7 +133,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.menuItemsOverview} />
 			</div>
-			<DataLoader loadingState={menuItemsLoadingState} render={renderTable} />
+			<DataLoader loadingState={initialLoading} render={renderTable} />
 		</>
 	);
 };

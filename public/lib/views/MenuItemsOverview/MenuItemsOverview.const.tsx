@@ -5,6 +5,7 @@ import { TableColumn } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import React from 'react';
 
+import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
 
 import styles from './MenuItemsOverview.module.scss';
@@ -13,6 +14,7 @@ const cx = classnames.bind(styles);
 
 export const MENU_ITEMS_COLUMNS = (
 	t: TranslateFunc,
+	mySecurityrights: string[],
 	expandRow: (id: number) => void,
 	openRearrangeModal: (id: number) => void,
 	openRows: string[]
@@ -114,13 +116,18 @@ export const MENU_ITEMS_COLUMNS = (
 			width: '20%',
 			component(value: string, { id, navigate }: MenuItemsTableRow) {
 				return (
-					<Button
-						ariaLabel="Edit"
-						icon="edit"
-						onClick={() => navigate(id)}
-						type="primary"
-						transparent
-					/>
+					<rolesRightsConnector.api.components.SecurableRender
+						userSecurityRights={mySecurityrights}
+						requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.read]}
+					>
+						<Button
+							ariaLabel="Edit"
+							icon="edit"
+							onClick={() => navigate(id)}
+							type="primary"
+							transparent
+						/>
+					</rolesRightsConnector.api.components.SecurableRender>
 				);
 			},
 		},
