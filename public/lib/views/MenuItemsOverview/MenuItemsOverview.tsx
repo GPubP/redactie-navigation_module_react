@@ -30,6 +30,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 		onlyKeys: true,
 	});
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+	const [cachedItems, setCachedItems] = useState<number[]>([]);
 
 	useEffect(() => {
 		if (
@@ -92,8 +93,12 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			return;
 		}
 
-		setNestedLoadingId(rowId);
-		await menuItemsFacade.getSubset(siteId, menuId as string, rowId, 1);
+		if (!cachedItems.includes(rowId)) {
+			setNestedLoadingId(rowId);
+			await menuItemsFacade.getSubset(siteId, menuId as string, rowId, 1);
+		}
+
+		setCachedItems([...cachedItems, rowId]);
 
 		setExpandedRows({
 			...expandedRows,
