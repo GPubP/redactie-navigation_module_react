@@ -211,14 +211,21 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				{isMenuItemsOverview && (
 					<ContextHeaderActionsSection>
-						<FlyoutButton
-							label="Nieuw maken"
-							flyoutDirection="right"
-							flyoutSize="small"
-							iconLeft="plus"
+						<rolesRightsConnector.api.components.SecurableRender
+							userSecurityRights={mySecurityrights}
+							requiredSecurityRights={[
+								rolesRightsConnector.menuItemSecurityRights.create,
+							]}
 						>
-							<FlyoutMenu siteId={siteId} menuId={menuId} />
-						</FlyoutButton>
+							<FlyoutButton
+								label="Nieuw maken"
+								flyoutDirection="right"
+								flyoutSize="small"
+								iconLeft="plus"
+							>
+								<FlyoutMenu siteId={siteId} menuId={menuId} />
+							</FlyoutButton>
+						</rolesRightsConnector.api.components.SecurableRender>
 					</ContextHeaderActionsSection>
 				)}
 			</ContextHeader>

@@ -72,6 +72,10 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		return menuItem?.id ? rights?.canUpdate : true;
 	}, [menuItem, rights]);
 
+	const isEdit = useMemo(() => {
+		return !!menuItem?.id;
+	}, [menuItem]);
+
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
 		activeItem: MenuItem | undefined;
@@ -210,61 +214,79 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 							</div>
 							<div className="row u-margin-top">
 								<div className="col-xs-12">
-									<div className="a-input has-icon-right is-required">
-										<label className="a-input__label" htmlFor="text-field">
-											Positie
-										</label>
-										<Cascader
-											changeOnSelect
-											value={menuItem?.parentId}
-											options={treeConfig.options}
-											onChange={(value: number[]) =>
-												handlePositionOnChange(value, setFieldValue)
-											}
+									<div className="u-flex u-flex-align-end">
+										<div
+											className="a-input has-icon-right is-required"
+											style={{ flexGrow: 1 }}
 										>
-											<div className="a-input__wrapper">
-												<input
-													onChange={() => null}
-													disabled={!canEdit}
-													placeholder="Kies een positie in de boom"
-													value={getPositionInputValue(
-														treeConfig.options,
-														values.position
-													)}
-												/>
+											<label className="a-input__label" htmlFor="text-field">
+												Positie
+											</label>
+											<Cascader
+												changeOnSelect
+												value={menuItem?.parentId}
+												options={treeConfig.options}
+												onChange={(value: number[]) =>
+													handlePositionOnChange(value, setFieldValue)
+												}
+											>
+												<div className="a-input__wrapper">
+													<input
+														onChange={() => null}
+														disabled={!canEdit}
+														placeholder="Kies een positie in de boom"
+														value={getPositionInputValue(
+															treeConfig.options,
+															values.position
+														)}
+													/>
 
-												{values.position?.length > 0 && (
-													<span
-														className="fa"
-														style={{
-															pointerEvents: 'initial',
-															cursor: 'pointer',
-														}}
-													>
-														<Button
-															icon="close"
-															ariaLabel="Close"
-															size="small"
-															transparent
+													{values.position?.length > 0 && (
+														<span
+															className="fa"
 															style={{
-																top: '-2px',
+																pointerEvents: 'initial',
+																cursor: 'pointer',
 															}}
-															onClick={(e: React.SyntheticEvent) => {
-																e.preventDefault();
-																e.stopPropagation();
-																setFieldValue('position', []);
-															}}
-														></Button>
-													</span>
-												)}
-											</div>
-										</Cascader>
-										<ErrorMessage name="description" />
-										<small className="u-block u-margin-top-xs">
-											Selecteer op welke plek in de boom je dit item wilt
-											hangen.
-										</small>
+														>
+															<Button
+																icon="close"
+																ariaLabel="Close"
+																size="small"
+																disabled={!canEdit}
+																transparent
+																style={{
+																	top: '-2px',
+																}}
+																onClick={(
+																	e: React.SyntheticEvent
+																) => {
+																	e.preventDefault();
+																	e.stopPropagation();
+																	setFieldValue('position', []);
+																}}
+															></Button>
+														</span>
+													)}
+												</div>
+											</Cascader>
+										</div>
+										{isEdit && (
+											<Button
+												className="u-margin-left-xs"
+												onClick={() => {
+													console.log(menuItemDraft?.parentId);
+												}}
+												type="primary"
+											>
+												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+											</Button>
+										)}
 									</div>
+									<ErrorMessage name="description" />
+									<small className="u-block u-margin-top-xs">
+										Selecteer op welke plek in de boom je dit item wilt hangen.
+									</small>
 								</div>
 							</div>
 							<div className="row u-margin-top">
