@@ -104,7 +104,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	};
 
 	const onChange = (formValue: FormikValues): void => {
-		const parentId = formValue.position[formValue.position.length - 1];
+		const parentId = formValue.position
+			? formValue.position[formValue.position.length - 1]
+			: undefined;
 
 		menuItemsFacade.setMenuItemDraft({
 			...menuItemDraft,

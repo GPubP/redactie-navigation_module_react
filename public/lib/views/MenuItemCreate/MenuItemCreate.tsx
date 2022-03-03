@@ -10,7 +10,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import { useMenuItems } from '../../hooks';
+import { useMenu, useMenuItem, useMenuItemDraft, useMenuItems } from '../../hooks';
 import { generateEmptyMenuItem } from '../../menu.helpers';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
@@ -27,6 +27,9 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	/**
 	 * Hooks
 	 */
+	const { menuItem } = useMenuItem();
+	const [menuItemDraft] = useMenuItemDraft();
+	const { menu } = useMenu();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const { upsertingState, fetchingState } = useMenuItems();
@@ -38,6 +41,14 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 				name: "Menu's",
 				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
 			},
+			...(menu?.label
+				? [
+						{
+							name: menu?.label,
+							target: generatePath(MODULE_PATHS.site.menuItems, { siteId, menuId }),
+						},
+				  ]
+				: []),
 		])
 	);
 	const isLoading = useMemo(() => {
@@ -80,6 +91,9 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 				loading: isLoading,
 				onCancel: () => navigate(MODULE_PATHS.overview),
 				onSubmit: createItem,
+				menu,
+				menuItem,
+				menuItemDraft,
 			}}
 		/>
 	);

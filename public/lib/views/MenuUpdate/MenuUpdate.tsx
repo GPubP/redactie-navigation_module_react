@@ -1,6 +1,8 @@
+import { FlyoutButton } from '@acpaas-ui/react-components';
 import {
 	Container,
 	ContextHeader,
+	ContextHeaderActionsSection,
 	ContextHeaderTopSection,
 } from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
@@ -14,8 +16,9 @@ import {
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, matchPath, useParams } from 'react-router-dom';
 
+import { FlyoutMenu } from '../../components/FlyoutMenu';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
@@ -26,6 +29,7 @@ import {
 	MENU_DETAIL_TABS,
 	MODULE_PATHS,
 	SITES_ROOT,
+	TENANT_ROOT,
 } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
@@ -43,6 +47,15 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const isMenuItemsOverview = useMemo(
+		() =>
+			!!matchPath(location.pathname, {
+				path: `${TENANT_ROOT}/${SITES_ROOT}${MODULE_PATHS.site.menuItems}`,
+				exact: true,
+			}),
+		[location.pathname]
+	);
+
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -196,6 +209,18 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 				title={pageTitle}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
+				{isMenuItemsOverview && (
+					<ContextHeaderActionsSection>
+						<FlyoutButton
+							label="Nieuw maken"
+							flyoutDirection="right"
+							flyoutSize="small"
+							iconLeft="plus"
+						>
+							<FlyoutMenu siteId={siteId} menuId={menuId} />
+						</FlyoutButton>
+					</ContextHeaderActionsSection>
+				)}
 			</ContextHeader>
 			<Container>
 				<DataLoader loadingState={initialLoading} render={renderChildRoutes} />

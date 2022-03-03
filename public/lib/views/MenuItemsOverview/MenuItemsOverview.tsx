@@ -53,7 +53,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				hasChildren:
 					!!(menuItem.parents || []).length || (menuItem.childItemCount || 0) > 0,
 				navigate: (menuItemId: number) =>
-					navigate(MODULE_PATHS.site.menuItemDetailSettings, {
+					navigate(MODULE_PATHS.site.contentRefMenuItemDetailSettings, {
 						siteId,
 						menuId,
 						menuItemId,
