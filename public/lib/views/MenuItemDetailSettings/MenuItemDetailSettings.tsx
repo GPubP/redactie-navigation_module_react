@@ -1,4 +1,4 @@
-import { Button, Checkbox, Textarea, TextField } from '@acpaas-ui/react-components';
+import { Button, Checkbox, Switch, Textarea, TextField } from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
@@ -12,7 +12,6 @@ import {
 	ErrorMessage,
 	FormikOnChangeHandler,
 	LeavePrompt,
-	LoadingState,
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
@@ -26,7 +25,6 @@ import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { getPositionInputValue } from '../../helpers/getPositionInputValue';
 import { getTreeConfig } from '../../helpers/getTreeConfig';
-import { useMenu, useMenuItem, useMenuItemDraft } from '../../hooks';
 import { MenuItemDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { CascaderOption } from '../../navigation.types';
@@ -48,19 +46,19 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	onDelete,
 	loading,
 	removing,
+	upserting,
+	menu,
+	menuItem,
+	menuItemDraft,
 }) => {
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
-	const [menuItemDraft] = useMenuItemDraft();
-	const { menuItem, upsertingState } = useMenuItem();
-	const { menu } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(
 		!loading && !!menuItemDraft,
 		menuItemDraft
 	);
 	const [contentItemPublished, setContentItemPublished] = useState(false);
-	const isLoading = useMemo(() => upsertingState === LoadingState.Loading, [upsertingState]);
 
 	useEffect(() => {
 		if (!menuId || !siteId) {
@@ -73,6 +71,10 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const canEdit = useMemo(() => {
 		return menuItem?.id ? rights?.canUpdate : true;
 	}, [menuItem, rights]);
+
+	const isEdit = useMemo(() => {
+		return !!menuItem?.id;
+	}, [menuItem]);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -106,7 +108,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	};
 
 	const onChange = (formValue: FormikValues): void => {
-		const parentId = formValue.position[formValue.position.length - 1];
+		const parentId = formValue.position
+			? formValue.position[formValue.position.length - 1]
+			: undefined;
 
 		menuItemsFacade.setMenuItemDraft({
 			...menuItemDraft,
@@ -210,61 +214,79 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 							</div>
 							<div className="row u-margin-top">
 								<div className="col-xs-12">
-									<div className="a-input has-icon-right is-required">
-										<label className="a-input__label" htmlFor="text-field">
-											Positie
-										</label>
-										<Cascader
-											changeOnSelect
-											value={menuItem?.parentId}
-											options={treeConfig.options}
-											onChange={(value: number[]) =>
-												handlePositionOnChange(value, setFieldValue)
-											}
+									<div className="u-flex u-flex-align-end">
+										<div
+											className="a-input has-icon-right is-required"
+											style={{ flexGrow: 1 }}
 										>
-											<div className="a-input__wrapper">
-												<input
-													onChange={() => null}
-													disabled={!canEdit}
-													placeholder="Kies een positie in de boom"
-													value={getPositionInputValue(
-														treeConfig.options,
-														values.position
-													)}
-												/>
+											<label className="a-input__label" htmlFor="text-field">
+												Positie
+											</label>
+											<Cascader
+												changeOnSelect
+												value={menuItem?.parentId}
+												options={treeConfig.options}
+												onChange={(value: number[]) =>
+													handlePositionOnChange(value, setFieldValue)
+												}
+											>
+												<div className="a-input__wrapper">
+													<input
+														onChange={() => null}
+														disabled={!canEdit}
+														placeholder="Kies een positie in de boom"
+														value={getPositionInputValue(
+															treeConfig.options,
+															values.position
+														)}
+													/>
 
-												{values.position?.length > 0 && (
-													<span
-														className="fa"
-														style={{
-															pointerEvents: 'initial',
-															cursor: 'pointer',
-														}}
-													>
-														<Button
-															icon="close"
-															ariaLabel="Close"
-															size="small"
-															transparent
+													{values.position?.length > 0 && (
+														<span
+															className="fa"
 															style={{
-																top: '-2px',
+																pointerEvents: 'initial',
+																cursor: 'pointer',
 															}}
-															onClick={(e: React.SyntheticEvent) => {
-																e.preventDefault();
-																e.stopPropagation();
-																setFieldValue('position', []);
-															}}
-														></Button>
-													</span>
-												)}
-											</div>
-										</Cascader>
-										<ErrorMessage name="description" />
-										<small className="u-block u-margin-top-xs">
-											Selecteer op welke plek in de boom je dit item wilt
-											hangen.
-										</small>
+														>
+															<Button
+																icon="close"
+																ariaLabel="Close"
+																size="small"
+																disabled={!canEdit}
+																transparent
+																style={{
+																	top: '-2px',
+																}}
+																onClick={(
+																	e: React.SyntheticEvent
+																) => {
+																	e.preventDefault();
+																	e.stopPropagation();
+																	setFieldValue('position', []);
+																}}
+															></Button>
+														</span>
+													)}
+												</div>
+											</Cascader>
+										</div>
+										{isEdit && (
+											<Button
+												className="u-margin-left-xs"
+												onClick={() => {
+													console.log(menuItemDraft?.parentId);
+												}}
+												type="primary"
+											>
+												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+											</Button>
+										)}
 									</div>
+									<ErrorMessage name="description" />
+									<small className="u-block u-margin-top-xs">
+										Selecteer op welke plek in de boom je dit item wilt hangen.
+									</small>
 								</div>
 							</div>
 							<div className="row u-margin-top">
@@ -288,14 +310,16 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									<div className="col-xs-12">
 										<label className="u-block u-margin-bottom-xs">Status</label>
 										<Field
-											as={Checkbox}
+											as={Switch}
 											checked={
 												values.publishStatus === NAV_STATUSES.PUBLISHED
 											}
+											labelFalse="Uit"
+											labelTrue="Aan"
 											id="publishStatus"
 											disabled={!canEdit || !contentItemPublished}
 											name="publishStatus"
-											label="Je kan de status bewerken indien het content item online is"
+											label=""
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {
 												setFieldValue(
 													'publishStatus',
@@ -306,25 +330,33 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											}}
 										/>
 										{!contentItemPublished && (
-											<Field
-												as={Checkbox}
-												checked={
-													values.publishStatus === NAV_STATUSES.READY
-												}
-												id="readyStatus"
-												disabled={!canEdit}
-												name="publishStatus"
-												label="Zet het menu-item aan wanneer het content item online is"
-												onChange={(e: ChangeEvent<HTMLInputElement>) => {
-													setFieldValue(
-														'publishStatus',
-														e.target.checked
-															? NAV_STATUSES.READY
-															: NAV_STATUSES.DRAFT
-													);
-												}}
-											/>
+											<div className="u-margin-top-xs">
+												<Field
+													as={Checkbox}
+													checked={
+														values.publishStatus === NAV_STATUSES.READY
+													}
+													id="readyStatus"
+													disabled={!canEdit}
+													name="publishStatus"
+													label="Zet het menu-item aan wanneer het content item online is"
+													onChange={(
+														e: ChangeEvent<HTMLInputElement>
+													) => {
+														setFieldValue(
+															'publishStatus',
+															e.target.checked
+																? NAV_STATUSES.READY
+																: NAV_STATUSES.DRAFT
+														);
+													}}
+												/>
+											</div>
 										)}
+										<small className="u-block">
+											Je kan de status bewerken indien het content item online
+											is
+										</small>
 										<ErrorMessage name="publishStatus" />
 									</div>
 								</div>
@@ -342,8 +374,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
 										<Button
-											iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-											disabled={isLoading || !isChanged}
+											iconLeft={upserting ? 'circle-o-notch fa-spin' : null}
+											disabled={upserting || !isChanged}
 											onClick={submitForm}
 											type="success"
 										>

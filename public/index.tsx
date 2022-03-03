@@ -87,26 +87,26 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
-			path: MODULE_PATHS.site.menuItemCreate,
+			path: MODULE_PATHS.site.createContentRefMenuItem,
 			breadcrumb: null,
 			component: MenuItemCreate,
-			redirect: MODULE_PATHS.site.menuItemCreateSettings,
+			redirect: MODULE_PATHS.site.createContentRefMenuItemSettings,
 			routes: [
 				{
-					path: MODULE_PATHS.site.menuItemCreateSettings,
+					path: MODULE_PATHS.site.createContentRefMenuItemSettings,
 					breadcrumb: null,
 					component: MenuItemDetailSettings,
 				},
 			],
 		},
 		{
-			path: MODULE_PATHS.site.menuItemDetail,
+			path: MODULE_PATHS.site.contentRefMenuItemDetail,
 			breadcrumb: null,
 			component: MenuItemUpdate,
-			redirect: MODULE_PATHS.site.menuItemDetailSettings,
+			redirect: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
 			routes: [
 				{
-					path: MODULE_PATHS.site.menuItemDetailSettings,
+					path: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
 					breadcrumb: null,
 					component: MenuItemDetailSettings,
 				},

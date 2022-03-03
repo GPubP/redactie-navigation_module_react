@@ -29,10 +29,10 @@ export const MODULE_PATHS = {
 		detailSettings: `${SITE_ROOT}/menus/:menuId/instellingen`,
 		contentTypeMenu: `${SITE_ROOT}/content-types/:contentTypeId`,
 		menuItems: `${SITE_ROOT}/menus/:menuId/menu-items`,
-		menuItemCreate: `${SITE_ROOT}/menus/:menuId/menu-items/aanmaken`,
-		menuItemCreateSettings: `${SITE_ROOT}/menus/:menuId/menu-items/aanmaken/instellingen`,
-		menuItemDetail: `${SITE_ROOT}/menus/:menuId/menu-items/:menuItemId`,
-		menuItemDetailSettings: `${SITE_ROOT}/menus/:menuId/menu-items/:menuItemId/instellingen`,
+		createContentRefMenuItem: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/aanmaken`,
+		createContentRefMenuItemSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/aanmaken/instellingen`,
+		contentRefMenuItemDetail: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId`,
+		contentRefMenuItemDetailSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId/instellingen`,
 	},
 };
 
@@ -46,6 +46,7 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}${MENUS_BASE_PATH}`,
 		`${TENANT_ROOT}/sites`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
 	],
 	extraBreadcrumbs: [
 		{

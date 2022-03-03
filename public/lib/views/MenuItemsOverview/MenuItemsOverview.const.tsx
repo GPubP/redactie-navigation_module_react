@@ -58,7 +58,12 @@ export const MENU_ITEMS_COLUMNS = (
 							<p>{label}</p>
 							{url && (
 								<EllipsisWithTooltip>
-									<a href={url} className="has-icon-right">
+									<a
+										href={url}
+										className="has-icon-right"
+										target="_blank"
+										rel="noopener noreferrer"
+									>
 										{url}
 										<Icon
 											name="external-link"
