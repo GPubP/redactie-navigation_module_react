@@ -115,8 +115,7 @@ export const MENU_ITEMS_COLUMNS = (
 				return (
 					<rolesRightsConnector.api.components.SecurableRender
 						userSecurityRights={mySecurityrights}
-						requiredSecurityRights={[]}
-						// requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.read]}
+						requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.read]}
 					>
 						<Button
 							ariaLabel="Edit"
