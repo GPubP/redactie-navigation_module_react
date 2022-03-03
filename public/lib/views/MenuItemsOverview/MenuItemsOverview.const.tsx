@@ -33,14 +33,11 @@ export const MENU_ITEMS_COLUMNS = (
 					</div>
 				);
 			},
-			component(
-				value: string,
-				{ id, url, label, rows, parents, childItemCount }: MenuItemsTableRow
-			) {
+			component(value: string, { id, url, label, rows, hasChildren }: MenuItemsTableRow) {
 				return (
 					<div className={cx('m-menu-items-table__item')}>
 						<div className={cx('m-menu-items-table__collapse')}>
-							{(rows || []).length || (parents || []).length || childItemCount > 0 ? (
+							{(rows || []).length || hasChildren ? (
 								<Button
 									onClick={() => expandRow(id)}
 									icon="chevron-right"

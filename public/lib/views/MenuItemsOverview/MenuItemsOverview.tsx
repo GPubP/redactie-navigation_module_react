@@ -50,8 +50,8 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				url: menuItem.externalUrl,
 				active: menuItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(menuItem.items),
-				parents: menuItem.parents || [],
-				childItemCount: menuItem.childItemCount || 0,
+				hasChildren:
+					!!(menuItem.parents || []).length || (menuItem.childItemCount || 0) > 0,
 				navigate: (menuItemId: number) =>
 					navigate(MODULE_PATHS.site.menuItemDetailSettings, {
 						siteId,
