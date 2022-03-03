@@ -239,16 +239,35 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 														...getFieldHelpers('slug'),
 														setValue: (value: ContentModel) => {
 															setContentItemPublished(
-																!!value.meta.published
+																!!value?.meta.published
 															);
 															setFieldValue(
 																'slug',
-																value.meta.slug.nl
+																value?.meta.slug?.nl
 															);
 															setFieldValue(
 																'externalUrl',
-																`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																`${site?.data.url}${value?.meta.urlPath?.nl?.value}`
 															);
+
+															if (!values?.label) {
+																setFieldValue(
+																	'label',
+																	value?.meta.label
+																);
+															}
+
+															// This will not work until fields are returned by the content select
+															// TODO: see if we should return fields because of this
+															if (
+																!values?.description &&
+																value?.fields?.teaser?.text
+															) {
+																setFieldValue(
+																	'description',
+																	value.fields.teaser.text
+																);
+															}
 														},
 													}}
 													fieldSchema={
