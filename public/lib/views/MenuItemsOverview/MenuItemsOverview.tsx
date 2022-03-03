@@ -1,5 +1,5 @@
 import { Table } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DataLoader, LoadingState, useNavigate } from '@redactie/utils';
+import { AlertContainer, DataLoader, useNavigate } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -44,7 +44,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 
 	const rows = useMemo(() => {
 		if (!menuItems || !menuItems.length) {
-			return [];
+			return undefined;
 		}
 
 		setNestedLoadingId(undefined);
@@ -97,6 +97,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				expandNested={false}
 				striped={false}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
+				loading={!rows}
 			/>
 		);
 	};
@@ -106,10 +107,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.menuItemsOverview} />
 			</div>
-			<DataLoader
-				loadingState={menuItemsLoadingState !== LoadingState.Loaded}
-				render={renderTable}
-			/>
+			<DataLoader loadingState={menuItemsLoadingState} render={renderTable} />
 		</>
 	);
 };

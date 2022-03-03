@@ -1,4 +1,5 @@
 import { alertService, BaseEntityFacade, SearchParams } from '@redactie/utils';
+import { pathOr } from 'ramda';
 import { take } from 'rxjs/operators';
 
 import { buildSubset } from '../../helpers';
@@ -76,13 +77,17 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				const result = await this.menuItems$.pipe(take(1)).toPromise();
 
 				this.store.set(
-					startitem === 0
-						? response?._embedded.resourceList
-						: buildSubset(
-								result,
-								response?._embedded.resourceList[0].items,
-								response?._embedded.resourceList[0].items[0].parentId as number
-						  )
+					buildSubset(
+						result,
+						startitem === 0
+							? response?._embedded.resourceList
+							: response?._embedded.resourceList[0].items,
+						pathOr(
+							0,
+							['_embedded', 'resourceList', 0, 'items', 0, 'parentId'],
+							response
+						)
+					)
 				);
 				this.store.update({
 					isFetching: false,
