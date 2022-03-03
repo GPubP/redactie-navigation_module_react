@@ -21,7 +21,7 @@ export const MINIMAL_VALIDATION_SCHEMA = object().shape({
 	navigationTree: string(),
 });
 
-export const NAV_ITEM_STATUSES = {
+export const NAV_STATUSES = {
 	REJECTED: 'rejected',
 	ARCHIVED: 'archived',
 	DRAFT: 'draft',
@@ -33,26 +33,26 @@ export const NAV_ITEM_STATUSES = {
 export const STATUS_OPTIONS = [
 	{
 		label: 'Werkversie',
-		value: NAV_ITEM_STATUSES.DRAFT,
+		value: NAV_STATUSES.DRAFT,
 	},
 	{
 		label: 'Klaar voor nakijken',
-		value: NAV_ITEM_STATUSES.INREVIEW,
+		value: NAV_STATUSES.INREVIEW,
 	},
 	{
 		label: 'Klaar voor publicatie',
-		value: NAV_ITEM_STATUSES.READY,
+		value: NAV_STATUSES.READY,
 	},
 	{
 		label: 'Gepubliceerd',
-		value: NAV_ITEM_STATUSES.PUBLISHED,
+		value: NAV_STATUSES.PUBLISHED,
 	},
 	{
 		label: 'Afgewezen',
-		value: NAV_ITEM_STATUSES.REJECTED,
+		value: NAV_STATUSES.REJECTED,
 	},
 	{
 		label: 'Gearchiveerd',
-		value: NAV_ITEM_STATUSES.ARCHIVED,
+		value: NAV_STATUSES.ARCHIVED,
 	},
 ];

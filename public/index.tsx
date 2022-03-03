@@ -11,7 +11,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { registerContentDetailCompartment } from './lib/connectors/content';
+import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
@@ -19,7 +19,16 @@ import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { MenuModuleProps } from './lib/menu.types';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
-import { MenuCreate, MenuDetailSettings, MenuOverview, MenuUpdate } from './lib/views';
+import {
+	MenuCreate,
+	MenuDetailSettings,
+	MenuItemCreate,
+	MenuItemDetailSettings,
+	MenuItemsOverview,
+	MenuItemUpdate,
+	MenuOverview,
+	MenuUpdate,
+} from './lib/views';
 
 // akitaDevtools();
 
@@ -78,6 +87,32 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.createContentRefMenuItem,
+			breadcrumb: null,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.createContentRefMenuItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createContentRefMenuItemSettings,
+					breadcrumb: null,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.contentRefMenuItemDetail,
+			breadcrumb: null,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
+					breadcrumb: null,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.detail,
 			breadcrumb: null,
 			component: MenuUpdate,
@@ -88,12 +123,17 @@ sitesConnector.registerRoutes({
 					breadcrumb: null,
 					component: MenuDetailSettings,
 				},
+				{
+					path: MODULE_PATHS.site.menuItems,
+					breadcrumb: null,
+					component: MenuItemsOverview,
+				},
 			],
 		},
 	],
 });
 
-registerContentDetailCompartment(CONFIG.name, {
+contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	label: 'Navigatie',
 	getDescription: contentItem => contentItem?.meta.slug.nl || '',
 	module: CONFIG.module,

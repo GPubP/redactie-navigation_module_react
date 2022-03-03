@@ -1,4 +1,10 @@
-import { ContextHeader, ContextHeaderTopSection } from '@acpaas-ui/react-editorial-components';
+import { FlyoutButton } from '@acpaas-ui/react-components';
+import {
+	Container,
+	ContextHeader,
+	ContextHeaderActionsSection,
+	ContextHeaderTopSection,
+} from '@acpaas-ui/react-editorial-components';
 import { ModuleRouteConfig, useBreadcrumbs } from '@redactie/redactie-core';
 import {
 	ContextHeaderTabLinkProps,
@@ -10,8 +16,9 @@ import {
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { Link, matchPath, useParams } from 'react-router-dom';
 
+import { FlyoutMenu } from '../../components/FlyoutMenu';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
@@ -22,11 +29,12 @@ import {
 	MENU_DETAIL_TABS,
 	MODULE_PATHS,
 	SITES_ROOT,
+	TENANT_ROOT,
 } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
-const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
+const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	location,
 	route,
 	tenantId,
@@ -36,9 +44,18 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [t] = useCoreTranslation();
-	const { siteId, menuUuid } = useParams<{ menuUuid?: string; siteId: string }>();
+	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
+	const isMenuItemsOverview = useMemo(
+		() =>
+			!!matchPath(location.pathname, {
+				path: `${TENANT_ROOT}/${SITES_ROOT}${MODULE_PATHS.site.menuItems}`,
+				exact: true,
+			}),
+		[location.pathname]
+	);
+
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -105,16 +122,16 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 	}, [siteId, menu, menuLoadingState]);
 
 	useEffect(() => {
-		if (menuUuid) {
-			menusFacade.getMenu(siteId, menuUuid);
-			menusFacade.getOccurrences(siteId, menuUuid);
+		if (menuId) {
+			menusFacade.getMenu(siteId, menuId);
+			menusFacade.getOccurrences(siteId, menuId);
 		}
 
 		return () => {
 			menusFacade.unsetMenu();
 			menusFacade.unsetMenuDraft();
 		};
-	}, [siteId, menuUuid]);
+	}, [siteId, menuId]);
 
 	/**
 	 * Methods
@@ -185,15 +202,36 @@ const MenuUpdate: FC<MenuRouteProps<{ menuUuid?: string; siteId: string }>> = ({
 					...props,
 					to: generatePath(`${MODULE_PATHS.site.detail}/${props.href}`, {
 						siteId,
-						menuUuid,
+						menuId,
 					}),
 					component: Link,
 				})}
 				title={pageTitle}
 			>
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
+				{isMenuItemsOverview && (
+					<ContextHeaderActionsSection>
+						<rolesRightsConnector.api.components.SecurableRender
+							userSecurityRights={mySecurityrights}
+							requiredSecurityRights={[
+								rolesRightsConnector.menuItemSecurityRights.create,
+							]}
+						>
+							<FlyoutButton
+								label="Nieuw maken"
+								flyoutDirection="right"
+								flyoutSize="small"
+								iconLeft="plus"
+							>
+								<FlyoutMenu siteId={siteId} menuId={menuId} />
+							</FlyoutButton>
+						</rolesRightsConnector.api.components.SecurableRender>
+					</ContextHeaderActionsSection>
+				)}
 			</ContextHeader>
-			<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
+			<Container>
+				<DataLoader loadingState={initialLoading} render={renderChildRoutes} />
+			</Container>
 		</>
 	);
 };

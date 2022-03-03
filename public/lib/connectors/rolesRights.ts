@@ -16,6 +16,12 @@ class RolesRightsConnector {
 		update: 'navigation-menus_update',
 		delete: 'navigation-menus_delete',
 	};
+	public menuItemSecurityRights = {
+		create: 'navigation-menu-items_create',
+		read: 'navigation-menu-items_read',
+		update: 'navigation-menu-items_update',
+		delete: 'navigation-menu-items_delete',
+	};
 	public api: RolesRightsModuleAPI;
 
 	constructor(api?: RolesRightsModuleAPI) {

@@ -1,5 +1,8 @@
 import { alertService, BaseEntityFacade, SearchParams } from '@redactie/utils';
+import { pathOr } from 'ramda';
+import { take } from 'rxjs/operators';
 
+import { buildSubset } from '../../helpers';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import {
 	MenuItem,
@@ -32,12 +35,60 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		this.service
 			.getMenuItems(siteId, menuId, searchParams)
-			.then((response: MenuItemsResponse | null) => {
+			.then((response: MenuItemsResponse) => {
 				if (!response) {
 					throw new Error('Getting menuItems failed!');
 				}
 
-				this.store.set(response._embedded.resourceList);
+				this.store.set(response?._embedded.resourceList);
+				this.store.update({
+					isFetching: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetching: false,
+				});
+			});
+	}
+
+	public async getSubset(
+		siteId: string,
+		menuId: string,
+		startitem = 0,
+		depth = 0
+	): Promise<void> {
+		const { isFetching } = this.query.getValue();
+
+		if (isFetching) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsFetching(true);
+
+		return this.service
+			.getSubset(siteId, menuId, startitem, depth)
+			.then(async (response: MenuItemsResponse) => {
+				if (!response) {
+					throw new Error('Getting menuItems subset failed!');
+				}
+
+				const result = await this.menuItems$.pipe(take(1)).toPromise();
+
+				this.store.set(
+					buildSubset(
+						result,
+						startitem === 0
+							? response?._embedded.resourceList
+							: response?._embedded.resourceList[0].items,
+						pathOr(
+							0,
+							['_embedded', 'resourceList', 0, 'items', 0, 'parentId'],
+							response
+						)
+					)
+				);
 				this.store.update({
 					isFetching: false,
 				});
@@ -59,16 +110,13 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getMenuItem(siteId, menuId, uuid)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Getting menuItem '${uuid}' failed!`);
 				}
 
 				this.store.update({
-					menuItem: {
-						...response,
-						lang: 'nl',
-					},
+					menuItem: response,
 					isFetchingOne: false,
 				});
 			})
@@ -80,7 +128,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public createMenuItem(siteId: string, menuId: string, body: MenuItem, alertId: string): void {
+	public async createMenuItem(
+		siteId: string,
+		menuId: string,
+		body: MenuItem,
+		alertId: string
+	): Promise<MenuItem | undefined> {
 		const { isCreating } = this.query.getValue();
 
 		if (isCreating) {
@@ -89,9 +142,9 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		this.store.setIsCreating(true);
 
-		this.service
+		return this.service
 			.createMenuItem(siteId, menuId, body)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Creating menuItem '${body?.label}' failed!`);
 				}
@@ -101,9 +154,15 @@ export class MenuItemsFacade extends BaseEntityFacade<
 					menuItemDraft: response,
 					isCreating: false,
 				});
-				alertService.success(getAlertMessages(response).create.success, {
-					containerId: alertId,
-				});
+
+				// Timeout because the alert should be visible on the overview page
+				setTimeout(() => {
+					alertService.success(getAlertMessages(response).create.success, {
+						containerId: alertId,
+					});
+				}, 300);
+
+				return response;
 			})
 			.catch(error => {
 				this.store.update({
@@ -113,10 +172,11 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				alertService.danger(getAlertMessages(body).create.error, {
 					containerId: alertId,
 				});
+				return undefined;
 			});
 	}
 
-	public updateMenuItem(
+	public async updateMenuItem(
 		siteId: string,
 		menuId: string,
 		body: MenuItem,
@@ -132,20 +192,14 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 		return this.service
 			.updateMenuItem(siteId, menuId, body)
-			.then((response: MenuItem | null) => {
+			.then((response: MenuItem) => {
 				if (!response) {
 					throw new Error(`Updating menuItem '${body.id}' failed!`);
 				}
 
 				this.store.update({
-					menuItem: {
-						...response,
-						lang: 'nl',
-					},
-					menuItemDraft: {
-						...response,
-						lang: 'nl',
-					},
+					menuItem: response,
+					menuItemDraft: response,
 					isUpdating: false,
 				});
 
@@ -165,7 +219,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public async deleteMenuItem(siteId: string, menuId: string, body: MenuItem): Promise<void> {
+	public async deleteMenuItem(
+		siteId: string,
+		menuId: string,
+		body: MenuItem,
+		alertId: string
+	): Promise<void> {
 		const { isRemoving } = this.query.getValue();
 
 		if (isRemoving || !body) {
@@ -186,7 +245,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				// Timeout because the alert should be visible on the overview page
 				setTimeout(() => {
 					alertService.success(getAlertMessages(body).delete.success, {
-						containerId: ALERT_CONTAINER_IDS.overview,
+						containerId: alertId,
 					});
 				}, 300);
 			})

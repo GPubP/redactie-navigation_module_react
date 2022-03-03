@@ -9,74 +9,56 @@ export class MenuItemsApiService {
 		siteId: string,
 		menuId: string,
 		searchParams: SearchParams
-	): Promise<MenuItemsResponse | null> {
-		try {
-			const response: MenuItemsResponse = await api
-				.get(`${siteId}/menus/${menuId}/items`, {
-					searchParams,
-				})
-				.json();
-
-			if (!response) {
-				throw new Error('Failed to get menuItems');
-			}
-
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
+	): Promise<MenuItemsResponse> {
+		return api
+			.get(`${siteId}/menus/${menuId}/items`, {
+				searchParams,
+			})
+			.json();
 	}
 
-	public async getMenuItem(siteId: string, menuId: string, id: string): Promise<MenuItem | null> {
-		try {
-			const response: MenuItem = await api
-				.get(`${siteId}/menus/${menuId}/items/${id}`)
-				.json();
+	public async getSubset(
+		siteId: string,
+		menuId: string,
+		startitem: number,
+		depth: number
+	): Promise<MenuItemsResponse> {
+		return api
+			.get(`${siteId}/menus/${menuId}/subset`, {
+				searchParams: {
+					startitem,
+					depth,
+				},
+			})
+			.json();
+	}
 
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
+	public async getMenuItem(siteId: string, menuId: string, id: string): Promise<MenuItem> {
+		return api.get(`${siteId}/menus/${menuId}/items/${id}`).json();
 	}
 
 	public async createMenuItem(
 		siteId: string,
 		menuId: string,
 		menuItem: MenuItem
-	): Promise<MenuItem | null> {
-		try {
-			const response: MenuItem = await api
-				.post(`${siteId}/menus/${menuId}/items`, {
-					json: menuItem,
-				})
-				.json();
-
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
+	): Promise<MenuItem> {
+		return api
+			.post(`${siteId}/menus/${menuId}/items`, {
+				json: menuItem,
+			})
+			.json();
 	}
 
 	public async updateMenuItem(
 		siteId: string,
 		menuId: string,
 		menuItem: MenuItem
-	): Promise<MenuItem | null> {
-		try {
-			const response: MenuItem = await api
-				.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
-					json: menuItem,
-				})
-				.json();
-
-			return response;
-		} catch (err) {
-			console.error(err);
-			return null;
-		}
+	): Promise<MenuItem> {
+		return api
+			.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
+				json: menuItem,
+			})
+			.json();
 	}
 
 	public async deleteMenuItem(
@@ -84,7 +66,7 @@ export class MenuItemsApiService {
 		menuId: string,
 		menuItem: MenuItem
 	): Promise<Response> {
-		return await api.delete(`${siteId}/menus/${menuId}/items/${menuItem.id}`);
+		return api.delete(`${siteId}/menus/${menuId}/items/${menuItem.id}`);
 	}
 }
 
