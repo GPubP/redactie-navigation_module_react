@@ -1,4 +1,4 @@
-import { Button, Checkbox, Textarea, TextField } from '@acpaas-ui/react-components';
+import { Button, Checkbox, Switch, Textarea, TextField } from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
@@ -12,7 +12,6 @@ import {
 	ErrorMessage,
 	FormikOnChangeHandler,
 	LeavePrompt,
-	LoadingState,
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
@@ -26,7 +25,6 @@ import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { getPositionInputValue } from '../../helpers/getPositionInputValue';
 import { getTreeConfig } from '../../helpers/getTreeConfig';
-import { useMenu, useMenuItem, useMenuItemDraft } from '../../hooks';
 import { MenuItemDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { CascaderOption } from '../../navigation.types';
@@ -48,19 +46,19 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	onDelete,
 	loading,
 	removing,
+	upserting,
+	menu,
+	menuItem,
+	menuItemDraft,
 }) => {
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
-	const [menuItemDraft] = useMenuItemDraft();
-	const { menuItem, upsertingState } = useMenuItem();
-	const { menu } = useMenu();
 	const [t] = useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(
 		!loading && !!menuItemDraft,
 		menuItemDraft
 	);
 	const [contentItemPublished, setContentItemPublished] = useState(false);
-	const isLoading = useMemo(() => upsertingState === LoadingState.Loading, [upsertingState]);
 
 	useEffect(() => {
 		if (!menuId || !siteId) {
@@ -288,14 +286,16 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									<div className="col-xs-12">
 										<label className="u-block u-margin-bottom-xs">Status</label>
 										<Field
-											as={Checkbox}
+											as={Switch}
 											checked={
 												values.publishStatus === NAV_STATUSES.PUBLISHED
 											}
+											labelFalse="Uit"
+											labelTrue="Aan"
 											id="publishStatus"
 											disabled={!canEdit || !contentItemPublished}
 											name="publishStatus"
-											label="Je kan de status bewerken indien het content item online is"
+											label=""
 											onChange={(e: ChangeEvent<HTMLInputElement>) => {
 												setFieldValue(
 													'publishStatus',
@@ -306,25 +306,33 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											}}
 										/>
 										{!contentItemPublished && (
-											<Field
-												as={Checkbox}
-												checked={
-													values.publishStatus === NAV_STATUSES.READY
-												}
-												id="readyStatus"
-												disabled={!canEdit}
-												name="publishStatus"
-												label="Zet het menu-item aan wanneer het content item online is"
-												onChange={(e: ChangeEvent<HTMLInputElement>) => {
-													setFieldValue(
-														'publishStatus',
-														e.target.checked
-															? NAV_STATUSES.READY
-															: NAV_STATUSES.DRAFT
-													);
-												}}
-											/>
+											<div className="u-margin-top-xs">
+												<Field
+													as={Checkbox}
+													checked={
+														values.publishStatus === NAV_STATUSES.READY
+													}
+													id="readyStatus"
+													disabled={!canEdit}
+													name="publishStatus"
+													label="Zet het menu-item aan wanneer het content item online is"
+													onChange={(
+														e: ChangeEvent<HTMLInputElement>
+													) => {
+														setFieldValue(
+															'publishStatus',
+															e.target.checked
+																? NAV_STATUSES.READY
+																: NAV_STATUSES.DRAFT
+														);
+													}}
+												/>
+											</div>
 										)}
+										<small className="u-block">
+											Je kan de status bewerken indien het content item online
+											is
+										</small>
 										<ErrorMessage name="publishStatus" />
 									</div>
 								</div>
@@ -342,8 +350,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
 										<Button
-											iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-											disabled={isLoading || !isChanged}
+											iconLeft={upserting ? 'circle-o-notch fa-spin' : null}
+											disabled={upserting || !isChanged}
 											onClick={submitForm}
 											type="success"
 										>

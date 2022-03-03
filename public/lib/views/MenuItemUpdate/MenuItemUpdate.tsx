@@ -12,7 +12,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
-import { useMenuItem, useMenuItemDraft } from '../../hooks';
+import { useMenu, useMenuItem, useMenuItemDraft } from '../../hooks';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
 	ALERT_CONTAINER_IDS,
@@ -33,6 +33,7 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const [t] = useCoreTranslation();
+	const { menu } = useMenu();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -40,6 +41,14 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 				name: "Menu's",
 				target: generatePath(MODULE_PATHS.site.overview, { siteId }),
 			},
+			...(menu?.label
+				? [
+						{
+							name: menu?.label,
+							target: generatePath(MODULE_PATHS.site.menuItems, { siteId, menuId }),
+						},
+				  ]
+				: []),
 		])
 	);
 	const {
@@ -80,6 +89,9 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const isRemoving = useMemo(() => {
 		return removeMenuItemLoadingState === LoadingState.Loading;
 	}, [removeMenuItemLoadingState]);
+	const isUpserting = useMemo(() => {
+		return upsertMenuItemLoadingState === LoadingState.Loading;
+	}, [upsertMenuItemLoadingState]);
 
 	useEffect(() => {
 		if (
@@ -156,7 +168,11 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 					onDelete: deleteMenuItem,
 					loading: isLoading,
 					removing: isRemoving,
+					upserting: isUpserting,
 					rights,
+					menu,
+					menuItem,
+					menuItemDraft,
 				}}
 			/>
 		);

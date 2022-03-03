@@ -55,6 +55,10 @@ export interface MenuItemDetailRouteProps<Params = MenuRouteParams>
 	rights: MenuRights;
 	loading: boolean;
 	removing: boolean;
+	upserting: boolean;
+	menu: Menu | undefined;
+	menuItem: MenuItem | undefined;
+	menuItemDraft: MenuItem | undefined;
 }
 
 export interface MenuRights {
