@@ -131,12 +131,11 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 			return Promise.resolve();
 		}
 
-		return menuItemsFacade.updateMenuItem(
-			siteId,
-			menuId,
-			updatedMenuItem,
-			ALERT_CONTAINER_IDS.settings
-		);
+		return menuItemsFacade
+			.updateMenuItem(siteId, menuId, updatedMenuItem, ALERT_CONTAINER_IDS.menuItemsOverview)
+			.then(() => {
+				forceNavigateToOverview();
+			});
 	};
 
 	const deleteMenuItem = async (menuItem: MenuItem): Promise<void> => {
