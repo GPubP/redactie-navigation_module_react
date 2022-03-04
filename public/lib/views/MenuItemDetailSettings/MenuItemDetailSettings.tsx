@@ -56,7 +56,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	onDelete,
 	loading,
 	removing,
-	upserting,
 	menu,
 	menuItem,
 	menuItemDraft,
@@ -101,6 +100,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			return {} as MenuItemDetailForm;
 		}
 
+		setContentItemPublished(menuItem.publishStatus === NAV_STATUSES.PUBLISHED);
 		return getInitialFormValues(menuItem, treeConfig.options);
 	}, [menuItem, treeConfig.options]);
 
@@ -117,8 +117,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	/**
 	 * Methods
 	 */
-	const onSave = (): void => {
-		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
+	const onSave = async (): Promise<void> => {
+		await onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
 
@@ -128,8 +128,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			: undefined;
 
 		menuItemsFacade.setMenuItemDraft({
-			...menuItemDraft,
-			...omit(['position'], formValue),
+			...omit(['parentId'], menuItemDraft),
+			...omit(['position', 'parentId'], formValue),
 			...(parentId && { parentId }),
 		} as MenuItem);
 	};
@@ -238,17 +238,24 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 													fieldHelperProps={{
 														...getFieldHelpers('slug'),
 														setValue: (value: ContentModel) => {
-															setContentItemPublished(
-																!!value.meta.published
-															);
 															setFieldValue(
 																'slug',
 																value.meta.slug.nl
 															);
 															setFieldValue(
-																'externalUrl',
-																`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																'publishStatus',
+																NAV_STATUSES.DRAFT
 															);
+															setContentItemPublished(
+																!!value.meta.published
+															);
+
+															if (value.meta.urlPath?.nl.value) {
+																setFieldValue(
+																	'externalUrl',
+																	`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																);
+															}
 														},
 													}}
 													fieldSchema={
@@ -267,7 +274,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											);
 										}}
 									</Field>
-									<ErrorMessage name="slug" />
 									<small className="u-block u-margin-top-xs">
 										Zoek en selecteer een content item
 									</small>
@@ -294,7 +300,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												<div className="a-input__wrapper">
 													<input
 														onChange={() => null}
-														disabled={!canEdit}
+														disabled={
+															!canEdit || !treeConfig.options.length
+														}
 														placeholder="Kies een positie in de boom"
 														value={getPositionInputValue(
 															treeConfig.options,
@@ -372,9 +380,10 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									<div className="col-xs-12">
 										<label className="u-block u-margin-bottom-xs">Status</label>
 										<Field
+											key={values.publishStatus}
 											as={Switch}
 											checked={
-												values.publishStatus === NAV_STATUSES.PUBLISHED
+												values?.publishStatus === NAV_STATUSES.PUBLISHED
 											}
 											labelFalse="Uit"
 											labelTrue="Aan"
@@ -382,7 +391,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											disabled={!canEdit || !contentItemPublished}
 											name="publishStatus"
 											label=""
-											onChange={(e: ChangeEvent<HTMLInputElement>) => {
+											onClick={(e: ChangeEvent<HTMLInputElement>) => {
 												setFieldValue(
 													'publishStatus',
 													e.target.checked
@@ -396,7 +405,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												<Field
 													as={Checkbox}
 													checked={
-														values.publishStatus === NAV_STATUSES.READY
+														values?.publishStatus === NAV_STATUSES.READY
 													}
 													id="readyStatus"
 													disabled={!canEdit}
@@ -415,7 +424,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												/>
 											</div>
 										)}
-										<small className="u-block">
+										<small className="u-block u-margin-top-xs">
 											Je kan de status bewerken indien het content item online
 											is
 										</small>
@@ -436,8 +445,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												: t(CORE_TRANSLATIONS.BUTTON_BACK)}
 										</Button>
 										<Button
-											iconLeft={upserting ? 'circle-o-notch fa-spin' : null}
-											disabled={upserting || !isChanged}
+											iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+											disabled={loading || !isChanged}
 											onClick={submitForm}
 											type="success"
 										>

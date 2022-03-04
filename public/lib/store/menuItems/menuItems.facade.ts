@@ -89,6 +89,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 						)
 					)
 				);
+
 				this.store.update({
 					isFetching: false,
 				});

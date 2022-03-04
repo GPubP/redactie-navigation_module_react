@@ -5,7 +5,7 @@ import { menuItemsFacade } from '../../store/menuItems';
 import { UseMenuItems } from './useMenuItems.type';
 
 const useMenuItems = (): UseMenuItems => {
-	const isFetching = useObservable(menuItemsFacade.isFetchingOne$, LoadingState.Loading);
+	const isFetching = useObservable(menuItemsFacade.isFetching$, LoadingState.Loading);
 	const isUpdating = useObservable(menuItemsFacade.isUpdating$, LoadingState.Loaded);
 	const isCreating = useObservable(menuItemsFacade.isCreating$, LoadingState.Loaded);
 	const isRemoving = useObservable(menuItemsFacade.isRemoving$, LoadingState.Loaded);

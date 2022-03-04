@@ -116,7 +116,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 
 	const renderMenuItems = (): ReactElement => {
 		const pluralSingularItems =
-			values.itemCount && values.itemCount === 1 ? 'menu item' : 'menu items';
+			values.itemCount && values.itemCount === 1 ? 'menu-item' : 'menu-items';
 
 		return (
 			<>

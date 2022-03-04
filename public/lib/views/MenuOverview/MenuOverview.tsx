@@ -178,7 +178,7 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 
 	return (
 		<>
-			<ContextHeader title="Menu">
+			<ContextHeader title="Menu's">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				<ContextHeaderActionsSection>
 					<Button

@@ -3,25 +3,38 @@ import { MenuItem } from '../services/menuItems';
 const recursiveFind = (
 	items: MenuItem[],
 	itemsToAppend: MenuItem[],
-	parentId: number
-): MenuItem[] => {
-	return items.map((item: MenuItem) => {
-		if (item.id === parentId) {
-			item = {
-				...item,
-				items: itemsToAppend,
-			};
-		}
+	parentId: number,
+	accumulator: { parentFound: boolean; items: MenuItem[] }
+): { parentFound: boolean; items: MenuItem[] } => {
+	return items.reduce(
+		(acc: { parentFound: boolean; items: MenuItem[] }, item: MenuItem) => {
+			if (item.id === parentId) {
+				item = {
+					...item,
+					items: itemsToAppend,
+				};
+				accumulator.parentFound = true;
+			}
 
-		if ((item.items || []).length) {
-			item = {
-				...item,
-				items: recursiveFind(item.items, itemsToAppend, parentId),
-			};
-		}
+			if ((item.items || []).length) {
+				const rec = recursiveFind(item.items, itemsToAppend, parentId, accumulator);
 
-		return item;
-	});
+				item = {
+					...item,
+					items: rec.items,
+				};
+			}
+
+			return {
+				parentFound: accumulator.parentFound,
+				items: [...acc.items, item],
+			};
+		},
+		{
+			parentFound: false,
+			items: [],
+		}
+	);
 };
 
 export const buildSubset = (
@@ -29,11 +42,10 @@ export const buildSubset = (
 	itemsToAppend: MenuItem[],
 	parentId: number
 ): MenuItem[] => {
-	const updatedExisting = recursiveFind(items, itemsToAppend, parentId);
+	const res = recursiveFind(items, itemsToAppend, parentId, {
+		parentFound: false,
+		items: [],
+	});
 
-	if (updatedExisting.length) {
-		return updatedExisting;
-	}
-
-	return itemsToAppend;
+	return res.parentFound ? res.items : itemsToAppend;
 };
