@@ -4,6 +4,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
+import { RearrangeModal } from '../../components/RearrangeModal';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
 import { useMenuItems } from '../../hooks';
@@ -31,6 +32,8 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 	});
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [cachedItems, setCachedItems] = useState<number[]>([]);
+	const [selectedId, setSelectedId] = useState<number | undefined>();
+	const [showRearrange, setShowRearrange] = useState(false);
 
 	useEffect(() => {
 		if (
@@ -107,6 +110,8 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 	};
 
 	const openRearrangeModal = (rowId: string | number): void => {
+		setSelectedId(rowId as number);
+		setShowRearrange(true);
 		console.log(rowId);
 	};
 
@@ -141,6 +146,12 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<DataLoader
 				loadingState={initialLoading === LoadingState.Loading && !nestedLoadingId}
 				render={renderTable}
+			/>
+			<RearrangeModal
+				show={showRearrange}
+				onCancel={() => setShowRearrange(false)}
+				selectedId={selectedId}
+				onConfirm={() => console.log('Confirm')}
 			/>
 		</>
 	);
