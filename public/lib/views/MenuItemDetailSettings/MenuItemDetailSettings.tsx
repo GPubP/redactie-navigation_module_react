@@ -241,7 +241,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 															setFieldValue(
 																'slug',
 																value?.meta.slug?.nl
-															);															
+															);
 															setFieldValue(
 																'publishStatus',
 																NAV_STATUSES.DRAFT
@@ -249,7 +249,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 															setContentItemPublished(
 																!!value?.meta.published
 															);
-															
+
 															if (value?.meta.urlPath?.nl?.value) {
 																setFieldValue(
 																	'externalUrl',
