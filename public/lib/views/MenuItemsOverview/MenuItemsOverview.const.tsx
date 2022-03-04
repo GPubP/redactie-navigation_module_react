@@ -75,11 +75,15 @@ export const MENU_ITEMS_COLUMNS = (
 				</div>
 			);
 		},
-		indentingComponent(value: string, { id }: MenuItemsTableRow) {
+		indentingComponent(value: string, rowData: MenuItemsTableRow) {
 			return (
 				<div
 					className={cx('m-menu-items-table__indent-block')}
-					onClick={() => openRearrangeModal(id)}
+					onClick={() => {
+						if (rowData.id) {
+							openRearrangeModal(rowData.id);
+						}
+					}}
 				>
 					<Icon name="sort" className={cx('m-menu-items-table__indent-block__icon')} />
 				</div>
