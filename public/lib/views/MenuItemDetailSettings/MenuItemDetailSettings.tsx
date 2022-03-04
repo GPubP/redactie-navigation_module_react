@@ -383,7 +383,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 									<Field
 										as={Textarea}
 										disabled={!canEdit}
-										className="a-input--small"
 										label="Beschrijving"
 										name="description"
 										state={errors.description && 'error'}
