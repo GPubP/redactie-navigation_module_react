@@ -240,20 +240,39 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 														setValue: (value: ContentModel) => {
 															setFieldValue(
 																'slug',
-																value.meta.slug.nl
-															);
+																value?.meta.slug?.nl
+															);															
 															setFieldValue(
 																'publishStatus',
 																NAV_STATUSES.DRAFT
 															);
 															setContentItemPublished(
-																!!value.meta.published
+																!!value?.meta.published
 															);
-
-															if (value.meta.urlPath?.nl.value) {
+															
+															if (value?.meta.urlPath?.nl?.value) {
 																setFieldValue(
 																	'externalUrl',
 																	`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																);
+															}
+
+															if (!values?.label) {
+																setFieldValue(
+																	'label',
+																	value?.meta.label
+																);
+															}
+
+															// This will not work until fields are returned by the content select
+															// TODO: see if we should return fields because of this
+															if (
+																!values?.description &&
+																value?.fields?.teaser?.text
+															) {
+																setFieldValue(
+																	'description',
+																	value.fields.teaser.text
 																);
 															}
 														},
