@@ -117,8 +117,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	/**
 	 * Methods
 	 */
-	const onSave = async (): Promise<void> => {
-		await onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
+	const onSave = (): void => {
+		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
 
