@@ -58,6 +58,7 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const isLoading = useMemo(() => {
 		return upsertingState === LoadingState.Loading || fetchingState === LoadingState.Loading;
 	}, [fetchingState, upsertingState]);
+
 	const [forceNavigateToOverview] = useOnNextRender(() =>
 		navigate(MODULE_PATHS.site.menuItems, {
 			siteId,

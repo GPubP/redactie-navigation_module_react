@@ -93,9 +93,6 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const isRemoving = useMemo(() => {
 		return removeMenuItemLoadingState === LoadingState.Loading;
 	}, [removeMenuItemLoadingState]);
-	const isUpserting = useMemo(() => {
-		return upsertMenuItemLoadingState === LoadingState.Loading;
-	}, [upsertMenuItemLoadingState]);
 
 	useEffect(() => {
 		if (
@@ -172,7 +169,6 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 					onDelete: deleteMenuItem,
 					loading: isLoading,
 					removing: isRemoving,
-					upserting: isUpserting,
 					rights,
 					menu,
 					menuItem,

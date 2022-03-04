@@ -30,6 +30,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 		onlyKeys: true,
 	});
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+	const [cachedItems, setCachedItems] = useState<number[]>([]);
 
 	useEffect(() => {
 		if (
@@ -64,7 +65,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 
 	const rows = useMemo(() => {
 		if (!menuItems || !menuItems.length) {
-			return undefined;
+			return [];
 		}
 
 		setNestedLoadingId(undefined);
@@ -92,8 +93,12 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			return;
 		}
 
-		setNestedLoadingId(rowId);
-		await menuItemsFacade.getSubset(siteId, menuId as string, rowId, 1);
+		if (!cachedItems.includes(rowId)) {
+			setNestedLoadingId(rowId);
+			await menuItemsFacade.getSubset(siteId, menuId as string, rowId, 1);
+		}
+
+		setCachedItems([...cachedItems, rowId]);
 
 		setExpandedRows({
 			...expandedRows,
@@ -123,7 +128,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 				expandNested={false}
 				striped={false}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-				loading={!rows}
+				loading={menuItemsLoadingState === LoadingState.Loading && !nestedLoadingId}
 			/>
 		);
 	};
@@ -133,7 +138,10 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<div className="u-margin-bottom">
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.menuItemsOverview} />
 			</div>
-			<DataLoader loadingState={initialLoading} render={renderTable} />
+			<DataLoader
+				loadingState={initialLoading === LoadingState.Loading && !nestedLoadingId}
+				render={renderTable}
+			/>
 		</>
 	);
 };

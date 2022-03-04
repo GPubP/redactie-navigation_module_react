@@ -58,7 +58,7 @@ sitesConnector.registerRoutes({
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
-		label: 'Menu',
+		label: "Menu's",
 		order: 2,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
 		canShown: [
