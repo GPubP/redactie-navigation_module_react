@@ -2,7 +2,7 @@ import { SearchParams } from '@redactie/utils';
 
 import { api } from '../api';
 
-import { MenuItem, MenuItemsResponse } from './menuItems.service.types';
+import { MenuItem, MenuItemsResponse, RearrangeMenuItem } from './menuItems.service.types';
 
 export class MenuItemsApiService {
 	public async getMenuItems(
@@ -59,6 +59,16 @@ export class MenuItemsApiService {
 				json: menuItem,
 			})
 			.json();
+	}
+
+	public async rearrangeMenuItems(
+		siteId: string,
+		menuId: string,
+		rearrangeItems: RearrangeMenuItem[]
+	): Promise<Response> {
+		return api.post(`${siteId}/menus/${menuId}/items/rearrange`, {
+			json: rearrangeItems,
+		});
 	}
 
 	public async deleteMenuItem(
