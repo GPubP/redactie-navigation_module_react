@@ -13,7 +13,7 @@ export const REARRANGE_COLUMNS = (
 		label: '',
 		value: '',
 		disableSorting: true,
-		component(label: string, rowData: any) {
+		component(label: string, rowData: RearrangeTableRow) {
 			const defaultButtonProps = {
 				htmlType: 'button',
 				size: 'tiny',
