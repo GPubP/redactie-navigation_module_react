@@ -45,7 +45,7 @@ export const getInitialFormValues = (
 ) => {
 	if (!treeItem && isEmpty(value)) {
 		return {
-			status: STATUS_OPTIONS[0].value,
+			status: NAV_ITEM_STATUSES.READY,
 		};
 	}
 
@@ -59,7 +59,7 @@ export const getInitialFormValues = (
 			: [],
 		label: value.label ?? treeItem?.label ?? '',
 		description: value.description ?? treeItem?.description ?? '',
-		status: value.status ?? treeItem?.publishStatus ?? STATUS_OPTIONS[0].value,
+		status: value.status ?? treeItem?.publishStatus ?? NAV_ITEM_STATUSES.READY,
 		replaceItem: value.replaceItem ?? false,
 	};
 };
