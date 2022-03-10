@@ -4,12 +4,14 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
+import { RearrangeModal } from '../../components/RearrangeModal';
 import rolesRightsConnector from '../../connectors/rolesRights';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { extractSiblings } from '../../helpers/extractSiblings';
 import { useMenuItems } from '../../hooks';
 import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
-import { MenuItem } from '../../services/menuItems';
+import { MenuItem, RearrangeMenuItem } from '../../services/menuItems';
 import { menuItemsFacade } from '../../store/menuItems';
 
 import { MENU_ITEMS_COLUMNS } from './MenuItemsOverview.const';
@@ -19,7 +21,11 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 	const [t] = useCoreTranslation();
 	const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
-	const { menuItems, fetchingState: menuItemsLoadingState } = useMenuItems();
+	const {
+		menuItems,
+		fetchingState: menuItemsLoadingState,
+		upsertingState: menuItemsUpsertingState,
+	} = useMenuItems();
 	const { navigate } = useNavigate(SITES_ROOT);
 	const [nestedLoadingId, setNestedLoadingId] = useState<number | undefined>();
 	const [
@@ -31,6 +37,8 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 	});
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [cachedItems, setCachedItems] = useState<number[]>([]);
+	const [showRearrange, setShowRearrange] = useState(false);
+	const [sortRows, setSortRows] = useState<MenuItem[]>([]);
 
 	useEffect(() => {
 		if (
@@ -106,8 +114,19 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 		});
 	};
 
-	const openRearrangeModal = (rowId: string | number): void => {
-		console.log(rowId);
+	const openRearrangeModal = (rowId: number): void => {
+		setShowRearrange(true);
+		setSortRows(extractSiblings(rowId, menuItems as MenuItem[]));
+	};
+
+	const onRearrange = async (items: RearrangeMenuItem[]): Promise<void> => {
+		await menuItemsFacade.rearrangeItems(
+			siteId,
+			menuId as string,
+			items,
+			ALERT_CONTAINER_IDS.menuItemsOverview
+		);
+		setShowRearrange(false);
 	};
 
 	const renderTable = (): ReactElement => {
@@ -141,6 +160,13 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
 			<DataLoader
 				loadingState={initialLoading === LoadingState.Loading && !nestedLoadingId}
 				render={renderTable}
+			/>
+			<RearrangeModal
+				menuItems={sortRows}
+				show={showRearrange}
+				loading={menuItemsUpsertingState === LoadingState.Loading}
+				onCancel={() => setShowRearrange(false)}
+				onConfirm={onRearrange}
 			/>
 		</>
 	);

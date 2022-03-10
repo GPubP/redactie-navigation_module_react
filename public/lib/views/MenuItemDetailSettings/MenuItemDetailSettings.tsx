@@ -22,6 +22,7 @@ import {
 	ErrorMessage,
 	FormikOnChangeHandler,
 	LeavePrompt,
+	LoadingState,
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
@@ -30,15 +31,18 @@ import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } fr
 import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
+import { RearrangeModal } from '../../components/RearrangeModal';
 import formRendererConnector from '../../connectors/formRenderer';
 import sitesConnector from '../../connectors/sites';
 import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { extractSiblings } from '../../helpers/extractSiblings';
 import { getPositionInputValue } from '../../helpers/getPositionInputValue';
 import { getTreeConfig } from '../../helpers/getTreeConfig';
+import { useMenuItems } from '../../hooks';
 import { MenuItemDetailRouteProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { CascaderOption } from '../../navigation.types';
-import { MenuItem } from '../../services/menuItems';
+import { MenuItem, RearrangeMenuItem } from '../../services/menuItems';
 import { Menu } from '../../services/menus';
 import { menuItemsFacade } from '../../store/menuItems';
 import { menusFacade } from '../../store/menus';
@@ -69,6 +73,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	);
 	const [contentItemPublished, setContentItemPublished] = useState(false);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [showRearrange, setShowRearrange] = useState(false);
+	const [sortRows, setSortRows] = useState<MenuItem[]>([]);
+	const { menuItems, upsertingState: menuItemsUpsertingState } = useMenuItems();
 
 	useEffect(() => {
 		if (!menuId || !siteId) {
@@ -76,7 +83,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		}
 
 		menusFacade.getMenu(siteId, menuId);
-	}, [menuId, siteId]);
+		menuItemsFacade.getSubset(siteId, menuId, menuItemDraft?.parentId, 1);
+	}, [menuId, menuItemDraft, siteId]);
 
 	const canEdit = useMemo(() => {
 		return menuItem?.id ? rights?.canUpdate : true;
@@ -154,6 +162,21 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 
 	const onDeletePromptCancel = (): void => {
 		setShowDeleteModal(false);
+	};
+
+	const onRearrange = async (items: RearrangeMenuItem[]): Promise<void> => {
+		await menuItemsFacade.rearrangeItems(
+			siteId,
+			menuId as string,
+			items,
+			ALERT_CONTAINER_IDS.settings
+		);
+		setShowRearrange(false);
+	};
+
+	const openRearrangeModal = (): void => {
+		setShowRearrange(true);
+		setSortRows(extractSiblings(menuItem?.id as number, menuItems as MenuItem[]));
 	};
 
 	/**
@@ -363,9 +386,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 											<Button
 												className="u-margin-left-xs"
 												disabled={!canEdit}
-												onClick={() => {
-													console.log(menuItemDraft?.parentId);
-												}}
+												onClick={openRearrangeModal}
 												type="primary"
 											>
 												Sorteren
@@ -480,6 +501,13 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 								when={isChanged}
 								shouldBlockNavigationOnConfirm
 								onConfirm={submitForm}
+							/>
+							<RearrangeModal
+								menuItems={sortRows}
+								show={showRearrange}
+								loading={menuItemsUpsertingState === LoadingState.Loading}
+								onCancel={() => setShowRearrange(false)}
+								onConfirm={onRearrange}
 							/>
 						</>
 					);

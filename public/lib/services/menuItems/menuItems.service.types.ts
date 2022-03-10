@@ -23,3 +23,8 @@ export type MenuItemsResponse = ListApiResponse<EmbeddedMenuItems>;
 export interface EmbeddedMenuItems {
 	resourceList: MenuItem[];
 }
+
+export interface RearrangeMenuItem {
+	itemId: number;
+	newWeight: number;
+}
