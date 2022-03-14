@@ -1,84 +1,170 @@
-import { Button, RadioGroup } from '@acpaas-ui/react-components';
-import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import { Button } from '@acpaas-ui/react-components';
+import {
+	ActionBar,
+	ActionBarContentSection,
+	ControlledModal,
+	ControlledModalBody,
+	ControlledModalFooter,
+	ControlledModalHeader,
+	NavList,
+} from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import { FormikOnChangeHandler, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
-import { Field, Formik } from 'formik';
-import React, { FC, useState } from 'react';
+import {
+	FormikOnChangeHandler,
+	LeavePrompt,
+	RenderChildRoutes,
+	useDetectValueChanges,
+	useNavigate,
+} from '@redactie/utils';
+import { Formik } from 'formik';
+import React, { FC, useEffect, useState } from 'react';
+import { NavLink, useHistory, useParams } from 'react-router-dom';
 
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { tenantContentTypeDetailTabRoutes } from '../../../index';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
+import { CONFIG, MODULE_PATHS } from '../../navigation.const';
 
-import { IS_ACTIVE_TREE_OPTIONS } from './ContentTypeTenantDetailTab.const';
+import { NAV_TENANT_COMPARTMENTS } from './ContentTypeTenantDetailTab.const';
 import { ContentTypeTenantDetailTabFormState } from './ContentTypeTenantDetailTab.types';
 
+// TODO: fix types
 const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
 	onSubmit,
 	onCancel,
 }) => {
-	const initialValues: ContentTypeTenantDetailTabFormState = {
-		activateTree: value?.config?.activateTree || 'false',
-	};
-	const [t] = useCoreTranslation();
+	const initialValues: ContentTypeTenantDetailTabFormState = {};
+	const { contentTypeUuid, child } = useParams<{
+		contentTypeUuid: string;
+		child: string;
+	}>();
+	const [t] = translationsConnector.useCoreTranslation();
+	const [tModule] = translationsConnector.useModuleTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
+	const { generatePath } = useNavigate();
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
 
-	const onFormSubmit = (values: any): void => {
+	const history = useHistory();
+
+	useEffect(() => {
+		if (!child) {
+			history.replace(
+				generatePath(`${MODULE_PATHS.tenantContentTypeDetailExternalChild}`, {
+					contentTypeUuid,
+					tab: CONFIG.name,
+					child: NAV_TENANT_COMPARTMENTS[0].to,
+				})
+			);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [child]);
+
+	const onConfirm = (values: any): void => {
 		onSubmit({ config: values, validationSchema: {} });
 		resetChangeDetection();
 	};
 
+	const onFormSubmit = (): void => {
+		setShowConfirmModal(true);
+	};
+
+	const onSavePromptCancel = (): void => {
+		setShowConfirmModal(false);
+	};
+
 	return (
-		<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-			{({ submitForm }) => {
-				return (
-					<>
-						<FormikOnChangeHandler onChange={values => setFormValue(values)} />
-						<p>
-							Bepaal of er voor dit content type een navigatie-item gemaakt kan
-							worden.
-						</p>
-						<div className="row u-margin-top">
-							<div className="col-xs-12 col-sm-6">
-								<Field
-									as={RadioGroup}
-									id="activateTree"
-									name="activateTree"
-									options={IS_ACTIVE_TREE_OPTIONS}
-								/>
+		<div className="row top-xs u-margin-bottom-lg">
+			<div className="col-xs-12 col-md-3 u-margin-bottom">
+				<NavList
+					items={NAV_TENANT_COMPARTMENTS.map(compartment => ({
+						...compartment,
+						activeClassName: 'is-active',
+						to: generatePath(`${MODULE_PATHS.tenantContentTypeDetailExternalChild}`, {
+							contentTypeUuid,
+							tab: CONFIG.name,
+							child: compartment.to,
+						}),
+					}))}
+					linkComponent={NavLink}
+				/>
+			</div>
+			<div className="col-xs-12 col-md-9">
+				<div className="m-card u-padding">
+					<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
+						{({ submitForm }) => {
+							return (
+								<>
+									<FormikOnChangeHandler onChange={setFormValue} />
+									<RenderChildRoutes
+										routes={tenantContentTypeDetailTabRoutes}
+										extraOptions={{}}
+									/>
+									<ActionBar className="o-action-bar--fixed" isOpen>
+										<ActionBarContentSection>
+											<div className="u-wrapper row end-xs">
+												<Button
+													className="u-margin-right-xs"
+													onClick={onCancel}
+													negative
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+												</Button>
+												<Button
+													iconLeft={
+														isLoading ? 'circle-o-notch fa-spin' : null
+													}
+													disabled={isLoading || !hasChanges}
+													onClick={submitForm}
+													type="success"
+													htmlType="submit"
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+												</Button>
+											</div>
+										</ActionBarContentSection>
+									</ActionBar>
+									<LeavePrompt
+										shouldBlockNavigationOnConfirm
+										when={hasChanges}
+										onConfirm={submitForm}
+									/>
+								</>
+							);
+						}}
+					</Formik>
+					<ControlledModal
+						show={showConfirmModal}
+						onClose={onSavePromptCancel}
+						size="large"
+					>
+						<ControlledModalHeader>
+							<h4>{t(CORE_TRANSLATIONS.CONFIRM)}</h4>
+						</ControlledModalHeader>
+						<ControlledModalBody>
+							{tModule(MODULE_TRANSLATIONS.TENANT_NAVIGATION_CONFIRM_DESCRIPTION)}
+						</ControlledModalBody>
+						<ControlledModalFooter>
+							<div className="u-flex u-flex-item u-flex-justify-end">
+								<Button onClick={onSavePromptCancel} negative>
+									{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+								</Button>
+								<Button
+									iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
+									disabled={isLoading}
+									onClick={onConfirm}
+									type="success"
+								>
+									{t(CORE_TRANSLATIONS.MODAL_CONFIRM)}
+								</Button>
 							</div>
-						</div>
-						<ActionBar className="o-action-bar--fixed" isOpen>
-							<ActionBarContentSection>
-								<div className="u-wrapper row end-xs">
-									<Button
-										className="u-margin-right-xs"
-										onClick={onCancel}
-										negative
-									>
-										{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-									</Button>
-									<Button
-										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-										disabled={isLoading || !hasChanges}
-										onClick={submitForm}
-										type="success"
-										htmlType="submit"
-									>
-										{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-									</Button>
-								</div>
-							</ActionBarContentSection>
-						</ActionBar>
-						<LeavePrompt
-							shouldBlockNavigationOnConfirm
-							when={hasChanges}
-							onConfirm={submitForm}
-						/>
-					</>
-				);
-			}}
-		</Formik>
+						</ControlledModalFooter>
+					</ControlledModal>
+				</div>
+			</div>
+		</div>
 	);
 };
 

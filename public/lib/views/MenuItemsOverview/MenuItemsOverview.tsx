@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 
 import { NAV_STATUSES } from '../../components';
 import rolesRightsConnector from '../../connectors/rolesRights';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useMenuItems } from '../../hooks';
 import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
@@ -16,7 +16,7 @@ import { MENU_ITEMS_COLUMNS } from './MenuItemsOverview.const';
 import { MenuItemsTableRow } from './MenuItemsOverview.types';
 
 const MenuItemsOverview: FC<MenuDetailRouteProps<MenuMatchProps>> = () => {
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { menuItems, fetchingState: menuItemsLoadingState } = useMenuItems();

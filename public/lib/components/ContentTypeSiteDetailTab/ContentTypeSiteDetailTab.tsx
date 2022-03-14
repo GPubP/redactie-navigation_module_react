@@ -1,20 +1,37 @@
 import { Button, RadioGroup } from '@acpaas-ui/react-components';
-import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import {
+	ActionBar,
+	ActionBarContentSection,
+	ControlledModal,
+	ControlledModalBody,
+	ControlledModalFooter,
+	ControlledModalHeader,
+	NavList,
+} from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import { FormikOnChangeHandler, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
+import {
+	FormikOnChangeHandler,
+	LeavePrompt,
+	RenderChildRoutes,
+	useDetectValueChanges,
+	useNavigate,
+} from '@redactie/utils';
 import { Field, Formik } from 'formik';
 import { isEmpty } from 'ramda';
 import React, { FC, useEffect, useState } from 'react';
+import { NavLink, useHistory, useParams } from 'react-router-dom';
 
+import { siteContentTypeDetailTabRoutes } from '../../..';
 import contentTypeConnector from '../../connectors/contentTypes';
 import sitesConnector from '../../connectors/sites';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { formatMenuCategory } from '../../helpers/formatMenuCategory';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
+import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 import { menusFacade } from '../../store/menus';
 import { MenusCheckboxList } from '../MenusCheckboxList';
 
-import { ALLOW_MENUS_OPTIONS } from './ContentTypeSiteDetailTab.const';
-import { ContentTypeSiteDetailTabFormState } from './ContentTypeSiteDetailTab.types';
+import { NAV_SITE_COMPARTMENTS } from './ContentTypeSiteDetailTab.const';
 
 const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	value = {} as Record<string, any>,
@@ -23,30 +40,41 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	siteId,
 	contentType,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = {
-		allowMenus: value?.config?.allowMenus || false,
-		menus: value?.config?.menus || [],
-	};
-	const [t] = useCoreTranslation();
+	const initialValues = {};
+	const [t] = translationsConnector.useCoreTranslation();
+	const [tModule] = translationsConnector.useModuleTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
-	const [site] = sitesConnector.hooks.useSite(siteId);
+	const { generatePath } = useNavigate(SITES_ROOT);
+	const { contentTypeUuid, child } = useParams<{
+		contentTypeUuid: string;
+		child: string;
+	}>();
+	const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+	const history = useHistory();
 
 	useEffect(() => {
-		if (!siteId || !site) {
-			return;
+		if (!child) {
+			history.replace(
+				generatePath(`${MODULE_PATHS.site.contentTypeDetailExternalChild}`, {
+					contentTypeUuid,
+					tab: CONFIG.name,
+					child: NAV_SITE_COMPARTMENTS[0].to,
+					siteId,
+				})
+			);
 		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [child]);
 
-		menusFacade.getMenus(siteId, {
-			category: formatMenuCategory(site?.data.name),
-		});
-	}, [site, siteId]);
-
-	const onFormSubmit = async (values: any): Promise<void> => {
+	const onConfirm = async (values: any): Promise<void> => {
 		const config = {
-			...values,
-			allowMenus: values.allowMenus === 'true',
+			test: 'test',
 		};
+
+		// TEMP
+		value.config = config;
 
 		isEmpty(value.config)
 			? await contentTypeConnector.metadataFacade.createMetadata(
@@ -73,75 +101,109 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					'update'
 			  );
 
+		setShowConfirmModal(false);
 		resetChangeDetection();
 	};
 
+	const onFormSubmit = (): void => {
+		setShowConfirmModal(true);
+	};
+
+	const onSavePromptCancel = (): void => {
+		setShowConfirmModal(false);
+	};
+
 	return (
-		<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-			{({ submitForm }) => {
-				return (
-					<>
-						<FormikOnChangeHandler onChange={values => setFormValue(values)} />
-						<div className="row">
-							<p>
-								Bepaal of het werken met menu&apos;s is toegestaan voor dit content
-								type en of dit standaard geactiveerd moet worden.
-							</p>
-						</div>
-						<div className="row u-margin-top">
-							<div className="col-xs-12 col-sm-6">
-								<Field
-									as={RadioGroup}
-									id="allowMenus"
-									name="allowMenus"
-									options={ALLOW_MENUS_OPTIONS}
-								/>
+		<div className="row top-xs u-margin-bottom-lg">
+			<div className="col-xs-12 col-md-3 u-margin-bottom">
+				<NavList
+					items={NAV_SITE_COMPARTMENTS.map(compartment => ({
+						...compartment,
+						activeClassName: 'is-active',
+						to: generatePath(`${MODULE_PATHS.site.contentTypeDetailExternalChild}`, {
+							contentTypeUuid,
+							tab: CONFIG.name,
+							child: compartment.to,
+							siteId,
+						}),
+					}))}
+					linkComponent={NavLink}
+				/>
+			</div>
+			<div className="col-xs-12 col-md-9">
+				<div className="m-card u-padding">
+					<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
+						{({ submitForm }) => {
+							return (
+								<>
+									<FormikOnChangeHandler onChange={setFormValue} />
+									<RenderChildRoutes
+										routes={siteContentTypeDetailTabRoutes}
+										extraOptions={{}}
+									/>
+									<ActionBar className="o-action-bar--fixed" isOpen>
+										<ActionBarContentSection>
+											<div className="u-wrapper row end-xs">
+												<Button
+													className="u-margin-right-xs"
+													onClick={onCancel}
+													negative
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+												</Button>
+												<Button
+													iconLeft={
+														isLoading ? 'circle-o-notch fa-spin' : null
+													}
+													disabled={isLoading || !hasChanges}
+													onClick={submitForm}
+													type="success"
+													htmlType="submit"
+												>
+													{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+												</Button>
+											</div>
+										</ActionBarContentSection>
+									</ActionBar>
+									<LeavePrompt
+										shouldBlockNavigationOnConfirm
+										when={hasChanges}
+										onConfirm={submitForm}
+									/>
+								</>
+							);
+						}}
+					</Formik>
+					<ControlledModal
+						show={showConfirmModal}
+						onClose={onSavePromptCancel}
+						size="large"
+					>
+						<ControlledModalHeader>
+							<h4>{t(CORE_TRANSLATIONS.CONFIRM)}</h4>
+						</ControlledModalHeader>
+						<ControlledModalBody>
+							{tModule(MODULE_TRANSLATIONS.SITE_NAVIGATION_CONFIRM_DESCRIPTION)}
+						</ControlledModalBody>
+						<ControlledModalFooter>
+							<div className="u-flex u-flex-item u-flex-justify-end">
+								<Button onClick={onSavePromptCancel} negative>
+									{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+								</Button>
+								<Button
+									iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
+									disabled={isLoading}
+									onClick={onConfirm}
+									type="success"
+								>
+									{t(CORE_TRANSLATIONS.MODAL_CONFIRM)}
+								</Button>
 							</div>
-						</div>
-						{`${formValue.allowMenus}` === 'true' && (
-							<div>
-								<div className="row u-margin-top u-flex u-flex-column">
-									<p>Beschikbare menu&apos;s</p>
-									<small className="u-margin-top-xs">
-										Selecteer de beschikbare menu&apos;s voor dit content type
-									</small>
-								</div>
-								<div className="row u-margin-top">
-									<MenusCheckboxList />
-								</div>
-							</div>
-						)}
-						<ActionBar className="o-action-bar--fixed" isOpen>
-							<ActionBarContentSection>
-								<div className="u-wrapper row end-xs">
-									<Button
-										className="u-margin-right-xs"
-										onClick={onCancel}
-										negative
-									>
-										{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-									</Button>
-									<Button
-										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-										disabled={isLoading || !hasChanges}
-										onClick={submitForm}
-										type="success"
-										htmlType="submit"
-									>
-										{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-									</Button>
-								</div>
-							</ActionBarContentSection>
-						</ActionBar>
-						<LeavePrompt
-							shouldBlockNavigationOnConfirm
-							when={hasChanges}
-							onConfirm={submitForm}
-						/>
-					</>
-				);
-			}}
-		</Formik>
+						</ControlledModalFooter>
+					</ControlledModal>
+				</div>
+			</div>
+		</div>
 	);
 };
 

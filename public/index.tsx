@@ -1,12 +1,18 @@
 // import { akitaDevtools } from '@datorama/akita';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
+import { ChildModuleRouteConfig } from '@redactie/redactie-core';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
 
-import { ContentDetailCompartment, ContentTypeDetailTab } from './lib/components';
+import {
+	ContentDetailCompartment,
+	ContentTypeDetailMenu,
+	ContentTypeDetailTab,
+	ContentTypeDetailUrl,
+} from './lib/components';
 import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
@@ -17,6 +23,7 @@ import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
+import { registerTranslations } from './lib/i18next';
 import { MenuModuleProps } from './lib/menu.types';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import {
@@ -31,6 +38,8 @@ import {
 } from './lib/views';
 
 // akitaDevtools();
+
+registerTranslations();
 
 const MenuComponent: FC<MenuModuleProps<{ siteId: string }>> = ({ route, tenantId, match }) => {
 	const { siteId } = match.params;
@@ -47,7 +56,7 @@ const MenuComponent: FC<MenuModuleProps<{ siteId: string }>> = ({ route, tenantI
 
 sitesConnector.registerRoutes({
 	path: MODULE_PATHS.site.root,
-	breadcrumb: null,
+	breadcrumb: false,
 	component: MenuComponent,
 	redirect: MODULE_PATHS.site.overview,
 	guards: [
@@ -70,62 +79,62 @@ sitesConnector.registerRoutes({
 	routes: [
 		{
 			path: MODULE_PATHS.site.overview,
-			breadcrumb: null,
+			breadcrumb: false,
 			component: MenuOverview,
 		},
 		{
 			path: MODULE_PATHS.site.create,
-			breadcrumb: null,
+			breadcrumb: false,
 			component: MenuCreate,
 			redirect: MODULE_PATHS.site.createSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.createSettings,
-					breadcrumb: null,
+					breadcrumb: false,
 					component: MenuDetailSettings,
 				},
 			],
 		},
 		{
 			path: MODULE_PATHS.site.createContentRefMenuItem,
-			breadcrumb: null,
+			breadcrumb: false,
 			component: MenuItemCreate,
 			redirect: MODULE_PATHS.site.createContentRefMenuItemSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.createContentRefMenuItemSettings,
-					breadcrumb: null,
+					breadcrumb: false,
 					component: MenuItemDetailSettings,
 				},
 			],
 		},
 		{
 			path: MODULE_PATHS.site.contentRefMenuItemDetail,
-			breadcrumb: null,
+			breadcrumb: false,
 			component: MenuItemUpdate,
 			redirect: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.contentRefMenuItemDetailSettings,
-					breadcrumb: null,
+					breadcrumb: false,
 					component: MenuItemDetailSettings,
 				},
 			],
 		},
 		{
 			path: MODULE_PATHS.site.detail,
-			breadcrumb: null,
+			breadcrumb: false,
 			component: MenuUpdate,
 			redirect: MODULE_PATHS.site.detailSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.detailSettings,
-					breadcrumb: null,
+					breadcrumb: false,
 					component: MenuDetailSettings,
 				},
 				{
 					path: MODULE_PATHS.site.menuItems,
-					breadcrumb: null,
+					breadcrumb: false,
 					component: MenuItemsOverview,
 				},
 			],
@@ -171,6 +180,32 @@ contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	},
 });
 
+export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
+	{
+		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
+		breadcrumb: false,
+		component: ContentTypeDetailUrl,
+	},
+];
+
+export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
+	{
+		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
+		breadcrumb: false,
+		component: ContentTypeDetailUrl,
+	},
+	{
+		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
+		breadcrumb: false,
+		component: ContentTypeDetailUrl,
+	},
+	{
+		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
+		breadcrumb: false,
+		component: ContentTypeDetailMenu,
+	},
+];
+
 contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	label: 'Navigatie',
 	module: CONFIG.module,
@@ -178,4 +213,6 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
+	routes: [...tenantContentTypeDetailTabRoutes, ...siteContentTypeDetailTabRoutes],
+	// TODO: FIX TYPES
 } as any);

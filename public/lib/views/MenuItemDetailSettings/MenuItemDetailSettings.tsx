@@ -32,7 +32,7 @@ import { useParams } from 'react-router-dom';
 import { NAV_STATUSES } from '../../components';
 import formRendererConnector from '../../connectors/formRenderer';
 import sitesConnector from '../../connectors/sites';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getPositionInputValue } from '../../helpers/getPositionInputValue';
 import { getTreeConfig } from '../../helpers/getTreeConfig';
 import { MenuItemDetailRouteProps } from '../../menu.types';
@@ -62,7 +62,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 }) => {
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(
 		!loading && !!menuItemDraft,
 		menuItemDraft

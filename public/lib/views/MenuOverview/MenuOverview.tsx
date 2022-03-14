@@ -24,7 +24,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { FilterForm, FilterFormState } from '../../components';
 import sitesConnector from '../../connectors/sites';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { useMenus } from '../../hooks/useMenus';
 import { MenuMatchProps, MenuRouteProps } from '../../menu.types';
@@ -48,7 +48,7 @@ const MenuOverview: FC<MenuRouteProps<MenuMatchProps>> = ({ match }) => {
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loaded);
 	const [filterFormState, setFilterFormState] = useState<FilterFormState>(DEFAULT_FILTER_FORM);
 	const [query, setQuery] = useAPIQueryParams(DEFAULT_OVERVIEW_QUERY_PARAMS);
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const { generatePath, navigate } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const breadcrumbs = useBreadcrumbs(
