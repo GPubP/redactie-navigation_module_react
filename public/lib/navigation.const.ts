@@ -45,10 +45,6 @@ export const MODULE_PATHS = {
 	},
 };
 
-console.log(
-	`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${CONTENT_TYPE_DETAIL_BASE_PATH}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})/:tab/:child`
-);
-
 export const BREADCRUMB_OPTIONS = (
 	generatePath: NavigateGenerateFn,
 	extraBreadcrumbs: Breadcrumb[] = []

@@ -1,7 +1,8 @@
 import { TextField } from '@acpaas-ui/react-components';
 import { Table } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import { Field, FormikValues, useFormikContext } from 'formik';
+import { FormikMultilanguageField } from '@redactie/utils';
+import { FormikValues, useFormikContext } from 'formik';
 import React, { ChangeEvent, FC, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
@@ -20,7 +21,8 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	};
 
 	const importPattern = (key: string): void => {
-		const urlPattern = values.url.urlPattern;
+		// TODO: Implement multilanguage
+		const urlPattern = values.url.urlPattern.nl;
 
 		if (!cursorPosition) {
 			setFieldValue('url.urlPattern', `${urlPattern}${key}`);
@@ -29,8 +31,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 
 		const left = urlPattern.substring(0, cursorPosition);
 		const right = urlPattern.substring(cursorPosition);
-
-		setFieldValue('url.urlPattern', `${left}${key}${right}`);
+		setFieldValue('url.urlPattern.nl', `${left}${key}${right}`);
 		setCursorPosition(null);
 	};
 
@@ -39,8 +40,8 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 			<div className="u-margin-bottom">
 				<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_URL_DESCRIPTION)}</p>
 			</div>
-			<Field
-				as={TextField}
+			<FormikMultilanguageField
+				asComponent={TextField}
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"

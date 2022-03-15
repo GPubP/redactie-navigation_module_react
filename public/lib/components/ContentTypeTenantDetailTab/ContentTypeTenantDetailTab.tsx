@@ -6,6 +6,7 @@ import {
 	ControlledModalBody,
 	ControlledModalFooter,
 	ControlledModalHeader,
+	LanguageHeader,
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
@@ -28,14 +29,22 @@ import { CONFIG, MODULE_PATHS } from '../../navigation.const';
 import { NAV_TENANT_COMPARTMENTS } from './ContentTypeTenantDetailTab.const';
 import { ContentTypeTenantDetailTabFormState } from './ContentTypeTenantDetailTab.types';
 
-// TODO: fix types
 const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
 	onSubmit,
 	onCancel,
 }) => {
-	const initialValues: ContentTypeTenantDetailTabFormState = {};
+	const initialValues: ContentTypeTenantDetailTabFormState = value?.config
+		? value.config
+		: {
+				url: {
+					urlPattern: {
+						multilanguage: true,
+					},
+				},
+		  };
+
 	const { contentTypeUuid, child } = useParams<{
 		contentTypeUuid: string;
 		child: string;
@@ -62,9 +71,10 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [child]);
 
-	const onConfirm = (values: any): void => {
-		onSubmit({ config: values, validationSchema: {} });
+	const onConfirm = (): void => {
+		onSubmit({ config: formValue, validationSchema: {} });
 		resetChangeDetection();
+		setShowConfirmModal(false);
 	};
 
 	const onFormSubmit = (): void => {
@@ -74,6 +84,8 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	const onSavePromptCancel = (): void => {
 		setShowConfirmModal(false);
 	};
+
+	console.log('cjecl');
 
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
@@ -93,48 +105,58 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
-					<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-						{({ submitForm }) => {
-							return (
-								<>
-									<FormikOnChangeHandler onChange={setFormValue} />
-									<RenderChildRoutes
-										routes={tenantContentTypeDetailTabRoutes}
-										extraOptions={{}}
-									/>
-									<ActionBar className="o-action-bar--fixed" isOpen>
-										<ActionBarContentSection>
-											<div className="u-wrapper row end-xs">
-												<Button
-													className="u-margin-right-xs"
-													onClick={onCancel}
-													negative
-												>
-													{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-												</Button>
-												<Button
-													iconLeft={
-														isLoading ? 'circle-o-notch fa-spin' : null
-													}
-													disabled={isLoading || !hasChanges}
-													onClick={submitForm}
-													type="success"
-													htmlType="submit"
-												>
-													{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-												</Button>
-											</div>
-										</ActionBarContentSection>
-									</ActionBar>
-									<LeavePrompt
-										shouldBlockNavigationOnConfirm
-										when={hasChanges}
-										onConfirm={submitForm}
-									/>
-								</>
-							);
-						}}
-					</Formik>
+					<LanguageHeader
+						//	TODO: Implement multilanguage
+						languages={[{ key: 'nl', primary: true }]}
+						activeLanguage={{ key: 'nl' }}
+						tooltipText="some-text"
+						onChangeLanguage={console.log}
+					>
+						<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
+							{({ submitForm }) => {
+								return (
+									<div className="u-margin-top">
+										<FormikOnChangeHandler onChange={setFormValue} />
+										<RenderChildRoutes
+											routes={tenantContentTypeDetailTabRoutes}
+											extraOptions={{}}
+										/>
+										<ActionBar className="o-action-bar--fixed" isOpen>
+											<ActionBarContentSection>
+												<div className="u-wrapper row end-xs">
+													<Button
+														className="u-margin-right-xs"
+														onClick={onCancel}
+														negative
+													>
+														{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+													</Button>
+													<Button
+														iconLeft={
+															isLoading
+																? 'circle-o-notch fa-spin'
+																: null
+														}
+														disabled={isLoading || !hasChanges}
+														onClick={submitForm}
+														type="success"
+														htmlType="submit"
+													>
+														{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+													</Button>
+												</div>
+											</ActionBarContentSection>
+										</ActionBar>
+										<LeavePrompt
+											shouldBlockNavigationOnConfirm
+											when={hasChanges}
+											onConfirm={submitForm}
+										/>
+									</div>
+								);
+							}}
+						</Formik>
+					</LanguageHeader>
 					<ControlledModal
 						show={showConfirmModal}
 						onClose={onSavePromptCancel}

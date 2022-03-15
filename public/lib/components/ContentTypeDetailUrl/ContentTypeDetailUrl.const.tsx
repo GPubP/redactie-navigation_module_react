@@ -49,8 +49,9 @@ export const PATTERN_COLUMNS = (
 	{
 		label: tModule(MODULE_TRANSLATIONS.VARIABLE),
 		value: 'key',
-		width: '20%',
 		disableSorting: true,
+		ellipsis: true,
+		width: '20%',
 	},
 	{
 		label: t(CORE_TRANSLATIONS.DESCRIPTION),
@@ -63,6 +64,7 @@ export const PATTERN_COLUMNS = (
 		value: 'example',
 		ellipsis: true,
 		disableSorting: true,
+		width: '15%',
 	},
 	{
 		label: '',

@@ -1,2 +1,8 @@
-/* eslint-disable @typescript-eslint/no-empty-interface */
-export interface ContentTypeTenantDetailTabFormState {}
+export interface ContentTypeTenantDetailTabFormState {
+	url: {
+		urlPattern: {
+			multilanguage: boolean;
+			[lang: string]: string | boolean;
+		};
+	};
+}

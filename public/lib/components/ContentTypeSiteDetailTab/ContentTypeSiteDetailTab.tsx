@@ -1,4 +1,4 @@
-import { Button, RadioGroup } from '@acpaas-ui/react-components';
+import { Button } from '@acpaas-ui/react-components';
 import {
 	ActionBar,
 	ActionBarContentSection,
@@ -6,6 +6,7 @@ import {
 	ControlledModalBody,
 	ControlledModalFooter,
 	ControlledModalHeader,
+	LanguageHeader,
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
@@ -16,22 +17,22 @@ import {
 	useDetectValueChanges,
 	useNavigate,
 } from '@redactie/utils';
-import { Field, Formik } from 'formik';
+import { Formik } from 'formik';
 import { isEmpty } from 'ramda';
 import React, { FC, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
 import { siteContentTypeDetailTabRoutes } from '../../..';
 import contentTypeConnector from '../../connectors/contentTypes';
-import sitesConnector from '../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
-import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
-import { menusFacade } from '../../store/menus';
-import { MenusCheckboxList } from '../MenusCheckboxList';
 
-import { NAV_SITE_COMPARTMENTS } from './ContentTypeSiteDetailTab.const';
+import {
+	NAV_SITE_COMPARTMENTS,
+	SITE_DETAIL_TAB_ALLOWED_PATHS,
+} from './ContentTypeSiteDetailTab.const';
+import { ContentTypeSiteDetailTabFormState } from './ContentTypeSiteDetailTab.types';
 
 const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	value = {} as Record<string, any>,
@@ -40,7 +41,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	siteId,
 	contentType,
 }) => {
-	const initialValues = {};
+	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
@@ -51,6 +52,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		child: string;
 	}>();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
 
 	const history = useHistory();
 
@@ -68,20 +70,13 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [child]);
 
-	const onConfirm = async (values: any): Promise<void> => {
-		const config = {
-			test: 'test',
-		};
-
-		// TEMP
-		value.config = config;
-
-		isEmpty(value.config)
+	const onConfirm = async (): Promise<void> => {
+		!metadataExists
 			? await contentTypeConnector.metadataFacade.createMetadata(
 					siteId,
 					contentType,
 					{
-						config,
+						config: formValue,
 						label: 'Navigatie',
 						name: 'navigation',
 						ref: contentType.uuid,
@@ -96,11 +91,12 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					value.uuid,
 					{
 						...value,
-						config,
+						config: formValue,
 					} as any,
 					'update'
 			  );
 
+		setMetadataExists(true);
 		setShowConfirmModal(false);
 		resetChangeDetection();
 	};
@@ -132,48 +128,61 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
-					<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-						{({ submitForm }) => {
-							return (
-								<>
-									<FormikOnChangeHandler onChange={setFormValue} />
-									<RenderChildRoutes
-										routes={siteContentTypeDetailTabRoutes}
-										extraOptions={{}}
-									/>
-									<ActionBar className="o-action-bar--fixed" isOpen>
-										<ActionBarContentSection>
-											<div className="u-wrapper row end-xs">
-												<Button
-													className="u-margin-right-xs"
-													onClick={onCancel}
-													negative
-												>
-													{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-												</Button>
-												<Button
-													iconLeft={
-														isLoading ? 'circle-o-notch fa-spin' : null
-													}
-													disabled={isLoading || !hasChanges}
-													onClick={submitForm}
-													type="success"
-													htmlType="submit"
-												>
-													{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-												</Button>
-											</div>
-										</ActionBarContentSection>
-									</ActionBar>
-									<LeavePrompt
-										shouldBlockNavigationOnConfirm
-										when={hasChanges}
-										onConfirm={submitForm}
-									/>
-								</>
-							);
-						}}
-					</Formik>
+					<LanguageHeader
+						//	TODO: Implement multilanguage
+						languages={[{ key: 'nl', primary: true }]}
+						activeLanguage={{ key: 'nl' }}
+						tooltipText="some-text"
+						onChangeLanguage={console.log}
+					>
+						<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
+							{({ submitForm }) => {
+								return (
+									<div className="u-margin-top">
+										<FormikOnChangeHandler onChange={setFormValue} />
+										<RenderChildRoutes
+											routes={siteContentTypeDetailTabRoutes}
+											extraOptions={{
+												siteId,
+											}}
+										/>
+										<ActionBar className="o-action-bar--fixed" isOpen>
+											<ActionBarContentSection>
+												<div className="u-wrapper row end-xs">
+													<Button
+														className="u-margin-right-xs"
+														onClick={onCancel}
+														negative
+													>
+														{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+													</Button>
+													<Button
+														iconLeft={
+															isLoading
+																? 'circle-o-notch fa-spin'
+																: null
+														}
+														disabled={isLoading || !hasChanges}
+														onClick={submitForm}
+														type="success"
+														htmlType="submit"
+													>
+														{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
+													</Button>
+												</div>
+											</ActionBarContentSection>
+										</ActionBar>
+										<LeavePrompt
+											allowedPaths={SITE_DETAIL_TAB_ALLOWED_PATHS}
+											shouldBlockNavigationOnConfirm
+											when={hasChanges}
+											onConfirm={submitForm}
+										/>
+									</div>
+								);
+							}}
+						</Formik>
+					</LanguageHeader>
 					<ControlledModal
 						show={showConfirmModal}
 						onClose={onSavePromptCancel}

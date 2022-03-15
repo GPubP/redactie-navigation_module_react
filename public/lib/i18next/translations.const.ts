@@ -40,6 +40,14 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'NAVIGATION_URL_DESCRIPTION',
 		'Geef het URL patroon op dat gebruikt zal worden voor het genereren van een URL per content item.'
 	),
+	NAVIGATION_MENU_AVAILABLE_MENUS_TITLE: tKey(
+		'NAVIGATION_MENU_AVAILABLE_MENUS_TITLE',
+		"Beschikbare menu's"
+	),
+	NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION: tKey(
+		'NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION',
+		"Selecteer de beschikbare menu's voor dit content type"
+	),
 });
 
 export { MODULE_TRANSLATIONS };

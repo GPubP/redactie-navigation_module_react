@@ -1,12 +1,9 @@
 import { RadioGroup } from '@acpaas-ui/react-components';
-import { Table } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import { FormikOnChangeHandler, useDetectValueChanges } from '@redactie/utils';
-import { Field, Formik, FormikValues, useFormikContext } from 'formik';
-import { isEmpty } from 'ramda';
-import React, { ChangeEvent, FC, useEffect, useState } from 'react';
+import { FormikMultilanguageField } from '@redactie/utils';
+import { FormikValues, useFormikContext } from 'formik';
+import React, { FC, useEffect } from 'react';
 
-import contentTypeConnector from '../../connectors/contentTypes';
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { formatMenuCategory } from '../../helpers/formatMenuCategory';
@@ -16,17 +13,9 @@ import { MenusCheckboxList } from '../MenusCheckboxList';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
-const ContentTypeDetailMenu: FC<ExternalTabProps> = ({
-	value = {} as Record<string, any>,
-	isLoading,
-	onCancel,
-	siteId,
-	contentType,
-}) => {
-	const initialValues = {};
-	const [t] = translationsConnector.useCoreTranslation();
+const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const { values } = useFormikContext<FormikValues>();
+	const { values, setFieldValue } = useFormikContext<FormikValues>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
@@ -46,27 +35,34 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({
 			</div>
 			<div className="row u-margin-top">
 				<div className="col-xs-12 col-sm-6">
-					<Field
-						as={RadioGroup}
-						id="menu.allowMenus"
-						name="allowMenus"
+					<FormikMultilanguageField
+						asComponent={RadioGroup}
+						name="menu.allowMenus"
 						options={ALLOW_MENUS_OPTIONS}
+						onChange={(e: any) => {
+							// TODO: Implement multilanguage
+							setFieldValue('menu.allowMenus.nl', e.target.value);
+							setFieldValue('menu.allowedMenus.nl', []);
+						}}
 					/>
 				</div>
 			</div>
-			{/* {`${values.menu.allowMenus}` === 'true' && (
+			{/* // TODO: Implement multilanguage */}
+			{`${values?.menu?.allowMenus.nl}` === 'true' && (
 				<div>
-					<div className="row u-margin-top u-flex u-flex-column">
-						<p>Beschikbare menu&apos;s</p>
+					<div className="u-margin-top u-flex u-flex-column">
+						<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_MENU_AVAILABLE_MENUS_TITLE)}</p>
 						<small className="u-margin-top-xs">
-							Selecteer de beschikbare menu&apos;s voor dit content type
+							{tModule(
+								MODULE_TRANSLATIONS.NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION
+							)}
 						</small>
 					</div>
-					<div className="row u-margin-top">
-						<MenusCheckboxList />
+					<div className="u-margin-top">
+						<MenusCheckboxList name="menu.allowedMenus" />
 					</div>
 				</div>
-			)} */}
+			)}
 		</div>
 	);
 };
