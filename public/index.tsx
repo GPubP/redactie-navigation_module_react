@@ -213,6 +213,4 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
-	routes: [...tenantContentTypeDetailTabRoutes, ...siteContentTypeDetailTabRoutes],
-	// TODO: FIX TYPES
-} as any);
+});
