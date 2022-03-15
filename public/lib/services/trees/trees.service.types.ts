@@ -37,7 +37,7 @@ export interface TreeMeta {
 	lastEditor: null;
 }
 ///////////////////////////////////////
-// GET TREE TYPES ---------------------
+// GET TREE ITEMS ---------------------
 ///////////////////////////////////////
 export interface TreeDetail extends Tree {
 	items: TreeDetailItem[];
@@ -51,6 +51,13 @@ export interface TreeDetailItem {
 	slug: string;
 	externalUrl?: string;
 	items: TreeDetailItem[];
+}
+
+export interface ErrorResponse {
+	status: number;
+	code: string;
+	identifier: string;
+	title: string;
 }
 
 ///////////////////////////////////////

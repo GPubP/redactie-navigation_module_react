@@ -41,9 +41,10 @@ export const findPosition = (treeOptions: CascaderOption[], treeItemId?: number)
 export const getInitialFormValues = (
 	value: any,
 	treeItem: TreeItemModel | undefined,
-	options: CascaderOption[]
+	options: CascaderOption[],
+	itemNotFound: boolean
 ) => {
-	if (!treeItem && isEmpty(value)) {
+	if ((!treeItem && isEmpty(value)) || itemNotFound) {
 		return {
 			status: NAV_ITEM_STATUSES.READY,
 		};
