@@ -3,12 +3,14 @@ import { pathOr } from 'ramda';
 import { take } from 'rxjs/operators';
 
 import { buildSubset } from '../../helpers';
+import { rearrangeMenuItems } from '../../helpers/rearrangeMenuItems';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import {
 	MenuItem,
 	menuItemsApiService,
 	MenuItemsApiService,
 	MenuItemsResponse,
+	RearrangeMenuItem,
 } from '../../services/menuItems';
 
 import { getAlertMessages } from './menuItems.messages';
@@ -215,6 +217,46 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				});
 
 				alertService.danger(getAlertMessages(body).update.error, {
+					containerId: alertId,
+				});
+			});
+	}
+
+	public async rearrangeItems(
+		siteId: string,
+		menuId: string,
+		body: RearrangeMenuItem[],
+		alertId: string
+	): Promise<void> {
+		const { isUpdating } = this.query.getValue();
+
+		if (isUpdating) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsUpdating(true);
+
+		return this.service
+			.rearrangeMenuItems(siteId, menuId, body)
+			.then(async () => {
+				const menuItems = await this.menuItems$.pipe(take(1)).toPromise();
+
+				this.store.set(rearrangeMenuItems(menuItems, body));
+				this.store.update({
+					isUpdating: false,
+				});
+
+				alertService.success(getAlertMessages().rearrange.success, {
+					containerId: alertId,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isUpdating: false,
+				});
+
+				alertService.danger(getAlertMessages().rearrange.error, {
 					containerId: alertId,
 				});
 			});

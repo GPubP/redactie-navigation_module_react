@@ -1,0 +1,120 @@
+import { Button } from '@acpaas-ui/react-components';
+import {
+	ControlledModal,
+	ControlledModalBody,
+	ControlledModalFooter,
+	ControlledModalHeader,
+	Table,
+} from '@acpaas-ui/react-editorial-components';
+import classNames from 'classnames/bind';
+import React, { FC, useEffect, useState } from 'react';
+
+import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import { MenuItem } from '../../services/menuItems';
+
+import { REARRANGE_COLUMNS } from './RearrangeModal.const';
+import styles from './RearrangeModal.module.scss';
+import { MoveDirection, RearrangeTableRow } from './RearrangeModal.types';
+const cx = classNames.bind(styles);
+
+export const RearrangeModal: FC<{
+	menuItems: MenuItem[];
+	show: boolean;
+	loading: boolean;
+	onCancel: () => void;
+	onConfirm: (items: { itemId: number; newWeight: number }[]) => void;
+}> = ({ menuItems, show = false, loading = false, onCancel, onConfirm }) => {
+	const [t] = useCoreTranslation();
+	const [rows, setRows] = useState<RearrangeTableRow[]>([]);
+
+	const parseRows = (): RearrangeTableRow[] => {
+		return (menuItems || []).map((item, index) => {
+			return {
+				canMoveDown: index !== menuItems.length - 1,
+				canMoveUp: index !== 0,
+				url: item.externalUrl,
+				id: item.id as number,
+				label: item.label,
+				weight: index,
+			};
+		});
+	};
+
+	useEffect(() => {
+		setRows(parseRows());
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [menuItems]);
+
+	const onRearrange = (rowId: number, direction: MoveDirection): void => {
+		const updatedPosition = direction === MoveDirection.Up ? -1 : 1;
+		const sourceIndex = rows.findIndex(row => row.id === rowId);
+		const arr = rows;
+
+		const arrItem = arr[sourceIndex];
+		arr.splice(sourceIndex, 1);
+		arr.splice(arrItem.weight + updatedPosition, 0, arrItem);
+
+		setRows(
+			arr.map((row, index) => ({
+				...row,
+				canMoveDown: index !== arr.length - 1,
+				canMoveUp: index !== 0,
+				weight: index,
+			}))
+		);
+	};
+
+	const onSubmit = (): void => {
+		onConfirm(
+			rows.map(row => {
+				return {
+					itemId: row.id,
+					newWeight: row.weight,
+				};
+			})
+		);
+	};
+
+	const onClose = (): void => {
+		setRows(parseRows());
+		onCancel();
+	};
+
+	return (
+		<ControlledModal
+			show={show}
+			onClose={onClose}
+			size="large"
+			classname={cx('o-rearrange-modal')}
+		>
+			<ControlledModalHeader>
+				<h4>Menu-items sorteren</h4>
+			</ControlledModalHeader>
+			<ControlledModalBody>
+				<Table
+					dataKey="id"
+					columns={REARRANGE_COLUMNS(onRearrange)}
+					rows={rows}
+					striped={false}
+					noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
+					hideHeader={true}
+				/>
+			</ControlledModalBody>
+			<ControlledModalFooter>
+				<div className="u-flex u-flex-item u-flex-justify-end">
+					<Button onClick={onClose} negative>
+						Annuleer
+					</Button>
+					<Button
+						iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+						disabled={loading}
+						onClick={onSubmit}
+						type="success"
+					>
+						Bewaar
+					</Button>
+				</div>
+			</ControlledModalFooter>
+		</ControlledModal>
+	);
+};
