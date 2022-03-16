@@ -1,6 +1,6 @@
 {
   "name": "@redactie/navigation-module",
-  "version": "1.3.6",
+  "version": "1.3.7",
   "description": "redactie navigation module",
   "main": "dist/redactie-navigation-module.umd.js",
   "types": "dist/index.d.ts",
