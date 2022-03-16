@@ -6,6 +6,4 @@ export const generateEmptyMenu = (siteName: string | undefined): CreateMenuDTO =
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
 	category: `menu_${siteName}_nl`,
-	// items: [],
-	// slug: '',
 });
