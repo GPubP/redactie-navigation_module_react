@@ -1,44 +1,21 @@
 import { ContentTypeSchema } from '@redactie/content-module';
 import { Links, Page } from '@redactie/utils';
 
-import { ListApiResponse } from '../../navigation.types';
-import { MenuItem } from '../menuItems';
+import {
+	CreateNavTreeDTO,
+	EmbeddedNavTree,
+	ListApiResponse,
+	NavTree,
+	UpdateNavTreeDTO,
+} from '../../navigation.types';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
 /////////////////////////////////
-export type MenusResponse = ListApiResponse<EmbeddedMenu>;
-
-export interface EmbeddedMenu {
-	resourceList: Menu[];
-}
-
-export interface Menu {
-	id?: number;
-	logicalId?: string;
-	label: string;
-	description: string;
-	lang: string;
-	category: string;
-	publishStatus: string;
-	createdBy?: string;
-	createdAt?: Date;
-	updatedBy?: string;
-	updatedAt?: Date;
-	slug: string;
-	meta?: MenuMeta;
-	itemCount?: number;
-	items: MenuItem[];
-}
-
-export interface MenuCategory {
-	id: number;
-	label: string;
-}
-
-export interface MenuMeta {
-	lastEditor: null;
-}
+export type MenusResponse = ListApiResponse<EmbeddedNavTree>;
+export type CreateMenuDTO = CreateNavTreeDTO;
+export type UpdateMenuDTO = UpdateNavTreeDTO;
+export type Menu = NavTree;
 
 ///////////////////////////////////////
 // GET MENU OCCURRENCES ---------------------

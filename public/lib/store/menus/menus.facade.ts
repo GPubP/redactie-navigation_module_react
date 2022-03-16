@@ -1,7 +1,14 @@
 import { alertService, BaseEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
 
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { Menu, MenusApiService, menusApiService, MenusResponse } from '../../services/menus';
+import { UpdateNavTreeDTO } from '../../navigation.types';
+import {
+	CreateMenuDTO,
+	Menu,
+	MenusApiService,
+	menusApiService,
+	MenusResponse,
+} from '../../services/menus';
 
 import { getAlertMessages } from './menus.messages';
 import { MenusQuery, menusQuery } from './menus.query';
@@ -31,7 +38,16 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.set(response._embedded.resourceList);
+				this.store.set(
+					response._embedded.resourceList.map(menu => {
+						const categoryArray = menu.category.label.split('_');
+
+						return {
+							...menu,
+							lang: categoryArray[categoryArray.length - 1],
+						};
+					})
+				);
 				this.store.update({
 					meta: response._page,
 					isFetching: false,
@@ -59,10 +75,12 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error(`Getting menu '${uuid}' failed!`);
 				}
 
+				const categoryArray = response.category.label.split('_');
+
 				this.store.update({
 					menu: {
 						...response,
-						lang: 'nl',
+						lang: categoryArray[categoryArray.length - 1],
 					},
 					isFetchingOne: false,
 				});
@@ -75,7 +93,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public createMenu(siteId: string, body: Menu, alertId: string): void {
+	public createMenu(siteId: string, body: CreateMenuDTO, alertId: string): void {
 		const { isCreating } = this.query.getValue();
 
 		if (isCreating) {
@@ -111,7 +129,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public updateMenu(siteId: string, body: Menu, alertId: string): Promise<void> {
+	public updateMenu(siteId: string, body: UpdateNavTreeDTO, alertId: string): Promise<void> {
 		const { isUpdating } = this.query.getValue();
 
 		if (isUpdating) {
@@ -127,15 +145,15 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error(`Updating menu '${body.id}' failed!`);
 				}
 
+				const categoryArray = response.category.label.split('_');
+				const menu = {
+					...response,
+					lang: categoryArray[categoryArray.length - 1],
+				};
+
 				this.store.update({
-					menu: {
-						...response,
-						lang: 'nl',
-					},
-					menuDraft: {
-						...response,
-						lang: 'nl',
-					},
+					menu,
+					menuDraft: menu,
 					isUpdating: false,
 				});
 
