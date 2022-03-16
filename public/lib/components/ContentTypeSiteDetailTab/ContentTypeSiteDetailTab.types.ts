@@ -1,4 +1,8 @@
 export interface ContentTypeSiteDetailTabFormState {
-	allowMenus: 'true' | 'false';
-	menus: string[];
+	url: {
+		urlPattern: {
+			multilanguage: boolean;
+			[lang: string]: string | boolean;
+		};
+	};
 }

@@ -1,58 +1,32 @@
-import { FieldOption } from '@redactie/form-renderer-module';
-import { DataLoader, LoadingState } from '@redactie/utils';
-import { useField } from 'formik';
+import { CheckboxList, DataLoader, FormikMultilanguageField, LoadingState } from '@redactie/utils';
 import React, { FC, ReactElement, useMemo } from 'react';
 
-import formRendererConnector from '../../connectors/formRenderer';
 import { useMenus } from '../../hooks';
 
-const MenusCheckboxList: FC = () => {
-	const [menusLoadingState, menus] = useMenus();
-	const [field, meta, helpers] = useField('menus');
+import { MenusCheckboxListProps } from './MenusCheckboxList.types';
 
-	const menuOptions: FieldOption[] = useMemo(() => {
+const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ name }) => {
+	const [menusLoadingState, menus] = useMenus();
+
+	const menuOptions = useMemo(() => {
 		if (menusLoadingState !== LoadingState.Loaded || !menus?.length) {
 			return [];
 		}
 
-		return menus.map(
-			menu =>
-				({
-					value: {
-						value: menu.id?.toString(),
-						key: menu.id?.toString(),
-						label: menu.label,
-					},
-				} as FieldOption)
-		);
+		return menus.map(menu => ({
+			value: menu.id?.toString(),
+			key: menu.id?.toString(),
+			label: menu.label,
+		}));
 	}, [menus, menusLoadingState]);
-
-	const CheckBoxList = formRendererConnector.api.fieldRegistry.get('core', 'checkboxList')
-		?.component as any;
-
-	if (!CheckBoxList) {
-		return null;
-	}
 
 	const renderCheckboxList = (): ReactElement => (
 		<>
 			{menuOptions.length ? (
-				<CheckBoxList
-					fieldSchema={{
-						name: 'menus',
-						module: 'core',
-						type: 'string',
-						dataType: '',
-						semanticType: '',
-						config: {
-							options: menuOptions,
-						},
-					}}
-					fieldProps={{
-						field,
-						meta,
-					}}
-					fieldHelperProps={helpers}
+				<FormikMultilanguageField
+					asComponent={CheckboxList}
+					name={name}
+					options={menuOptions}
 				/>
 			) : (
 				<p>Er zijn geen menu&apos;s geconfigureerd voor deze site.</p>

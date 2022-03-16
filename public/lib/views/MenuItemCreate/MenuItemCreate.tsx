@@ -13,7 +13,7 @@ import {
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useMenu, useMenuItem, useMenuItemDraft, useMenuItems } from '../../hooks';
 import { generateEmptyMenuItem } from '../../menu.helpers';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
@@ -37,7 +37,7 @@ const MenuItemCreate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const { upsertingState, fetchingState } = useMenuItems();
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [

@@ -20,7 +20,7 @@ import { Link, matchPath, useParams } from 'react-router-dom';
 
 import { FlyoutMenu } from '../../components/FlyoutMenu';
 import rolesRightsConnector from '../../connectors/rolesRights';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useActiveTabs, useMenu, useMenuDraft } from '../../hooks';
 import { MenuRouteProps } from '../../menu.types';
 import {
@@ -43,7 +43,7 @@ const MenuUpdate: FC<MenuRouteProps<{ menuId?: string; siteId: string }>> = ({
 	 * Hooks
 	 */
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();

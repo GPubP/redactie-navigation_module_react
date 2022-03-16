@@ -9,7 +9,7 @@ import {
 import classNames from 'classnames/bind';
 import React, { FC, useEffect, useState } from 'react';
 
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MenuItem } from '../../services/menuItems';
 
 import { REARRANGE_COLUMNS } from './RearrangeModal.const';
@@ -24,7 +24,7 @@ export const RearrangeModal: FC<{
 	onCancel: () => void;
 	onConfirm: (items: { itemId: number; newWeight: number }[]) => void;
 }> = ({ menuItems, show = false, loading = false, onCancel, onConfirm }) => {
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const [rows, setRows] = useState<RearrangeTableRow[]>([]);
 
 	const parseRows = (): RearrangeTableRow[] => {
