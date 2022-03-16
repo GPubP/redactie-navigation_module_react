@@ -36,7 +36,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 }) => {
 	const contentValueStatus = contentValue?.meta.status;
 	const contentValueIsPublished = contentValue?.meta.historySummary?.published;
-	const contentItemOldNavigation = contentItem?.modulesData?.navigation as ModuleValue;
 
 	/**
 	 * Hooks
@@ -57,6 +56,13 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
 	}>(() => getTreeConfig(tree, value.id), [tree, value.id]);
+	const contentItemOldNavigation = useMemo<ModuleValue | null>(
+		() =>
+			treeItemError?.message === 'NotFound'
+				? null
+				: (contentItem?.modulesData?.navigation as ModuleValue),
+		[contentItem, treeItemError]
+	);
 	const initialValues = useMemo(
 		() =>
 			getInitialFormValues(
