@@ -6,7 +6,7 @@ import {
 	SiteStructuresApiService,
 	siteStructuresApiService,
 	SiteStructuresResponse,
-	UpdateSiteStructureDTO,
+	UpdateSiteStructureDto,
 } from '../../services/siteStructures';
 
 import { getAlertMessages } from './siteStructures.messages';
@@ -132,7 +132,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 
 	public async updateSiteStructure(
 		siteId: string,
-		body: UpdateSiteStructureDTO,
+		body: UpdateSiteStructureDto,
 		alertId: string
 	): Promise<void> {
 		const { isUpdating } = this.query.getValue();

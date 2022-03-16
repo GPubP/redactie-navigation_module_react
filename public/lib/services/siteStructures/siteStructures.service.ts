@@ -5,7 +5,7 @@ import { api } from '../api';
 import {
 	SiteStructure,
 	SiteStructuresResponse,
-	UpdateSiteStructureDTO,
+	UpdateSiteStructureDto,
 } from './siteStructures.service.types';
 
 export class SiteStructuresApiService {
@@ -37,7 +37,7 @@ export class SiteStructuresApiService {
 
 	public async updateSiteStructure(
 		siteId: string,
-		siteStructure: UpdateSiteStructureDTO
+		siteStructure: UpdateSiteStructureDto
 	): Promise<SiteStructure> {
 		return api
 			.put(`${siteId}/site-structures/${siteStructure.id}`, {

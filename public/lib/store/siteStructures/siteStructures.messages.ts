@@ -1,7 +1,7 @@
-import { SiteStructure, UpdateSiteStructureDTO } from '../../services/siteStructures';
+import { SiteStructure, UpdateSiteStructureDto } from '../../services/siteStructures';
 
 export const getAlertMessages = (
-	data: SiteStructure | UpdateSiteStructureDTO
+	data: SiteStructure | UpdateSiteStructureDto
 ): Record<string, any> => ({
 	create: {
 		success: {

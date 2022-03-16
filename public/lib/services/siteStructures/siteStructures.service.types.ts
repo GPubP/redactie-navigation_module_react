@@ -10,6 +10,6 @@ import {
 // GET SITE STRUCTURES TYPES ---------------------
 /////////////////////////////////
 export type SiteStructuresResponse = ListApiResponse<EmbeddedNavTree>;
-export type CreateSiteStructureDTO = CreateNavTreeDTO;
-export type UpdateSiteStructureDTO = UpdateNavTreeDTO;
+export type CreateSiteStructureDto = CreateNavTreeDTO;
+export type UpdateSiteStructureDto = UpdateNavTreeDTO;
 export type SiteStructure = NavTree;

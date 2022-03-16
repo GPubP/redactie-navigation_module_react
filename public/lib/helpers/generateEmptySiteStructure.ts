@@ -1,9 +1,9 @@
 import { NAV_STATUSES } from '../components';
-import { CreateSiteStructureDTO } from '../services/siteStructures';
+import { CreateSiteStructureDto } from '../services/siteStructures';
 
 export const generateEmptySiteStructure = (
 	siteName: string | undefined
-): CreateSiteStructureDTO => ({
+): CreateSiteStructureDto => ({
 	label: '',
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
