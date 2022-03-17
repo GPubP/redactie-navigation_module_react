@@ -26,7 +26,7 @@ import {
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
-import { omit } from 'ramda';
+import { equals, omit } from 'ramda';
 import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -78,16 +78,8 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<MenuItem[]>([]);
+	const [parentChanged, setParentChanged] = useState<boolean>(false);
 	const { menuItems, upsertingState: menuItemsUpsertingState } = useMenuItems();
-
-	useEffect(() => {
-		if (!menuId || !siteId) {
-			return;
-		}
-
-		menusFacade.getMenu(siteId, menuId);
-		menuItemsFacade.getSubset(siteId, menuId, menuItemDraft?.parentId, 1);
-	}, [menuId, menuItemDraft, siteId]);
 
 	const canEdit = useMemo(() => {
 		return menuItem?.id ? rights?.canUpdate : true;
@@ -100,6 +92,29 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const isUpdate = useMemo(() => {
 		return !!menuItem?.id;
 	}, [menuItem]);
+
+	useEffect(() => {
+		if (!menuId || !siteId) {
+			return;
+		}
+
+		menusFacade.getMenu(siteId, menuId);
+	}, [menuId, siteId]);
+
+	useEffect(() => {
+		setParentChanged(menuItem?.parentId !== menuItemDraft?.parentId);
+
+		if (!menuId || !siteId || !isUpdate) {
+			return;
+		}
+
+		menuItemsFacade.getSubset(siteId, menuId, menuItemDraft?.parentId, 1);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isUpdate, menuId, menuItemDraft, siteId]);
+
+	useEffect(() => {
+		setSortRows(extractSiblings(menuItem?.id as number, menuItems as MenuItem[]));
+	}, [menuItem, menuItemDraft, menuItems]);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -138,11 +153,22 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
 
-		menuItemsFacade.setMenuItemDraft({
-			...omit(['parentId'], menuItemDraft),
-			...omit(['position', 'parentId'], formValue),
-			...(parentId && { parentId }),
-		} as MenuItem);
+		if (
+			!equals(
+				{
+					...omit(['parentId'], menuItemDraft),
+					...omit(['position', 'parentId'], formValue),
+					...(parentId && { parentId }),
+				} as MenuItem,
+				menuItemDraft
+			)
+		) {
+			menuItemsFacade.setMenuItemDraft({
+				...omit(['parentId'], menuItemDraft),
+				...omit(['position', 'parentId'], formValue),
+				...(parentId && { parentId }),
+			} as MenuItem);
+		}
 	};
 
 	const handlePositionOnChange = (
@@ -179,7 +205,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 
 	const openRearrangeModal = (): void => {
 		setShowRearrange(true);
-		setSortRows(extractSiblings(menuItem?.id as number, menuItems as MenuItem[]));
 	};
 
 	/**
@@ -385,7 +410,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 												</div>
 											</Cascader>
 										</div>
-										{isUpdate && (
+										{isUpdate && !parentChanged && (
 											<Button
 												className="u-margin-left-xs"
 												disabled={!canEdit}

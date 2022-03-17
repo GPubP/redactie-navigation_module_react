@@ -1,7 +1,10 @@
 @import '~@a-ui/core/dist/assets/styles/_quarks';
 
 .o-rearrange-modal {
-	thead {
-		display: none;
+	max-height: 90vh;
+
+	&__body {
+		max-height: 70vh;
+		overflow: scroll;
 	}
 }
