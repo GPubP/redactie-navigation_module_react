@@ -1,3 +1,12 @@
+import { ModuleRouteConfig, RouteConfigComponentProps } from '@redactie/redactie-core';
+import { ContextHeaderTab } from '@redactie/utils';
+
+import { MenuItem } from './services/menuItems';
+import { Menu } from './services/menus';
+import { SiteStructureItem } from './services/siteStructureItems';
+import { SiteStructure } from './services/siteStructures';
+import { InternalState } from './store/menus';
+
 export interface ListApiResponse<Embedded> {
 	_embedded: Embedded;
 	_page: ListApiPageResponse;
@@ -39,4 +48,170 @@ export interface NavigationSecurityRights {
 	update: boolean;
 	delete: boolean;
 	replace: boolean;
+}
+
+export interface NavigationModuleProps<Params extends { [K in keyof Params]?: string } = {}>
+	extends RouteConfigComponentProps<Params> {
+	routes: ModuleRouteConfig[];
+	tenantId: string;
+}
+export interface MenuRouteParams {
+	menuId: string;
+}
+
+export interface NavigationMatchProps {
+	siteId: string;
+}
+
+export interface MenuItemMatchProps {
+	siteId: string;
+	menuId: string;
+	menuItemId: string;
+}
+
+export interface SiteStructureMatchProps {
+	siteId: string;
+	siteStructureId: string;
+}
+
+export interface SiteStructureItemMatchProps extends SiteStructureMatchProps {
+	siteStructureItemId: string;
+}
+
+export interface NavigationRouteProps<
+	Params extends {
+		[K in keyof Params]?: string;
+	} = {}
+> extends RouteConfigComponentProps<Params> {
+	basePath: string;
+	routes: ModuleRouteConfig[];
+	tenantId: string;
+}
+
+export interface NavigationDetailRouteProps<Params = {}> extends RouteConfigComponentProps<Params> {
+	isCreating?: boolean;
+	isRemoving?: boolean;
+	loading: boolean;
+	rights: NavRights;
+	routes: ModuleRouteConfig[];
+	state: InternalState;
+	tenantId: string;
+	onCancel: () => void;
+}
+
+export interface MenuDetailRouteProps<Params = {}> extends NavigationDetailRouteProps<Params> {
+	menu: Menu;
+	onSubmit: (data: Menu | Partial<Menu>, tab: ContextHeaderTab) => Promise<void>;
+	onDelete: (data: Menu | Partial<Menu>) => Promise<void>;
+}
+
+export interface SiteStructureDetailRouteProps<Params = {}>
+	extends NavigationDetailRouteProps<Params> {
+	siteStructure: SiteStructure;
+	onSubmit: (
+		data: SiteStructure | Partial<SiteStructure>,
+		tab: ContextHeaderTab
+	) => Promise<void>;
+	onDelete: (data: SiteStructure | Partial<SiteStructure>) => Promise<void>;
+}
+
+export interface NavigationItemDetailRouteProps<Params = {}>
+	extends RouteConfigComponentProps<Params> {
+	onSubmit: (data: NavItem) => Promise<void>;
+	onDelete: (data: NavItem) => Promise<void>;
+	rights: NavRights;
+	loading: boolean;
+	removing: boolean;
+}
+
+export interface MenuItemDetailRouteProps<Params = MenuRouteParams>
+	extends NavigationItemDetailRouteProps<Params> {
+	menu: Menu | undefined;
+	menuItem: MenuItem | undefined;
+	menuItemDraft: MenuItem | undefined;
+}
+
+export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
+	extends NavigationItemDetailRouteProps<Params> {
+	siteStructure: SiteStructure | undefined;
+	siteStructureItem: SiteStructureItem | undefined;
+	siteStructureItemDraft: SiteStructureItem | undefined;
+}
+
+export interface NavRights {
+	canUpdate: boolean;
+	canDelete: boolean;
+}
+
+export interface NavItem {
+	id?: number;
+	label: string;
+	description: string;
+	publishStatus: string;
+	slug: string;
+	externalUrl: string;
+	logicalId: string;
+	items: NavItem[];
+	parentId?: number;
+	weight?: number;
+	parents?: NavItem[];
+	childItemCount?: number;
+}
+
+export interface EmbeddedNavItems {
+	resourceList: NavItem[];
+}
+
+export interface RearrangeNavItem {
+	itemId: number;
+	newWeight: number;
+}
+
+export interface NavItemDetailForm extends NavItem {
+	position: number[];
+}
+
+export interface NavTreeCategory {
+	id: number;
+	label: string;
+}
+
+export interface NavTreeMeta {
+	lastEditor: null;
+}
+
+export interface CreateNavTreeDTO {
+	label: string;
+	description: string;
+	category: string;
+	publishStatus: string;
+}
+
+export interface UpdateNavTreeDTO extends Omit<CreateNavTreeDTO, 'category'> {
+	id: number;
+	categoryId: number;
+}
+
+export interface NavTree {
+	id: number;
+	logicalId: string;
+	label: string;
+	description: string;
+	category: {
+		label: string;
+		id: number;
+	};
+	publishStatus: string;
+	createdBy: string;
+	createdAt: Date;
+	updatedBy: string;
+	updatedAt: Date;
+	meta: NavTreeMeta;
+	items: NavItem[];
+	itemCount?: number;
+	lang?: string;
+}
+
+export interface EmbeddedNavTree {
+	resourceList: NavTree[];
 }

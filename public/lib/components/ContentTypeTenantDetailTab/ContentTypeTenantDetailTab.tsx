@@ -109,7 +109,6 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 						//	TODO: Implement multilanguage
 						languages={[{ key: 'nl', primary: true }]}
 						activeLanguage={{ key: 'nl' }}
-						tooltipText="some-text"
 						onChangeLanguage={console.log}
 					>
 						<Formik onSubmit={onFormSubmit} initialValues={initialValues}>

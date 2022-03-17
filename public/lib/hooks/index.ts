@@ -9,3 +9,8 @@ export * from './useMenus';
 export * from './useMenuItem';
 export * from './useMenuItems';
 export * from './useMenuItemDraft';
+export * from './useSiteStructure';
+export * from './useSiteStructureDraft';
+export * from './useSiteStructureItems';
+export * from './useSiteStructureItem';
+export * from './useSiteStructureItemDraft';

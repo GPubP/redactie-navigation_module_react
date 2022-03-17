@@ -22,6 +22,18 @@ class RolesRightsConnector {
 		update: 'navigation-menu-items_update',
 		delete: 'navigation-menu-items_delete',
 	};
+	public siteStructuresSecurityRights = {
+		create: 'navigation-site-structures_create',
+		read: 'navigation-site-structures_read',
+		update: 'navigation-site-structures_update',
+		delete: 'navigation-site-structures_delete',
+	};
+	public siteStructureItemSecurityRights = {
+		create: 'navigation-site-structure-items_create',
+		read: 'navigation-site-structure-items_read',
+		update: 'navigation-site-structure-items_update',
+		delete: 'navigation-site-structure-items_delete',
+	};
 	public api: RolesRightsModuleAPI;
 
 	constructor(api?: RolesRightsModuleAPI) {

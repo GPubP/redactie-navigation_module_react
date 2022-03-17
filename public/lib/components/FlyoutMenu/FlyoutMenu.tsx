@@ -2,41 +2,23 @@ import { useNavigate } from '@redactie/utils';
 import classNames from 'classnames/bind';
 import React, { FC } from 'react';
 
-import { MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
+import { SITES_ROOT } from '../../navigation.const';
 
 import styles from './FlyoutMenu.module.scss';
 const cx = classNames.bind(styles);
 
-const menuItems = [
-	{
-		path: MODULE_PATHS.site.createContentRefMenuItem,
-		label: 'Content Referentie',
-	},
-	// TODO: DEVELOP AND UNCOMMENT
-	// {
-	// 	path: MODULE_PATHS.site.menuItems.createHyperlink,
-	// 	label: 'Hyperlink',
-	// },
-	// {
-	// 	path: MODULE_PATHS.site.menuItems.createTitle,
-	// 	label: 'Tussentitel',
-	// },
-];
-
-const FlyoutMenu: FC<{ menuId?: string; siteId: string }> = ({ menuId, siteId }) => {
+const FlyoutMenu: FC<{
+	items: { label: string; path: string }[];
+	navigateProps: Record<string, string>;
+}> = ({ items, navigateProps }) => {
 	const { navigate } = useNavigate(SITES_ROOT);
 
 	return (
 		<>
-			{menuItems.map((item, i) => (
+			{items.map((item, i) => (
 				<div
 					className={cx('m-flyout-menu__entry')}
-					onClick={() =>
-						navigate(item.path, {
-							siteId,
-							menuId,
-						})
-					}
+					onClick={() => navigate(item.path, navigateProps)}
 					key={i}
 				>
 					{item.label}

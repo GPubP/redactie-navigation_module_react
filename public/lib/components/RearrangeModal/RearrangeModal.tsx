@@ -18,19 +18,19 @@ import { MoveDirection, RearrangeTableRow } from './RearrangeModal.types';
 const cx = classNames.bind(styles);
 
 export const RearrangeModal: FC<{
-	menuItems: MenuItem[];
+	items: MenuItem[];
 	show: boolean;
 	loading: boolean;
 	onCancel: () => void;
 	onConfirm: (items: { itemId: number; newWeight: number }[]) => void;
-}> = ({ menuItems, show = false, loading = false, onCancel, onConfirm }) => {
+}> = ({ items, show = false, loading = false, onCancel, onConfirm }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [rows, setRows] = useState<RearrangeTableRow[]>([]);
 
 	const parseRows = (): RearrangeTableRow[] => {
-		return (menuItems || []).map((item, index) => {
+		return (items || []).map((item, index) => {
 			return {
-				canMoveDown: index !== menuItems.length - 1,
+				canMoveDown: index !== items.length - 1,
 				canMoveUp: index !== 0,
 				url: item.externalUrl,
 				id: item.id as number,
@@ -43,7 +43,7 @@ export const RearrangeModal: FC<{
 	useEffect(() => {
 		setRows(parseRows());
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [menuItems]);
+	}, [items]);
 
 	const onRearrange = (rowId: number, direction: MoveDirection): void => {
 		const updatedPosition = direction === MoveDirection.Up ? -1 : 1;

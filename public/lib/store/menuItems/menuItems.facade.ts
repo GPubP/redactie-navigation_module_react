@@ -3,14 +3,14 @@ import { pathOr } from 'ramda';
 import { take } from 'rxjs/operators';
 
 import { buildSubset } from '../../helpers';
-import { rearrangeMenuItems } from '../../helpers/rearrangeMenuItems';
+import { rearrangeItems } from '../../helpers/rearrangeItems';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
+import { RearrangeNavItem } from '../../navigation.types';
 import {
 	MenuItem,
 	menuItemsApiService,
 	MenuItemsApiService,
 	MenuItemsResponse,
-	RearrangeMenuItem,
 } from '../../services/menuItems';
 
 import { getAlertMessages } from './menuItems.messages';
@@ -225,7 +225,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 	public async rearrangeItems(
 		siteId: string,
 		menuId: string,
-		body: RearrangeMenuItem[],
+		body: RearrangeNavItem[],
 		alertId: string
 	): Promise<void> {
 		const { isUpdating } = this.query.getValue();
@@ -241,7 +241,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			.then(async () => {
 				const menuItems = await this.menuItems$.pipe(take(1)).toPromise();
 
-				this.store.set(rearrangeMenuItems(menuItems, body));
+				this.store.set(rearrangeItems(menuItems, body));
 				this.store.update({
 					isUpdating: false,
 				});

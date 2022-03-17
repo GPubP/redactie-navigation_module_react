@@ -1,7 +1,7 @@
 import { TextField } from '@acpaas-ui/react-components';
 import { Table } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import { FormikMultilanguageField } from '@redactie/utils';
+import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
 import React, { ChangeEvent, FC, useState } from 'react';
 
@@ -15,6 +15,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 	const { setFieldValue, values } = useFormikContext<FormikValues>();
+	const { siteId } = useSiteContext();
 
 	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
 		setCursorPosition(event.target.selectionStart);
@@ -51,7 +52,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				fixed
 				className="u-margin-top"
 				columns={PATTERN_COLUMNS(t, tModule, importPattern)}
-				rows={PATTERN_PLACEHOLDERS(tModule)}
+				rows={PATTERN_PLACEHOLDERS(tModule, !!siteId)}
 			/>
 		</div>
 	);
