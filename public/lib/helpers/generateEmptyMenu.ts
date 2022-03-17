@@ -8,6 +8,6 @@ export const generateEmptyMenu = (
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
 	category: `menu_${siteName}_nl`,
-	// TODO: Implement language
+	// TODO: Implement multilanguage
 	lang: 'nl',
 });

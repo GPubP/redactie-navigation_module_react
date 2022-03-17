@@ -8,6 +8,6 @@ export const generateEmptySiteStructure = (
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
 	category: `siteStructure_${siteName}_nl`,
-	// TODO: Implement language
+	// TODO: Implement multilanguage
 	lang: 'nl',
 });
