@@ -1,8 +1,9 @@
 import { SearchParams } from '@redactie/utils';
 
+import { RearrangeNavItem } from '../../navigation.types';
 import { api } from '../api';
 
-import { MenuItem, MenuItemsResponse, RearrangeMenuItem } from './menuItems.service.types';
+import { MenuItem, MenuItemsResponse } from './menuItems.service.types';
 
 export class MenuItemsApiService {
 	public async getMenuItems(
@@ -64,7 +65,7 @@ export class MenuItemsApiService {
 	public async rearrangeMenuItems(
 		siteId: string,
 		menuId: string,
-		rearrangeItems: RearrangeMenuItem[]
+		rearrangeItems: RearrangeNavItem[]
 	): Promise<Response> {
 		return api.post(`${siteId}/menus/${menuId}/items/rearrange`, {
 			json: rearrangeItems,

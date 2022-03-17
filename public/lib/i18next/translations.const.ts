@@ -48,6 +48,10 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION',
 		"Selecteer de beschikbare menu's voor dit content type"
 	),
+	SITE_STRUCTURE_CONTENT_REF_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_CONTENT_REF_DESCRIPTION',
+		'Plaats een content item op deze manier voor de 2e of 3e keer in de site structuur. Deze bijkomende registraties worden niet gebruikt voor het bepalen van de broodkruimel.'
+	),
 });
 
 export { MODULE_TRANSLATIONS };

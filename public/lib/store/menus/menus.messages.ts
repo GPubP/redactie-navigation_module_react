@@ -1,6 +1,8 @@
-import { Menu } from '../../services/menus';
+import { CreateMenuDTO, Menu, UpdateMenuDTO } from '../../services/menus';
 
-export const getAlertMessages = (data: Menu): Record<string, any> => ({
+export const getAlertMessages = (
+	data: Menu | CreateMenuDTO | UpdateMenuDTO
+): Record<string, any> => ({
 	create: {
 		success: {
 			title: 'Aangemaakt',
