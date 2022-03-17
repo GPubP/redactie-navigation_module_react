@@ -10,7 +10,7 @@ import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translat
 import { SITE_STRUCTURE_OPTIONS } from './SiteStructureTab.const';
 import { SiteStructureTabFormState } from './SiteStructureTab.types';
 
-const SiteUpdateTab: FC<ExternalTabProps> = ({
+const SiteStructureTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
 	onSubmit,
@@ -90,4 +90,4 @@ const SiteUpdateTab: FC<ExternalTabProps> = ({
 	);
 };
 
-export default SiteUpdateTab;
+export default SiteStructureTab;

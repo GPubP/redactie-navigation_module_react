@@ -4,8 +4,9 @@ import { ContextHeaderTab, NavigateGenerateFn } from '@redactie/utils';
 export const TENANT_ROOT = '/:tenantId';
 export const SITES_ROOT = 'sites';
 export const SITE_ROOT = `/:siteId`;
-export const MENUS_BASE_PATH = '/menus';
-export const MENUS_DETAIL_BASE_PATH = '/menus/:menuId';
+const MENUS_BASE_PATH = '/menus';
+const MENUS_DETAIL_BASE_PATH = '/menus/:menuId';
+const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
 
 export const MODULE_PATHS = {
 	admin: `/content/overzicht`,
@@ -14,6 +15,10 @@ export const MODULE_PATHS = {
 	overview: `${MENUS_BASE_PATH}/overzicht`,
 
 	create: `${MENUS_BASE_PATH}/aanmaken`,
+
+	tenantContentTypeDetailExternal: `${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,
+	tenantContentTypeDetailExternalChild: `${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
+	tenantContentTypeDetailExternalUrl: `${TENANT_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
 
 	// SITE
 	site: {
@@ -33,6 +38,10 @@ export const MODULE_PATHS = {
 		createContentRefMenuItemSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/aanmaken/instellingen`,
 		contentRefMenuItemDetail: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId`,
 		contentRefMenuItemDetailSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId/instellingen`,
+		contentTypeDetailExternal: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,
+		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
+		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
+		contentTypeDetailExternalMenu: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/menu`,
 	},
 };
 
@@ -47,6 +56,8 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}/sites`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${CONTENT_TYPE_DETAIL_BASE_PATH}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})/:tab/:child`,
 	],
 	extraBreadcrumbs: [
 		{

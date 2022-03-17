@@ -15,7 +15,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../connectors/rolesRights';
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useMenu, useMenuItem, useMenuItemDraft } from '../../hooks';
 import { MenuItemMatchProps, MenuModuleProps } from '../../menu.types';
 import {
@@ -36,7 +36,7 @@ const MenuItemUpdate: FC<MenuModuleProps<MenuItemMatchProps>> = ({ route, match 
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const { menu } = useMenu();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],

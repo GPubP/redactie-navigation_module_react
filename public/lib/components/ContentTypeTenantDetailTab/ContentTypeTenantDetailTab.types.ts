@@ -1,3 +1,8 @@
 export interface ContentTypeTenantDetailTabFormState {
-	activateTree: 'true' | 'false';
+	url: {
+		urlPattern: {
+			multilanguage: boolean;
+			[lang: string]: string | boolean;
+		};
+	};
 }

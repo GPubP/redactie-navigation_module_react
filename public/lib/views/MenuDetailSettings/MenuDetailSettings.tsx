@@ -15,7 +15,7 @@ import { ErrorMessage, Field, Formik } from 'formik';
 import React, { FC, ReactElement, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useMenu, useMenuDraft } from '../../hooks';
 import { MenuDetailRouteProps, MenuMatchProps } from '../../menu.types';
 import { ALERT_CONTAINER_IDS, MENU_DETAIL_TAB_MAP, MODULE_PATHS } from '../../navigation.const';
@@ -40,7 +40,7 @@ const MenuSettings: FC<MenuDetailRouteProps<MenuMatchProps>> = ({
 	const { siteId } = match.params;
 	const [menu] = useMenuDraft();
 	const { menu: values, occurrences } = useMenu();
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 
