@@ -5,7 +5,7 @@ import { LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { Field, Formik } from 'formik';
 import React, { ChangeEvent, FC, useState } from 'react';
 
-import { CORE_TRANSLATIONS, useCoreTranslation } from '../../connectors/translations';
+import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 
 import { SITE_STRUCTURE_OPTIONS } from './SiteStructureTab.const';
 import { SiteStructureTabFormState } from './SiteStructureTab.types';
@@ -19,7 +19,7 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 	const initialValues: SiteStructureTabFormState = {
 		allowSiteStructure: value?.config?.allowPreview || false,
 	};
-	const [t] = useCoreTranslation();
+	const [t] = translationsConnector.useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
 
