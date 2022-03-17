@@ -4,6 +4,7 @@ import { api } from '../api';
 
 import {
 	CreateTreeItemPayload,
+	ErrorResponse,
 	TreeDetail,
 	TreeItem,
 	TreesResponse,
@@ -26,13 +27,13 @@ export class TreesApiService {
 	): Promise<TreeItem> {
 		const item = await api
 			.get(`${siteId}/trees/${treeId}/items/${treeItemId}`)
-			.json<TreeItem>();
+			.json<TreeItem | ErrorResponse>();
 
-		if (!item?.id) {
+		if ((item as ErrorResponse)?.status === 404) {
 			throw new Error('NotFound');
 		}
 
-		return item;
+		return item as TreeItem;
 	}
 
 	public createTreeItem(
