@@ -1,5 +1,5 @@
 import Core, { ModuleRouteConfig } from '@redactie/redactie-core';
-import { SitesModuleAPI } from '@redactie/sites-module';
+import { ExternalTabOptions, SitesModuleAPI } from '@redactie/sites-module';
 
 class SitesConnector {
 	public static apiName = 'sites-module';
@@ -19,6 +19,10 @@ class SitesConnector {
 
 	public get config(): SitesModuleAPI['config'] {
 		return this.api.config;
+	}
+
+	public registerSiteStructureTab(key: string, options: ExternalTabOptions): void | false {
+		return this.api ? this.api.registerSiteUpdateTab(key, options) : false;
 	}
 
 	constructor(api?: SitesModuleAPI) {

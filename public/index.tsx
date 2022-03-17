@@ -11,6 +11,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
+import SiteStructureTab from './lib/components/SiteStructureTab/SiteStructureTab';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
@@ -31,6 +32,8 @@ import {
 } from './lib/views';
 
 // akitaDevtools();
+
+console.log("HelloNavModule")
 
 const MenuComponent: FC<MenuModuleProps<{ siteId: string }>> = ({ route, tenantId, match }) => {
 	const { siteId } = match.params;
@@ -179,3 +182,10 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
 } as any);
+
+sitesConnector.registerSiteStructureTab(CONFIG.name, {
+	label: 'Sitestructuur',
+	module: CONFIG.module,
+	component: SiteStructureTab,
+	containerId: 'update' as any,
+});
