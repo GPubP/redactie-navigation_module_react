@@ -17,7 +17,7 @@ export const getInitialFormValues = (
 ) => {
 	if ((!treeItem && isEmpty(value)) || itemNotFound) {
 		return {
-			status: NAV_ITEM_STATUSES.READY,
+			status: NAV_STATUSES.READY,
 		};
 	}
 
@@ -31,7 +31,7 @@ export const getInitialFormValues = (
 			: [],
 		label: value.label ?? treeItem?.label ?? '',
 		description: value.description ?? treeItem?.description ?? '',
-		status: value.status ?? treeItem?.publishStatus ?? NAV_ITEM_STATUSES.READY,
+		status: value.status ?? treeItem?.publishStatus ?? NAV_STATUSES.READY,
 		replaceItem: value.replaceItem ?? false,
 	};
 };
@@ -45,9 +45,7 @@ export const getStatusOptions = (
 		(contentValue?.meta.status === 'UNPUBLISHED' && status !== NAV_STATUSES.PUBLISHED) ||
 		!contentValue?.meta?.historySummary?.published
 	) {
-		return STATUS_OPTIONS.filter(
-			statusOption => statusOption.value !== NAV_STATUSES.PUBLISHED
-		);
+		return STATUS_OPTIONS.filter(statusOption => statusOption.value !== NAV_STATUSES.PUBLISHED);
 	}
 
 	return STATUS_OPTIONS;
