@@ -1,7 +1,7 @@
 import { Button, Card, CardBody, CardDescription, CardTitle } from '@acpaas-ui/react-components';
 import { AlertContainer, DeletePrompt, useDetectValueChanges } from '@redactie/utils';
 import { FormikValues } from 'formik';
-import { equals, omit } from 'ramda';
+import { omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -78,22 +78,11 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
 
-		if (
-			!equals(
-				{
-					...omit(['parentId'], siteStructureItemDraft),
-					...omit(['position', 'parentId'], formValue),
-					...(parentId && { parentId }),
-				} as SiteStructureItem,
-				siteStructureItemDraft
-			)
-		) {
-			siteStructureItemsFacade.setSiteStructureItemDraft({
-				...omit(['parentId'], siteStructureItemDraft),
-				...omit(['position', 'parentId'], formValue),
-				...(parentId && { parentId }),
-			} as SiteStructureItem);
-		}
+		siteStructureItemsFacade.setSiteStructureItemDraft({
+			...omit(['parentId'], siteStructureItemDraft),
+			...omit(['position', 'parentId'], formValue),
+			...(parentId && { parentId }),
+		} as SiteStructureItem);
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {

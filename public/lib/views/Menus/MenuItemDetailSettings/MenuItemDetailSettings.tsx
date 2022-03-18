@@ -1,7 +1,7 @@
 import { Button, Card, CardBody, CardDescription, CardTitle } from '@acpaas-ui/react-components';
 import { AlertContainer, DeletePrompt, useDetectValueChanges } from '@redactie/utils';
 import { FormikValues } from 'formik';
-import { equals, omit } from 'ramda';
+import { omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -73,22 +73,11 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
 
-		if (
-			!equals(
-				{
-					...omit(['parentId'], menuItemDraft),
-					...omit(['position', 'parentId'], formValue),
-					...(parentId && { parentId }),
-				} as MenuItem,
-				menuItemDraft
-			)
-		) {
-			menuItemsFacade.setMenuItemDraft({
-				...omit(['parentId'], menuItemDraft),
-				...omit(['position', 'parentId'], formValue),
-				...(parentId && { parentId }),
-			} as MenuItem);
-		}
+		menuItemsFacade.setMenuItemDraft({
+			...omit(['parentId'], menuItemDraft),
+			...omit(['position', 'parentId'], formValue),
+			...(parentId && { parentId }),
+		} as MenuItem);
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
