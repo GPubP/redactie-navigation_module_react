@@ -14,6 +14,7 @@ export class MenuItemsQuery extends BaseEntityQuery<MenuItemsState> {
 	public menuItemDraft$ = this.select(state => state.menuItemDraft).pipe(
 		filter(
 			menuItemDraft => !isNil(menuItemDraft),
+			// TODO: Figure out why this is needed to not trigger the leave prompt on menu item create/update
 			distinctUntilChanged((a, b) => equals(a, b))
 		)
 	);
