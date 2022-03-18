@@ -1,5 +1,6 @@
 import { isNil } from '@datorama/akita';
 import { BaseEntityQuery } from '@redactie/utils';
+import { equals } from 'ramda';
 import { distinctUntilChanged, filter } from 'rxjs/operators';
 
 import { SiteStructureItemsState } from './siteStructureItems.model';
@@ -11,7 +12,10 @@ export class SiteStructureItemsQuery extends BaseEntityQuery<SiteStructureItemsS
 		filter(siteStructureItem => !isNil(siteStructureItem), distinctUntilChanged())
 	);
 	public siteStructureItemDraft$ = this.select(state => state.siteStructureItemDraft).pipe(
-		filter(siteStructureItemDraft => !isNil(siteStructureItemDraft), distinctUntilChanged())
+		filter(
+			siteStructureItemDraft => !isNil(siteStructureItemDraft),
+			distinctUntilChanged((a, b) => equals(a, b))
+		)
 	);
 }
 
