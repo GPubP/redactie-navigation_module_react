@@ -153,8 +153,6 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
-					siteStructureItem: response,
-					siteStructureItemDraft: response,
 					isCreating: false,
 				});
 
@@ -201,8 +199,6 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
-					siteStructureItem: response,
-					siteStructureItemDraft: response,
 					isUpdating: false,
 				});
 

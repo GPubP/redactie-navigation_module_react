@@ -153,8 +153,6 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
-					menuItem: response,
-					menuItemDraft: response,
 					isCreating: false,
 				});
 
@@ -201,8 +199,6 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
-					menuItem: response,
-					menuItemDraft: response,
 					isUpdating: false,
 				});
 
