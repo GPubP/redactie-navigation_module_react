@@ -60,9 +60,25 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION',
 		"Selecteer de beschikbare menu's voor dit content type"
 	),
-	SITE_STRUCTURE_CONTENT_REF_DESCRIPTION: tKey(
-		'SITE_STRUCTURE_CONTENT_REF_DESCRIPTION',
+	SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION',
 		'Plaats een content item op deze manier voor de 2e of 3e keer in de site structuur. Deze bijkomende registraties worden niet gebruikt voor het bepalen van de broodkruimel.'
+	),
+	SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION',
+		'Bepaal het label voor dit sitestructuur-item. Dit is het woord dat de eindgebruiker ziet in de sitestructuur.'
+	),
+	SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION',
+		'Zet het sitestructuur-item aan wanneer het content item online is.'
+	),
+	MENU_ITEM_LABEL_DESCRIPTION: tKey(
+		'MENU_ITEM_LABEL_DESCRIPTION',
+		'Bepaal het label voor dit menu-item. Dit is het woord dat de eindgebruiker ziet in het menu.'
+	),
+	MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION: tKey(
+		'MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION',
+		'Zet het menu-item aan wanneer het content item online is.'
 	),
 });
 
