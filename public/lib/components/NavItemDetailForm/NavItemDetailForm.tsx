@@ -143,7 +143,9 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 														setFieldValue('slug', value?.meta.slug?.nl);
 														setFieldValue(
 															'publishStatus',
-															NAV_STATUSES.DRAFT
+															value?.meta.published
+																? NAV_STATUSES.PUBLISHED
+																: NAV_STATUSES.DRAFT
 														);
 														setContentItemPublished(
 															!!value?.meta.published
