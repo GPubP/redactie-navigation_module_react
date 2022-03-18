@@ -47,7 +47,7 @@ export class SiteStructuresApiService {
 	}
 
 	public async deleteSiteStructure(siteId: string, menu: SiteStructure): Promise<Response> {
-		return api.delete(`${siteId}/site-structure/${menu.id}`);
+		return api.delete(`${siteId}/site-structures/${menu.id}`);
 	}
 }
 

@@ -111,8 +111,6 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
-					siteStructure: response,
-					siteStructureDraft: response,
 					isCreating: false,
 				});
 				alertService.success(getAlertMessages(response).create.success, {
