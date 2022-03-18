@@ -106,7 +106,7 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	/**
 	 * Render
 	 */
-	const pageTitle = `Sitestrucuur item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
+	const pageTitle = `Sitestructuur item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
 
 	const renderChildRoutes = (): ReactElement => (
 		<RenderChildRoutes
