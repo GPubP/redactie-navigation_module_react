@@ -3,9 +3,11 @@ import { CreateSiteStructureDto } from '../services/siteStructures';
 
 export const generateEmptySiteStructure = (
 	siteName: string | undefined
-): CreateSiteStructureDto => ({
+): CreateSiteStructureDto & { lang: string } => ({
 	label: '',
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
 	category: `siteStructure_${siteName}_nl`,
+	// TODO: Implement multilanguage
+	lang: 'nl',
 });

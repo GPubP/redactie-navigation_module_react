@@ -26,7 +26,7 @@ import {
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
-import { omit } from 'ramda';
+import { equals, omit } from 'ramda';
 import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -77,24 +77,11 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<SiteStructureItem[]>([]);
+	const [parentChanged, setParentChanged] = useState<boolean>(false);
 	const {
 		siteStructureItems,
 		upsertingState: siteStructureItemsUpsertingState,
 	} = useSiteStructureItems();
-
-	useEffect(() => {
-		if (!siteStructureId || !siteId) {
-			return;
-		}
-
-		siteStructuresFacade.getSiteStructure(siteId, siteStructureId);
-		siteStructureItemsFacade.getSubset(
-			siteId,
-			siteStructureId,
-			siteStructureItemDraft?.parentId,
-			1
-		);
-	}, [siteStructureId, siteId, siteStructureItemDraft]);
 
 	const canEdit = useMemo(() => {
 		return siteStructureItem?.id ? rights?.canUpdate : true;
@@ -107,6 +94,30 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	const isUpdate = useMemo(() => {
 		return !!siteStructureItem?.id;
 	}, [siteStructureItem]);
+
+	useEffect(() => {
+		if (!siteStructureId || !siteId) {
+			return;
+		}
+
+		siteStructuresFacade.getSiteStructure(siteId, siteStructureId);
+	}, [siteStructureId, siteId]);
+
+	useEffect(() => {
+		setParentChanged(siteStructureItem?.parentId !== siteStructureItemDraft?.parentId);
+
+		if (!siteStructureId || !siteId || !isUpdate) {
+			return;
+		}
+
+		siteStructureItemsFacade.getSubset(
+			siteId,
+			siteStructureId,
+			siteStructureItemDraft?.parentId,
+			1
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [isUpdate, siteStructureId, siteStructureItemDraft, siteId]);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -152,11 +163,22 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
 
-		siteStructureItemsFacade.setSiteStructureItemDraft({
-			...omit(['parentId'], siteStructureItemDraft),
-			...omit(['position', 'parentId'], formValue),
-			...(parentId && { parentId }),
-		} as SiteStructureItem);
+		if (
+			!equals(
+				{
+					...omit(['parentId'], siteStructureItemDraft),
+					...omit(['position', 'parentId'], formValue),
+					...(parentId && { parentId }),
+				} as SiteStructureItem,
+				siteStructureItemDraft
+			)
+		) {
+			siteStructureItemsFacade.setSiteStructureItemDraft({
+				...omit(['parentId'], siteStructureItemDraft),
+				...omit(['position', 'parentId'], formValue),
+				...(parentId && { parentId }),
+			} as SiteStructureItem);
+		}
 	};
 
 	const handlePositionOnChange = (
@@ -409,7 +431,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 												</div>
 											</Cascader>
 										</div>
-										{isUpdate && (
+										{isUpdate && !parentChanged && (
 											<Button
 												className="u-margin-left-xs"
 												disabled={!canEdit}
