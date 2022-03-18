@@ -145,7 +145,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 															'publishStatus',
 															value?.meta.published
 																? NAV_STATUSES.PUBLISHED
-																: NAV_STATUSES.PUBLISHED
+																: NAV_STATUSES.DRAFT
 														);
 														setContentItemPublished(
 															!!value?.meta.published
