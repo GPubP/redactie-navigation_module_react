@@ -95,7 +95,7 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		componentt(value: string, { id }: MenuItemsTableRow) {
+		component(value: string, { id }: MenuItemsTableRow) {
 			return (
 				<div>
 					<ContentInfoTooltip id={id} />
