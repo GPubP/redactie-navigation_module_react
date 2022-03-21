@@ -4,6 +4,7 @@ import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import React from 'react';
+import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
@@ -94,8 +95,12 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component() {
-			return <div>Icon</div>;
+		componentt(value: string, { id }: MenuItemsTableRow) {
+			return (
+				<div>
+					<ContentInfoTooltip id={id} />
+				</div>
+			);
 		},
 	},
 	{
