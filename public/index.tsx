@@ -10,6 +10,7 @@ import { take } from 'rxjs/operators';
 import {
 	ContentDetailCompartment,
 	ContentTypeDetailMenu,
+	ContentTypeDetailSiteStructure,
 	ContentTypeDetailTab,
 	ContentTypeDetailUrl,
 } from './lib/components';
@@ -304,6 +305,11 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
 		breadcrumb: false,
 		component: ContentTypeDetailMenu,
+	},
+	{
+		path: MODULE_PATHS.site.contentTypeDetailExternalSiteStructure,
+		breadcrumb: false,
+		component: ContentTypeDetailSiteStructure,
 	},
 ];
 

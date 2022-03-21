@@ -44,6 +44,7 @@ export const MODULE_PATHS = {
 		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
 		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
 		contentTypeDetailExternalMenu: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/menu`,
+		contentTypeDetailExternalSiteStructure: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/sitestructuur`,
 		siteStrucureRoot: `${SITE_ROOT}/sitestructuren`,
 		siteStructuresOverview: `${SITE_ROOT}/sitestructuren/overzicht`,
 		createSiteStructure: `${SITE_ROOT}/sitestructuren/aanmaken`,
@@ -145,3 +146,10 @@ export const ALERT_CONTAINER_IDS = {
 
 // TODO: Implement multilanguage
 export const LANG_OPTIONS = [{ key: 'nl', label: 'Nederlands (NL)', value: 'nl' }];
+
+// TODO: Implement multilanguage
+export const SITE_STRUCTURE_POSITION_OPTIONS = [
+	{ key: 'none', label: 'Geen', value: 'none' },
+	{ key: 'limited', label: 'Beperkt', value: 'limited' },
+	{ key: 'unlimited', label: 'Vrij', value: 'unlimited' },
+];

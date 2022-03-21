@@ -48,6 +48,11 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'NAVIGATION_MENU_DESCRIPTION',
 		"Bepaal of het werken met menu's is toegestaan voor dit content type en of dit standaard geactiveerd moet worden."
 	),
+	NAVIGATION_SITE_STRUCTURE_TITLE: tKey('NAVIGATION_SITE_STRUCTURE_TITLE', 'Sitestructuur'),
+	NAVIGATION_SITE_STRUCTURE_DESCRIPTION: tKey(
+		'NAVIGATION_SITE_STRUCTURE_DESCRIPTION',
+		'Bepaal of content items van dit content type een plaats in de sitestructuur kunnen krijgen.'
+	),
 	NAVIGATION_URL_DESCRIPTION: tKey(
 		'NAVIGATION_URL_DESCRIPTION',
 		'Geef het URL patroon op dat gebruikt zal worden voor het genereren van een URL per content item.'
