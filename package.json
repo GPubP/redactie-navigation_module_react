@@ -42,7 +42,7 @@
     "@commitlint/cli": "8.3.5",
     "@commitlint/config-conventional": "8.3.4",
     "@datorama/akita": "4.22.0",
-    "@redactie/content-module": "^1.4.0",
+    "@redactie/content-module": "^1.15.2-3",
     "@redactie/content-types-module": "3.6.0",
     "@redactie/form-renderer-module": "^1.8.3",
     "@redactie/module-webpack-plugin": "2.0.0",
