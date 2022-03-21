@@ -36,11 +36,10 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 		}
 
 		menuItemsApiService.getMenuItem(siteId, menuId, id.toString()).then(async item => {
-			const str = item?.slug;
-			const data = await contentConnector?.contentService.getContentItemBySlug(siteId, str);
-			setItem(data);
+			await contentConnector?.contentService
+				.getContentItemBySlug(siteId, item?.slug)
+				.then(data => setItem(data));
 		});
-
 	}, [siteId, menuId, id]);
 
 	useEffect(() => {
