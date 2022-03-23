@@ -34,6 +34,9 @@ export class TreeItemsFacade extends BaseEntityFacade<
 			.then(response => {
 				if (response) {
 					this.store.upsert(treeItemId, response);
+					this.store.update({
+						error: false,
+					});
 					this.store.setIsFetchingOne(false);
 				}
 				return response;

@@ -35,7 +35,6 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 }) => {
 	const contentValueStatus = contentValue?.meta.status;
 	const contentValueIsPublished = contentValue?.meta.historySummary?.published;
-	const contentItemOldNavigation = contentItem?.modulesData?.navigation as ModuleValue;
 
 	/**
 	 * Hooks
@@ -45,7 +44,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 
 	// Data hooks
 	const [loadingTree, tree] = useTree(value.navigationTree);
-	const [loadingTreeItem, treeItem] = useTreeItem(value.navigationTree, value.id);
+	const [loadingTreeItem, treeItem, treeItemError] = useTreeItem(value.navigationTree, value.id);
 	const navigationRights = useNavigationRights(siteId);
 
 	// Local state hooks
@@ -56,11 +55,23 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 		options: CascaderOption[];
 		activeItem: TreeDetailItem | undefined;
 	}>(() => getTreeConfig(tree, value.id), [tree, value.id]);
-
+	const contentItemOldNavigation = useMemo<ModuleValue | null>(
+		() =>
+			treeItemError?.message === 'NotFound'
+				? null
+				: (contentItem?.modulesData?.navigation as ModuleValue),
+		[contentItem, treeItemError]
+	);
 	const initialValues = useMemo(
-		() => getInitialFormValues(value, treeItem, treeConfig.options),
+		() =>
+			getInitialFormValues(
+				value,
+				treeItem,
+				treeConfig.options,
+				treeItemError?.message === 'NotFound'
+			),
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-		[treeItem, treeItem?.publishStatus, treeConfig.options]
+		[treeItem, treeItem?.publishStatus, treeConfig.options, treeItemError]
 	);
 	const [loadingTreesOptions, treesOptions] = useTreeOptions(navigationRights, initialValues.id);
 	const activeTreeItemHasChildItems = useMemo(

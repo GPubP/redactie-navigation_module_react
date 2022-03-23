@@ -63,6 +63,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 	public getMenu(siteId: string, uuid: string): void {
 		const { isFetchingOne } = this.query.getValue();
+
 		if (isFetchingOne) {
 			return;
 		}

@@ -6,23 +6,35 @@ const tKey = translationsConnector.core.tKey;
 
 const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	VARIABLE: tKey('VARIABLE', 'Variabele'),
-	PATTERN_ID_DESCRIPTION: tKey('PATTERN_ID_DESCRIPTION', 'Het unieke uuid van dit content item'),
+	PATTERN_ID_DESCRIPTION: tKey('PATTERN_ID_DESCRIPTION', 'Het unieke uuid van dit content item.'),
 	PATTERN_LANG_DESCRIPTION: tKey(
 		'PATTERN_LANG_DESCRIPTION',
-		'De taal waarin dit content item is gemaakt'
+		'De taal waarin dit content item is gemaakt.'
 	),
-	PATTERN_SLUG_DESCRIPTION: tKey('PATTERN_SLUG_DESCRIPTION', 'De slug van dit content item'),
+	PATTERN_LABEL_DESCRIPTION: tKey(
+		'PATTERN_LABEL_DESCRIPTION',
+		'Het label van het content item bij creatie.'
+	),
+	PATTERN_SLUG_DESCRIPTION: tKey('PATTERN_SLUG_DESCRIPTION', 'De slug van dit content item.'),
 	PATTERN_CREATED_DESCRIPTION: tKey(
 		'PATTERN_CREATED_DESCRIPTION',
-		'De datum wanneer het item is gecreëerd'
+		'De datum wanneer het item is gecreëerd.'
 	),
 	PATTERN_URL_DESCRIPTION: tKey(
 		'PATTERN_URL_DESCRIPTION',
-		'De url geconfigureerd voor de site waarin dit content item leeft. Het neemt automatisch de juiste taalversie overß'
+		'De url geconfigureerd voor de site waarin dit content item leeft. Het neemt automatisch de juiste taalversie over.'
+	),
+	PATTERN_NAV_DESCRIPTION: tKey(
+		'PATTERN_NAV_DESCRIPTION',
+		"Alle parents van de navigatiestructuur waarin dit content item zicht bevindt, opgebouwd in een geldige deel, bv x/y/z, waarbij de slugs van de parents gecombineerd worden met een '/'"
+	),
+	PATTERN_MENU_DESCRIPTION: tKey(
+		'PATTERN_MENU_DESCRIPTION',
+		"Alle parents van de het primaire menu waarin dit content item zicht bevindt, opgebouwd in een geldige deel, bv x/y/z, waarbij de slugs van de parents gecombineerd worden met een '/'"
 	),
 	'PATTERN_CONTENT-TYPE_DESCRIPTION': tKey(
 		'PATTERN_CONTENT-TYPE_DESCRIPTION',
-		'De naam of label van het content type'
+		'De naam of label van het content type.'
 	),
 	TENANT_NAVIGATION_CONFIRM_DESCRIPTION: tKey(
 		'TENANT_NAVIGATION_CONFIRM_DESCRIPTION',
@@ -48,9 +60,25 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'NAVIGATION_MENU_AVAILABLE_MENUS_DESCRIPTION',
 		"Selecteer de beschikbare menu's voor dit content type"
 	),
-	SITE_STRUCTURE_CONTENT_REF_DESCRIPTION: tKey(
-		'SITE_STRUCTURE_CONTENT_REF_DESCRIPTION',
+	SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION',
 		'Plaats een content item op deze manier voor de 2e of 3e keer in de site structuur. Deze bijkomende registraties worden niet gebruikt voor het bepalen van de broodkruimel.'
+	),
+	SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION',
+		'Bepaal het label voor dit sitestructuur-item. Dit is het woord dat de eindgebruiker ziet in de sitestructuur.'
+	),
+	SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION',
+		'Zet het sitestructuur-item aan wanneer het content item online is.'
+	),
+	MENU_ITEM_LABEL_DESCRIPTION: tKey(
+		'MENU_ITEM_LABEL_DESCRIPTION',
+		'Bepaal het label voor dit menu-item. Dit is het woord dat de eindgebruiker ziet in het menu.'
+	),
+	MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION: tKey(
+		'MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION',
+		'Zet het menu-item aan wanneer het content item online is.'
 	),
 });
 

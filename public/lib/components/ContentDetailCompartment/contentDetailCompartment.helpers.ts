@@ -12,11 +12,12 @@ import { NAV_STATUSES, STATUS_OPTIONS } from './ContentDetailCompartment.const';
 export const getInitialFormValues = (
 	value: any,
 	treeItem: TreeItemModel | undefined,
-	options: CascaderOption[]
+	options: CascaderOption[],
+	itemNotFound: boolean
 ) => {
-	if (!treeItem && isEmpty(value)) {
+	if ((!treeItem && isEmpty(value)) || itemNotFound) {
 		return {
-			status: STATUS_OPTIONS[0].value,
+			status: NAV_STATUSES.READY,
 		};
 	}
 
@@ -30,7 +31,7 @@ export const getInitialFormValues = (
 			: [],
 		label: value.label ?? treeItem?.label ?? '',
 		description: value.description ?? treeItem?.description ?? '',
-		status: value.status ?? treeItem?.publishStatus ?? STATUS_OPTIONS[0].value,
+		status: value.status ?? treeItem?.publishStatus ?? NAV_STATUSES.READY,
 		replaceItem: value.replaceItem ?? false,
 	};
 };
@@ -44,9 +45,7 @@ export const getStatusOptions = (
 		(contentValue?.meta.status === 'UNPUBLISHED' && status !== NAV_STATUSES.PUBLISHED) ||
 		!contentValue?.meta?.historySummary?.published
 	) {
-		return STATUS_OPTIONS.filter(
-			statusOption => statusOption.value !== NAV_STATUSES.PUBLISHED
-		);
+		return STATUS_OPTIONS.filter(statusOption => statusOption.value !== NAV_STATUSES.PUBLISHED);
 	}
 
 	return STATUS_OPTIONS;

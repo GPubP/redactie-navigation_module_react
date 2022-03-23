@@ -85,20 +85,22 @@ export const RearrangeModal: FC<{
 			show={show}
 			onClose={onClose}
 			size="large"
-			classname={cx('o-rearrange-modal')}
+			className={cx('o-rearrange-modal')}
 		>
 			<ControlledModalHeader>
 				<h4>Menu-items sorteren</h4>
 			</ControlledModalHeader>
 			<ControlledModalBody>
-				<Table
-					dataKey="id"
-					columns={REARRANGE_COLUMNS(onRearrange)}
-					rows={rows}
-					striped={false}
-					noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
-					hideHeader={true}
-				/>
+				<div className={cx('o-rearrange-modal__body')}>
+					<Table
+						dataKey="id"
+						columns={REARRANGE_COLUMNS(onRearrange)}
+						rows={rows}
+						striped={false}
+						noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
+						hideHeader={true}
+					/>
+				</div>
 			</ControlledModalBody>
 			<ControlledModalFooter>
 				<div className="u-flex u-flex-item u-flex-justify-end">

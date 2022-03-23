@@ -71,9 +71,6 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.menusOverview,
-	param: {
-		navType: 'menus',
-	},
 	guards: [
 		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
 			rolesRightsConnector.menuSecurityRights.read,
@@ -86,9 +83,9 @@ sitesConnector.registerRoutes({
 		order: 2,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
 		canShown: [
-			// rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-			// 	rolesRightsConnector.menuSecurityRights.read,
-			// ]),
+			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
 		],
 	},
 	routes: [
@@ -163,9 +160,6 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.siteStructuresOverview,
-	param: {
-		navType: 'sitestructuren',
-	},
 	guards: [
 		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
 			rolesRightsConnector.siteStructuresSecurityRights.read,
@@ -178,9 +172,9 @@ sitesConnector.registerRoutes({
 		order: 3,
 		parentPath: MODULE_PATHS.site.explicitContentTypes,
 		canShown: [
-			// rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
-			// 	rolesRightsConnector.siteStructuresSecurityRights.read,
-			// ]),
+			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
+				rolesRightsConnector.siteStructuresSecurityRights.read,
+			]),
 		],
 	},
 	routes: [
