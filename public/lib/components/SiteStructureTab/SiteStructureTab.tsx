@@ -17,7 +17,7 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 	onCancel,
 }) => {
 	const initialValues: SiteStructureTabFormState = {
-		allowSiteStructure: value?.config?.allowPreview || false,
+		allowSiteStructure: value?.config?.allowSiteStructure || false,
 	};
 	const [t] = translationsConnector.useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);

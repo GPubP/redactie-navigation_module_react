@@ -47,8 +47,6 @@ import {
 } from './lib/views';
 
 // akitaDevtools();
-
-console.log("HelloNavModule")
 registerTranslations();
 
 const NavigationComponent: FC<NavigationModuleProps<{ siteId: string }>> = ({
