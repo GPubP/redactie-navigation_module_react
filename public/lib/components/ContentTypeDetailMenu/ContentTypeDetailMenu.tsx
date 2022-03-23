@@ -1,8 +1,9 @@
 import { RadioGroup } from '@acpaas-ui/react-components';
+import { LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
-import React, { FC, useEffect } from 'react';
+import React, { FC, useContext, useEffect } from 'react';
 
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
@@ -16,6 +17,7 @@ import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
+	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
@@ -35,20 +37,22 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 			</div>
 			<div className="row u-margin-top">
 				<div className="col-xs-12 col-sm-6">
+					{/* TODO: find out why changing language does not update radiogroup selection */}
 					<FormikMultilanguageField
 						asComponent={RadioGroup}
 						name="menu.allowMenus"
 						options={ALLOW_MENUS_OPTIONS}
 						onChange={(e: any) => {
-							// TODO: Implement multilanguage
-							setFieldValue('menu.allowMenus.nl', e.target.value);
-							setFieldValue('menu.allowedMenus.nl', []);
+							setFieldValue(
+								`menu.allowMenus.${activeLanguage.key}`,
+								e.target.value === 'true'
+							);
+							setFieldValue(`menu.allowedMenus.${activeLanguage.key}`, []);
 						}}
 					/>
 				</div>
 			</div>
-			{/* // TODO: Implement multilanguage */}
-			{`${values?.menu?.allowMenus.nl}` === 'true' && (
+			{`${values?.menu?.allowMenus[activeLanguage.key]}` === 'true' && (
 				<div>
 					<div className="u-margin-top u-flex u-flex-column">
 						<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_MENU_AVAILABLE_MENUS_TITLE)}</p>
