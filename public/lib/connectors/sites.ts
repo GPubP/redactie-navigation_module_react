@@ -5,7 +5,8 @@ class SitesConnector {
 	public static apiName = 'sites-module';
 	public api: SitesModuleAPI;
 
-	public get sitesFacade(): SitesModuleAPI['store']['sites']['facade'] {
+	// reset
+	public get sitesFacade(): any {
 		return this.api.store.sites.facade;
 	}
 

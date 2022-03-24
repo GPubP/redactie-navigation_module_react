@@ -50,7 +50,7 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 									onChange={(event: ChangeEvent<any>) =>
 										setFormValue({
 											...formValue,
-											allowPreview: event.target.value === 'true',
+											allowSiteStructure: event.target.value === 'true',
 										})
 									}
 								/>

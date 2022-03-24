@@ -175,6 +175,15 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
+			async ({ siteId }, next) => {
+				const hasSite = sitesConnector.sitesFacade.hasSite(siteId);
+				if (!hasSite) {
+					sitesConnector.sitesFacade.getSite({ id: siteId });
+				}
+				const site = await sitesConnector.sitesFacade.selectSite(siteId).pipe(take(1)).toPromise();
+				if (site.data.modulesConfig.find((x: any) => x.name === 'navigation').config.allowSiteStructure) return next();
+				throw new Error;
+			}
 		],
 	},
 	routes: [
