@@ -23,6 +23,7 @@ import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
 import { isEmpty } from './lib/helpers';
+import { canShowSiteStructure } from './lib/helpers/canShowSiteStructure';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -176,13 +177,7 @@ sitesConnector.registerRoutes({
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
 			async ({ siteId }, next) => {
-				const hasSite = sitesConnector.sitesFacade.hasSite(siteId);
-				if (!hasSite) {
-					sitesConnector.sitesFacade.getSite({ id: siteId });
-				}
-				const site = await sitesConnector.sitesFacade.selectSite(siteId).pipe(take(1)).toPromise();
-				if (site.data.modulesConfig.find((x: any) => x.name === 'navigation').config.allowSiteStructure) return next();
-				throw new Error;
+				canShowSiteStructure(siteId as string, next)
 			}
 		],
 	},
