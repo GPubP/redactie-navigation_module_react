@@ -1,5 +1,4 @@
 export * from './SiteStructureOverview';
-export * from './SiteStructureCreate';
 export * from './SiteStructureDetailSettings';
 export * from './SiteStructureItemsOverview';
 export * from './SiteStructureUpdate';

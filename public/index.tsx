@@ -35,7 +35,6 @@ import {
 	MenuItemUpdate,
 	MenuOverview,
 	MenuUpdate,
-	SiteStructureCreate,
 	SiteStructureDetailSettings,
 	SiteStructureItemCreate,
 	SiteStructureItemDetailSettings,
@@ -182,19 +181,6 @@ sitesConnector.registerRoutes({
 			path: MODULE_PATHS.site.siteStructuresOverview,
 			breadcrumb: false,
 			component: SiteStructureOverview,
-		},
-		{
-			path: MODULE_PATHS.site.createSiteStructure,
-			breadcrumb: false,
-			component: SiteStructureCreate,
-			redirect: MODULE_PATHS.site.createSiteStructureSettings,
-			routes: [
-				{
-					path: MODULE_PATHS.site.createSiteStructureSettings,
-					breadcrumb: false,
-					component: SiteStructureDetailSettings,
-				},
-			],
 		},
 		{
 			path: MODULE_PATHS.site.createContentRefSiteStructureItem,

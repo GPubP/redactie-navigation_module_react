@@ -130,7 +130,11 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public updateMenu(siteId: string, body: UpdateNavTreeDTO, alertId: string): Promise<void> {
+	public async updateMenu(
+		siteId: string,
+		body: UpdateNavTreeDTO,
+		alertId: string
+	): Promise<void> {
 		const { isUpdating } = this.query.getValue();
 
 		if (isUpdating) {
