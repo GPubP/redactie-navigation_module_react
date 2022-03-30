@@ -1,0 +1,47 @@
+@import '~@a-ui/core/dist/assets/styles/_quarks';
+
+.m-dataloader-container {
+	height: 1rem;
+	margin-top: -2.2rem;
+	width: 1rem;
+}
+
+.m-tooltip-container {
+	position: relative;
+	height: 2.5rem;
+
+	.a-dot {
+		font-size: 35px;
+		position: absolute;
+		bottom: -19px;
+		left: 10px;
+		pointer-events: none;
+		z-index: 3;
+
+		&__published {
+			color: green;
+		}
+
+		&__unpublished {
+			color: red;
+		}
+	}
+
+	.m-tooltip {
+		position: absolute;
+		left: -14px;
+		top: 8px;
+
+		.a-description {
+			word-break: break-all;
+		}
+
+		.a-url {
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: auto;
+		}
+	}
+}
