@@ -133,8 +133,6 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		);
 	};
 
-	console.log(languagesLoading);
-
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
 			<div className="col-xs-12 col-md-3 u-margin-bottom">
