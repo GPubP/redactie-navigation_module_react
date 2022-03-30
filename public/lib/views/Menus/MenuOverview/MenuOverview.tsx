@@ -25,7 +25,6 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { FilterForm, FilterFormState } from '../../../components';
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { formatMenuCategory } from '../../../helpers/formatMenuCategory';
 import { useMenus } from '../../../hooks/useMenus';
 import { BREADCRUMB_OPTIONS, LangKeys, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationRouteProps } from '../../../navigation.types';
@@ -76,7 +75,6 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 
 		menusFacade.getMenus(siteId, {
 			...query,
-			category: formatMenuCategory(siteId),
 			includeItemCount: true,
 		} as SearchParams);
 	}, [query, site, siteId]);
