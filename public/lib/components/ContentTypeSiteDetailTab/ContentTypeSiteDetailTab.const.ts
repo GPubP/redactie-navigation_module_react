@@ -16,7 +16,24 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 		url: MultilanguageYup.object().shape({
 			urlPattern: MultilanguageYup.object().validateMultiLanguage(
 				languages,
-				MultilanguageYup.string().required('Beschrijving is een verplicht veld')
+				MultilanguageYup.string()
+					.required(
+						'Opgelet, vul een url-patroon in, bijvoorbeeld de standaardvariabele /[item:slug]'
+					)
+					.matches(/^\//, "Het patroon moet beginnen met een '/'")
+					.matches(
+						/\[item:slug]/,
+						"De variabele '[item:slug]' ontbreekt. Daardoor is dit patroon mogelijk niet uniek. Voeg de variabele toe."
+					)
+					.test(
+						'doubleSlash',
+						"Kijk het patroon na. Vermijd dubbele '//' en schrijf alle variabelen tussen rechte haken",
+						value =>
+							value &&
+							value.indexOf('//') === -1 &&
+							// eslint-disable-next-line no-useless-escape
+							/^([^\[\]]*|\[[^\[\]]*\])*$/.test(value)
+					)
 			),
 		}),
 	});

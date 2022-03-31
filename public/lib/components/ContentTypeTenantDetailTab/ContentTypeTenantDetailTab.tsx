@@ -1,7 +1,5 @@
 import { Button } from '@acpaas-ui/react-components';
 import {
-	ActionBar,
-	ActionBarContentSection,
 	ControlledModal,
 	ControlledModalBody,
 	ControlledModalFooter,
@@ -10,22 +8,16 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import {
-	FormikOnChangeHandler,
-	LeavePrompt,
-	RenderChildRoutes,
-	useDetectValueChanges,
-	useNavigate,
-} from '@redactie/utils';
-import { Formik } from 'formik';
-import React, { FC, useEffect, useState } from 'react';
+import { DataLoader, Language, useDetectValueChanges, useNavigate } from '@redactie/utils';
+import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
-import { tenantContentTypeDetailTabRoutes } from '../../../index';
+import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, MODULE_PATHS } from '../../navigation.const';
 
+import ContentTypeTenantDetailForm from './ContentTypeTenantDetailForm';
 import { NAV_TENANT_COMPARTMENTS } from './ContentTypeTenantDetailTab.const';
 import { ContentTypeTenantDetailTabFormState } from './ContentTypeTenantDetailTab.types';
 
@@ -51,6 +43,8 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	}>();
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
+	const [activeLanguage, setActiveLanguage] = useState<Language>();
+	const [languagesLoading, languages] = languagesConnector.hooks.useActiveLanguages();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate();
@@ -71,6 +65,13 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [child]);
 
+	// setup preselected language
+	useEffect(() => {
+		if (Array.isArray(languages) && !activeLanguage) {
+			setActiveLanguage(languages.find(l => l.primary) || languages[0]);
+		}
+	}, [activeLanguage, languages]);
+
 	const onConfirm = (): void => {
 		onSubmit({ config: formValue, validationSchema: {} });
 		resetChangeDetection();
@@ -85,7 +86,28 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 		setShowConfirmModal(false);
 	};
 
-	console.log('cjecl');
+	const renderForm = (): ReactElement | null => {
+		if (!activeLanguage) {
+			return null;
+		}
+
+		return (
+			<LanguageHeader
+				languages={languages}
+				activeLanguage={activeLanguage}
+				onChangeLanguage={(language: string) => setActiveLanguage({ key: language })}
+			>
+				<ContentTypeTenantDetailForm
+					value={value}
+					isLoading={isLoading}
+					hasChanges={hasChanges}
+					setFormValue={setFormValue}
+					onFormSubmit={onFormSubmit}
+					onCancel={onCancel}
+				/>
+			</LanguageHeader>
+		);
+	};
 
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
@@ -105,57 +127,7 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
-					<LanguageHeader
-						//	TODO: Implement multilanguage
-						languages={[{ key: 'nl', primary: true }]}
-						activeLanguage={{ key: 'nl' }}
-						onChangeLanguage={console.log}
-					>
-						<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-							{({ submitForm }) => {
-								return (
-									<div className="u-margin-top">
-										<FormikOnChangeHandler onChange={setFormValue} />
-										<RenderChildRoutes
-											routes={tenantContentTypeDetailTabRoutes}
-											extraOptions={{}}
-										/>
-										<ActionBar className="o-action-bar--fixed" isOpen>
-											<ActionBarContentSection>
-												<div className="u-wrapper row end-xs">
-													<Button
-														className="u-margin-right-xs"
-														onClick={onCancel}
-														negative
-													>
-														{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-													</Button>
-													<Button
-														iconLeft={
-															isLoading
-																? 'circle-o-notch fa-spin'
-																: null
-														}
-														disabled={isLoading || !hasChanges}
-														onClick={submitForm}
-														type="success"
-														htmlType="submit"
-													>
-														{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-													</Button>
-												</div>
-											</ActionBarContentSection>
-										</ActionBar>
-										<LeavePrompt
-											shouldBlockNavigationOnConfirm
-											when={hasChanges}
-											onConfirm={submitForm}
-										/>
-									</div>
-								);
-							}}
-						</Formik>
-					</LanguageHeader>
+					<DataLoader loadingState={languagesLoading} render={renderForm} />
 					<ControlledModal
 						show={showConfirmModal}
 						onClose={onSavePromptCancel}

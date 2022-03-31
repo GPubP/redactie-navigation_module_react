@@ -3,6 +3,7 @@ import { LanguageHeaderContext, Table } from '@acpaas-ui/react-editorial-compone
 import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
+import { pathOr } from 'ramda';
 import React, { ChangeEvent, FC, useContext, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
@@ -14,7 +15,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
-	const { setFieldValue, values } = useFormikContext<FormikValues>();
+	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 
@@ -47,7 +48,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"
+				required
 				onBlur={handleBlur}
+				state={
+					activeLanguage &&
+					pathOr(null, ['url', 'urlPattern', activeLanguage.key], errors) &&
+					'error'
+				}
 			/>
 			<Table
 				fixed

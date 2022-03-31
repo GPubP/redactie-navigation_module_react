@@ -13,31 +13,27 @@ import {
 import { Formik, FormikErrors, FormikValues } from 'formik';
 import React, { FC, useContext } from 'react';
 
-import { siteContentTypeDetailTabRoutes } from '../../..';
+import { tenantContentTypeDetailTabRoutes } from '../../..';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 
+import { FORM_VALIDATION_SCHEMA } from './ContentTypeTenantDetailTab.const';
 import {
-	FORM_VALIDATION_SCHEMA,
-	SITE_DETAIL_TAB_ALLOWED_PATHS,
-} from './ContentTypeSiteDetailTab.const';
-import {
-	ContentTypeSiteDetailFormProps,
-	ContentTypeSiteDetailTabFormState,
-} from './ContentTypeSiteDetailTab.types';
+	ContentTypeTenantDetailFormProps,
+	ContentTypeTenantDetailTabFormState,
+} from './ContentTypeTenantDetailTab.types';
 
-const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: string }> = ({
+const ContentTypeTenantDetailForm: FC<ContentTypeTenantDetailFormProps> = ({
 	value,
 	isLoading,
 	hasChanges,
 	onFormSubmit,
 	onCancel,
 	setFormValue,
-	siteId,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
+	const initialValues: ContentTypeTenantDetailTabFormState = value?.config || {};
 	const [t] = translationsConnector.useCoreTranslation();
-	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
+	const [, languages] = languagesConnector.hooks.useActiveLanguages();
 	const { setErrors } = useContext(LanguageHeaderContext);
 
 	const handleOnError = (values: any, formErrors: FormikErrors<FormikValues>): void => {
@@ -58,10 +54,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: s
 					<div className="u-margin-top">
 						<FormikOnChangeHandler onChange={setFormValue} onError={handleOnError} />
 						<RenderChildRoutes
-							routes={siteContentTypeDetailTabRoutes}
-							extraOptions={{
-								siteId,
-							}}
+							routes={tenantContentTypeDetailTabRoutes}
+							extraOptions={{}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>
 							<ActionBarContentSection>
@@ -86,7 +80,6 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: s
 							</ActionBarContentSection>
 						</ActionBar>
 						<LeavePrompt
-							allowedPaths={SITE_DETAIL_TAB_ALLOWED_PATHS}
 							shouldBlockNavigationOnConfirm
 							when={hasChanges}
 							onConfirm={submitForm}
@@ -98,4 +91,4 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: s
 	);
 };
 
-export default ContentTypeSiteDetailForm;
+export default ContentTypeTenantDetailForm;
