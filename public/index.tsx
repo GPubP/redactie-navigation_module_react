@@ -46,8 +46,6 @@ import {
 	SiteStructureUpdate,
 } from './lib/views';
 
-console.log('init');
-
 // akitaDevtools();
 
 registerTranslations();
