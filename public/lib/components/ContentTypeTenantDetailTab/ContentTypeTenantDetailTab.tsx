@@ -29,8 +29,6 @@ import { CONFIG, MODULE_PATHS } from '../../navigation.const';
 import { NAV_TENANT_COMPARTMENTS } from './ContentTypeTenantDetailTab.const';
 import { ContentTypeTenantDetailTabFormState } from './ContentTypeTenantDetailTab.types';
 
-console.log(LanguageHeader);
-
 const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
