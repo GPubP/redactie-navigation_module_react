@@ -23,8 +23,7 @@ import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
-import { isEmpty } from './lib/helpers';
-import { canShowSiteStructure } from './lib/helpers/canShowSiteStructure';
+import { canShowSiteStructure, isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -176,9 +175,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
-			async ({ siteId }, next) => {
-				canShowSiteStructure(siteId as string, next)
-			}
+			canShowSiteStructure,
 		],
 	},
 	routes: [
@@ -288,7 +285,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (context, settings, value) => true,
+	show: () => true,
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
@@ -324,7 +321,7 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
-} as any);
+});
 
 sitesConnector.registerSiteStructureTab(CONFIG.name, {
 	label: 'Sitestructuur',
@@ -332,4 +329,3 @@ sitesConnector.registerSiteStructureTab(CONFIG.name, {
 	component: SiteStructureTab,
 	containerId: 'update' as any,
 });
-

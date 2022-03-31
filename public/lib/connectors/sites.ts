@@ -6,7 +6,7 @@ class SitesConnector {
 	public api: SitesModuleAPI;
 
 	// reset
-	public get sitesFacade(): any {
+	public get sitesFacade(): SitesModuleAPI['store']['sites']['facade'] {
 		return this.api.store.sites.facade;
 	}
 

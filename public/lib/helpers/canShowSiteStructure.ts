@@ -1,19 +1,38 @@
-import { Next } from '@redactie/react-router-guards';
-import { take } from 'rxjs/operators';
+import { isNil } from '@datorama/akita';
+import { ModuleSettings } from '@redactie/sites-module';
+import { filter, take } from 'rxjs/operators';
+
 import sitesConnector from '../connectors/sites';
 
-export async function canShowSiteStructure(siteId: string, next: any): Promise<Next> {
-	const hasSite = sitesConnector.sitesFacade.hasSite(siteId);
-	if (!hasSite) {
-		sitesConnector.sitesFacade.getSite({ id: siteId });
+export const canShowSiteStructure = async (
+	{ siteId }: Record<string, unknown>,
+	next: Function
+): Promise<void> => {
+	try {
+		const hasSite = sitesConnector.sitesFacade.hasSite(siteId as string);
+
+		if (!hasSite) {
+			sitesConnector.sitesFacade.getSite({ id: siteId as string });
+		}
+
+		const site = await sitesConnector.sitesFacade
+			.selectSite(siteId as string)
+			.pipe(
+				filter(site => !isNil(site)),
+				take(1)
+			)
+			.toPromise();
+
+		if (
+			(site?.data?.modulesConfig || []).find(
+				(siteNavigationConfig: ModuleSettings) => siteNavigationConfig.name === 'navigation'
+			)?.config?.allowSiteStructure
+		) {
+			next();
+		} else {
+			throw new Error('Sitestructure not allowed');
+		}
+	} catch (e) {
+		throw new Error(e as any);
 	}
-	const site = await sitesConnector.sitesFacade
-		.selectSite(siteId)
-		.pipe(take(1))
-		.toPromise();
-	if (site.data.modulesConfig.find((x: any) => x.name === 'navigation').config.allowSiteStructure)
-		return next();
-	else {
-		throw new Error();
-	}
-}
+};
