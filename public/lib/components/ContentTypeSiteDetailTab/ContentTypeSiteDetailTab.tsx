@@ -44,7 +44,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	siteId,
 	contentType,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
+	const [initialValues, setInitialValues] = useState<ContentTypeSiteDetailTabFormState>(
+		value?.config || {}
+	);
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [activeLanguage, setActiveLanguage] = useState<Language>();
@@ -79,10 +81,23 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 	// setup preselected language
 	useEffect(() => {
-		if (Array.isArray(languages) && !activeLanguage) {
-			setActiveLanguage(languages.find(l => l.primary) || languages[0]);
+		if (!(Array.isArray(languages) && !activeLanguage)) {
+			return;
 		}
-	}, [activeLanguage, languages]);
+
+		const currentLanguage = languages.find(l => l.primary) || languages[0];
+		setActiveLanguage(currentLanguage);
+
+		if (isEmpty(initialValues)) {
+			const form = {
+				url:
+					contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+						?.url || {},
+			};
+			setInitialValues(form);
+			setFormValue(form);
+		}
+	}, [activeLanguage, contentType.modulesConfig, initialValues, languages]);
 
 	const onConfirm = async (): Promise<void> => {
 		!metadataExists
