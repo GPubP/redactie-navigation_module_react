@@ -1,9 +1,9 @@
 import { TextField } from '@acpaas-ui/react-components';
-import { Table } from '@acpaas-ui/react-editorial-components';
+import { LanguageHeaderContext, Table } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
-import React, { ChangeEvent, FC, useState } from 'react';
+import React, { ChangeEvent, FC, useContext, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
@@ -16,6 +16,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 	const { setFieldValue, values } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
+	const { activeLanguage } = useContext(LanguageHeaderContext);
 
 	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
 		setCursorPosition(event.target.selectionStart);
@@ -26,13 +27,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 		const urlPattern = values.url.urlPattern.nl;
 
 		if (!cursorPosition) {
-			setFieldValue('url.urlPattern', `${urlPattern}${key}`);
+			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}${key}`);
 			return;
 		}
 
 		const left = urlPattern.substring(0, cursorPosition);
 		const right = urlPattern.substring(cursorPosition);
-		setFieldValue('url.urlPattern.nl', `${left}${key}${right}`);
+		setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${left}${key}${right}`);
 		setCursorPosition(null);
 	};
 

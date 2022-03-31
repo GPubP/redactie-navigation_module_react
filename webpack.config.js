@@ -12,6 +12,7 @@ module.exports = env => {
 			'@redactie/translations-module': '@redactie/translations-module',
 			'@redactie/content-module': '@redactie/content-module',
 			'@redactie/content-types-module': '@redactie/content-module',
+			'@redactie/language-module': '@redactie/language-module',
 		},
 	})(env);
 
