@@ -9,6 +9,7 @@ class RolesRightsConnector {
 		update: 'navigation-navigation_update',
 		delete: 'navigation-navigation_delete',
 		replace: 'navigation-navigation_parent-replace',
+		contentPathUpdate: 'navigation-content_path_update',
 	};
 	public menuSecurityRights = {
 		create: 'navigation-menus_create',
