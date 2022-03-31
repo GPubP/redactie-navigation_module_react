@@ -47,6 +47,7 @@ export interface NavigationSecurityRights {
 	read: boolean;
 	update: boolean;
 	delete: boolean;
+	contentPathUpdate: boolean;
 	replace: boolean;
 }
 

@@ -1,15 +1,24 @@
 import { LanguagesModuleAPI } from '@redactie/language-module';
 import Core from '@redactie/redactie-core';
+import { first } from 'rxjs/operators';
 
 class LanguagesConnector {
-	public api: LanguagesModuleAPI;
+	public static apiName = 'languages-module';
 
-	public get hooks(): LanguagesModuleAPI['hooks'] {
-		return this.api.hooks;
+	public initialized$ = Core.modules
+		.selectModuleAPI<LanguagesModuleAPI>(LanguagesConnector.apiName)
+		.pipe(first());
+
+	public getApi(): LanguagesModuleAPI {
+		return Core.modules.getModuleAPI<LanguagesModuleAPI>(LanguagesConnector.apiName);
 	}
 
-	constructor() {
-		this.api = Core.modules.getModuleAPI<LanguagesModuleAPI>('languages-module');
+	public get languagesFacade(): LanguagesModuleAPI['store']['languages']['facade'] {
+		return this.getApi().store.languages.facade;
+	}
+
+	public get hooks(): LanguagesModuleAPI['hooks'] {
+		return this.getApi().hooks;
 	}
 }
 
