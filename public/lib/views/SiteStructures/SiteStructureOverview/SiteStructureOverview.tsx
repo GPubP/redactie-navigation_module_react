@@ -70,7 +70,6 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 
 		siteStructuresFacade.getSiteStructures(siteId, {
 			...query,
-			category: formatSiteStructureCategory(site?.uuid),
 			includeItemCount: true,
 		} as SearchParams);
 	}, [query, site, siteId]);
