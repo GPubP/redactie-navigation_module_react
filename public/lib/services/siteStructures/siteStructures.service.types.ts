@@ -1,15 +1,17 @@
 import {
-	CreateNavTreeDTO,
+	CreateNavTreeDto,
 	EmbeddedNavTree,
 	ListApiResponse,
 	NavTree,
-	UpdateNavTreeDTO,
+	UpdateNavTreeDto,
 } from '../../navigation.types';
 
 /////////////////////////////////
 // GET SITE STRUCTURES TYPES ---------------------
 /////////////////////////////////
 export type SiteStructuresResponse = ListApiResponse<EmbeddedNavTree>;
-export type CreateSiteStructureDto = CreateNavTreeDTO;
-export type UpdateSiteStructureDto = UpdateNavTreeDTO;
-export type SiteStructure = NavTree;
+export type CreateSiteStructureDto = CreateNavTreeDto;
+export type UpdateSiteStructureDto = UpdateNavTreeDto;
+export interface SiteStructure extends Omit<NavTree, 'category'> {
+	category: string;
+}

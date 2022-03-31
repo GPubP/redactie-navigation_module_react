@@ -1,5 +1,6 @@
 import { SearchParams } from '@redactie/utils';
 
+import { NavTree } from '../../navigation.types';
 import { api } from '../api';
 
 import {
@@ -20,7 +21,7 @@ export class SiteStructuresApiService {
 			.json();
 	}
 
-	public async getSiteStructure(siteId: string, id: string): Promise<SiteStructure> {
+	public async getSiteStructure(siteId: string, id: string): Promise<NavTree> {
 		return api.get(`${siteId}/site-structures/${id}`).json();
 	}
 
@@ -38,7 +39,7 @@ export class SiteStructuresApiService {
 	public async updateSiteStructure(
 		siteId: string,
 		siteStructure: UpdateSiteStructureDto
-	): Promise<SiteStructure> {
+	): Promise<NavTree> {
 		return api
 			.put(`${siteId}/site-structures/${siteStructure.id}`, {
 				json: siteStructure,

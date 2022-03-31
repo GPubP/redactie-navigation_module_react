@@ -10,9 +10,12 @@ import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/tr
 import { useSiteStructureItems } from '../../../hooks';
 import { MODULE_TRANSLATIONS } from '../../../i18next/translations.const';
 import { ALERT_CONTAINER_IDS } from '../../../navigation.const';
-import { RearrangeNavItem, SiteStructureItemDetailRouteProps } from '../../../navigation.types';
+import {
+	NavTree,
+	RearrangeNavItem,
+	SiteStructureItemDetailRouteProps,
+} from '../../../navigation.types';
 import { SiteStructureItem } from '../../../services/siteStructureItems';
-import { SiteStructure } from '../../../services/siteStructures';
 import { siteStructureItemsFacade } from '../../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../../store/siteStructures';
 
@@ -150,7 +153,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<NavItemDetailForm
-				navTree={siteStructure as SiteStructure}
+				navTree={(siteStructure as unknown) as NavTree}
 				navItem={siteStructureItem as SiteStructureItem}
 				navItems={siteStructureItems as SiteStructureItem[]}
 				rights={rights}
