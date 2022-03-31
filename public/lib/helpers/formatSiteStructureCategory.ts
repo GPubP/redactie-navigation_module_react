@@ -1,4 +1,5 @@
-export const formatSiteStructureCategory = (siteName: string): string => {
-	// TODO: Implement multilanguage
-	return `siteStructure_${siteName}_nl`;
+import { LangKeys } from '../navigation.const';
+
+export const formatSiteStructureCategory = (siteId: string, lang?: string): string => {
+	return `siteStructure_${siteId}_${lang || LangKeys.generic}`;
 };
