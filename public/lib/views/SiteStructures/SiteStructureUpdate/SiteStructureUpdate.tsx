@@ -12,7 +12,6 @@ import {
 	LoadingState,
 	RenderChildRoutes,
 	useNavigate,
-	useOnNextRender,
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
@@ -47,7 +46,7 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [t] = translationsConnector.useCoreTranslation();
 	const { siteId, siteStructureId } = useParams<{ siteStructureId?: string; siteId: string }>();
-	const { navigate, generatePath } = useNavigate(SITES_ROOT);
+	const { generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const isSiteStructureItemsOverview = useMemo(
 		() =>
@@ -85,9 +84,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 				rolesRightsConnector.siteStructuresSecurityRights.update,
 			]),
-			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.siteStructuresSecurityRights.delete,
-			]),
 		}),
 		[mySecurityrights]
 	);
@@ -102,9 +98,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 	}, [removeSiteStructureLoadingState]);
 	const [siteStructureDraft] = useSiteStructureDraft();
 	const activeTabs = useActiveTabs(SITE_STRUCTURE_DETAIL_TABS, location.pathname);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
-		navigate(MODULE_PATHS.site.siteStructuresOverview, { siteId })
-	);
 
 	useEffect(() => {
 		if (
@@ -160,16 +153,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 		);
 	};
 
-	const deleteSiteStructure = async (siteStructure: SiteStructure): Promise<void> => {
-		return (
-			siteStructuresFacade
-				.deleteSiteStructure(siteId, siteStructure)
-				.then(forceNavigateToOverview)
-				// eslint-disable-next-line @typescript-eslint/no-empty-function
-				.catch(() => {})
-		);
-	};
-
 	/**
 	 * Render
 	 */
@@ -192,7 +175,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 				extraOptions={{
 					onCancel,
 					onSubmit: update,
-					onDelete: deleteSiteStructure,
 					routes: route.routes,
 					loading: isLoading,
 					removing: isRemoving,

@@ -24,8 +24,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	};
 
 	const importPattern = (key: string): void => {
-		// TODO: Implement multilanguage
-		const urlPattern = values.url.urlPattern.nl;
+		const urlPattern = pathOr('', ['url', 'urlPattern', activeLanguage.key], values);
 
 		if (!cursorPosition) {
 			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}${key}`);

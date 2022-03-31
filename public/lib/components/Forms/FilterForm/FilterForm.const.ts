@@ -1,6 +1,4 @@
-import { object, ObjectSchema, string } from 'yup';
-
-import { FilterFormState } from './FilterForm.types';
+import { object, string } from 'yup';
 
 export const FILTER_FORM_VALIDATION_SCHEMA = object().shape({
 	label: string(),

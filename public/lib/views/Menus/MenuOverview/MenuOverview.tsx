@@ -25,9 +25,8 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { FilterForm, FilterFormState } from '../../../components';
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { formatMenuCategory } from '../../../helpers/formatMenuCategory';
 import { useMenus } from '../../../hooks/useMenus';
-import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
+import { BREADCRUMB_OPTIONS, LangKeys, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationRouteProps } from '../../../navigation.types';
 import { menusFacade } from '../../../store/menus';
 
@@ -70,13 +69,12 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 	}, [loadingsState]);
 
 	useEffect(() => {
-		if (!siteId || !site?.data.name) {
+		if (!siteId) {
 			return;
 		}
 
 		menusFacade.getMenus(siteId, {
 			...query,
-			category: formatMenuCategory(site?.data.name),
 			includeItemCount: true,
 		} as SearchParams);
 	}, [query, site, siteId]);
@@ -141,7 +139,7 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 			label: menu.label || undefined,
 			description: menu.description || undefined,
 			itemCount: menu.itemCount,
-			lang: menu.lang || '',
+			lang: menu.lang !== LangKeys.generic ? menu.lang || '' : 'Alle talen',
 			navigate: (menuId: string) => navigate(MODULE_PATHS.site.menuItems, { siteId, menuId }),
 		}));
 
