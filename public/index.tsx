@@ -9,6 +9,7 @@ import { take } from 'rxjs/operators';
 
 import {
 	ContentDetailCompartment,
+	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
 	ContentTypeDetailTab,
 	ContentTypeDetailUrl,
@@ -37,7 +38,6 @@ import {
 	MenuItemUpdate,
 	MenuOverview,
 	MenuUpdate,
-	SiteStructureCreate,
 	SiteStructureDetailSettings,
 	SiteStructureItemCreate,
 	SiteStructureItemDetailSettings,
@@ -188,19 +188,6 @@ sitesConnector.registerRoutes({
 			component: SiteStructureOverview,
 		},
 		{
-			path: MODULE_PATHS.site.createSiteStructure,
-			breadcrumb: false,
-			component: SiteStructureCreate,
-			redirect: MODULE_PATHS.site.createSiteStructureSettings,
-			routes: [
-				{
-					path: MODULE_PATHS.site.createSiteStructureSettings,
-					breadcrumb: false,
-					component: SiteStructureDetailSettings,
-				},
-			],
-		},
-		{
 			path: MODULE_PATHS.site.createContentRefSiteStructureItem,
 			breadcrumb: false,
 			component: SiteStructureItemCreate,
@@ -283,6 +270,25 @@ contentConnector.registerContentDetailCompartment(CONFIG.name, {
 			rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, requiredRights)
 		);
 	},
+});
+
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
+	label: 'URL',
+	module: CONFIG.module,
+	component: ContentDetailUrlCompartment,
+	isValid: false,
+	beforeSubmit,
+	afterSubmit,
+	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
+		const navModuleValue = values.modulesData?.navigation || {};
+
+		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
+			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		}
+
+		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+	},
+	show: (context, settings, value) => true,
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [

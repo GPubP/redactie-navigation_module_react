@@ -196,7 +196,7 @@ const MenuUpdate: FC<NavigationRouteProps<{ menuId?: string; siteId: string }>> 
 					onDelete: deleteMenu,
 					routes: route.routes,
 					loading: isLoading,
-					removing: isRemoving,
+					isRemoving,
 					rights,
 				}}
 			/>

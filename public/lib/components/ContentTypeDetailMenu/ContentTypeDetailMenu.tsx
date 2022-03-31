@@ -1,7 +1,6 @@
 import { RadioGroup } from '@acpaas-ui/react-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import { FormikMultilanguageField } from '@redactie/utils';
-import { FormikValues, useFormikContext } from 'formik';
+import { Field, FormikValues, useFormikContext } from 'formik';
 import React, { FC, useEffect } from 'react';
 
 import sitesConnector from '../../connectors/sites';
@@ -19,12 +18,12 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
-		if (!siteId || !site) {
+		if (!siteId) {
 			return;
 		}
 
 		menusFacade.getMenus(siteId, {
-			category: formatMenuCategory(site?.data.name),
+			category: formatMenuCategory(siteId),
 		});
 	}, [site, siteId]);
 
@@ -35,20 +34,19 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 			</div>
 			<div className="row u-margin-top">
 				<div className="col-xs-12 col-sm-6">
-					<FormikMultilanguageField
-						asComponent={RadioGroup}
+					{/* TODO: find out why changing language does not update radiogroup selection */}
+					<Field
+						as={RadioGroup}
 						name="menu.allowMenus"
 						options={ALLOW_MENUS_OPTIONS}
 						onChange={(e: any) => {
-							// TODO: Implement multilanguage
-							setFieldValue('menu.allowMenus.nl', e.target.value);
-							setFieldValue('menu.allowedMenus.nl', []);
+							setFieldValue('menu.allowMenus', e.target.value);
+							setFieldValue(`menu.allowedMenus`, {});
 						}}
 					/>
 				</div>
 			</div>
-			{/* // TODO: Implement multilanguage */}
-			{`${values?.menu?.allowMenus.nl}` === 'true' && (
+			{`${values?.menu?.allowMenus}` === 'true' && (
 				<div>
 					<div className="u-margin-top u-flex u-flex-column">
 						<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_MENU_AVAILABLE_MENUS_TITLE)}</p>

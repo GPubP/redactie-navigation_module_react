@@ -19,6 +19,10 @@ class ContentConnector {
 
 	public getContentItem = (siteId: string, contentItemId: string): void | false =>
 		this.api ? this.api.store.content.facade.getContentItem(siteId, contentItemId) : false;
+
+	public get contentService(): ContentAPI['store']['content']['service'] {
+		return this.api.store.content.service;
+	}
 }
 
 const contentConnector = new ContentConnector();

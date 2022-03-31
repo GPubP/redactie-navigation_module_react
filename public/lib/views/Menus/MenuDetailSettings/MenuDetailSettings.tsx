@@ -12,9 +12,11 @@ import {
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
+import languagesConnector from '../../../connectors/languages';
+import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useMenu, useMenuDraft } from '../../../hooks';
 import {
@@ -47,6 +49,39 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, menu);
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [, , , languages] = languagesConnector.hooks.useLanguages();
+	const [site] = sitesConnector.hooks.useSite(siteId);
+
+	const canEdit = isCreating ? true : rights.canUpdate;
+	const canDelete = isCreating ? false : rights.canDelete;
+
+	const languageOptions = useMemo(() => {
+		if (!site || !languages) {
+			return [];
+		}
+
+		return [
+			...LANG_OPTIONS,
+			...(site.data.languages as string[]).map((lang: string) => {
+				const currentLang = languages?.find(language => language.uuid === lang);
+
+				return {
+					key: currentLang?.key,
+					label: `${currentLang?.localizedName} (${currentLang?.key})`,
+					value: currentLang?.key,
+				};
+			}),
+		].map(lang => ({ ...lang, disabled: !canEdit }));
+	}, [canEdit, languages, site]);
+
+	useEffect(() => {
+		languagesConnector.languagesFacade.getLanguages({
+			active: true,
+			includeContentOccurrences: false,
+			site: siteId,
+			sort: 'name',
+		});
+	}, [siteId]);
 
 	/**
 	 * Methods
@@ -59,9 +94,6 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 	const onChange = (newMenuValue: Menu): void => {
 		menusFacade.setMenuDraft(newMenuValue);
 	};
-
-	const canEdit = isCreating ? true : rights.canUpdate;
-	const canDelete = isCreating ? false : rights.canDelete;
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
 		if (!values) {
@@ -92,10 +124,11 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 		return (
 			<>
 				<p>
-					Deze workflow wordt gebruikt op{' '}
+					Dit menu wordt gebruikt op{' '}
 					<strong>
 						{occurrences?.length || 0} {pluralSingularText}
 					</strong>
+					.
 				</p>
 				{occurrences && occurrences.length > 0 && (
 					<ul>
@@ -123,25 +156,13 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 			values.itemCount && values.itemCount === 1 ? 'menu-item' : 'menu-items';
 
 		return (
-			<>
-				{values.itemCount && values.itemCount > 0 ? (
-					<p>
-						Dit menu heeft{' '}
-						<strong>
-							{values.itemCount ? values.itemCount : 0} {pluralSingularItems}
-						</strong>
-						. Verwijder deze items als je het menu wil verwijderen.
-					</p>
-				) : (
-					<p>
-						Er zijn{' '}
-						<strong>
-							{values.itemCount ? values.itemCount : 0} {pluralSingularItems}
-						</strong>
-						. Je kan het menu verwijderen.
-					</p>
-				)}
-			</>
+			<p>
+				Dit menu heeft{' '}
+				<strong>
+					{values.itemCount ? values.itemCount : 0} {pluralSingularItems}
+				</strong>
+				.
+			</p>
 		);
 	};
 
@@ -160,7 +181,6 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 							className="u-margin-top"
 							type="danger"
 							iconLeft="trash-o"
-							disabled={values.itemCount && values.itemCount > 0}
 						>
 							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
 						</Button>
@@ -240,12 +260,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										label="Taal"
 										name="lang"
 										required
-										options={LANG_OPTIONS.map(option => {
-											return {
-												...option,
-												disabled: !canEdit,
-											};
-										})}
+										options={languageOptions}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
