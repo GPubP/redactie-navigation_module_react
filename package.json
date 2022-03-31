@@ -107,6 +107,7 @@
     "yup": "0.28.3"
   },
   "dependencies": {
+    "@wcm/pattern-resolver": "^1.0.0",
     "array-tree-filter": "^2.1.0",
     "lodash.debounce": "4.0.8"
   },

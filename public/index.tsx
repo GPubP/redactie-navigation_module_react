@@ -66,6 +66,8 @@ const NavigationComponent: FC<NavigationModuleProps<{ siteId: string }>> = ({
 	);
 };
 
+console.log('navigation module');
+
 sitesConnector.registerRoutes({
 	path: MODULE_PATHS.site.menuRoot,
 	breadcrumb: false,
