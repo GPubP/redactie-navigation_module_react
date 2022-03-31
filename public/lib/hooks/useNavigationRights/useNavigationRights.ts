@@ -26,6 +26,10 @@ const useNavigationRights = (siteId: string): NavigationSecurityRights => {
 			replace: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 				rolesRightsConnector.securityRights.replace,
 			]),
+			contentPathUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(
+				mySecurityrights,
+				[rolesRightsConnector.securityRights.contentPathUpdate]
+			),
 		}),
 		[mySecurityrights]
 	);

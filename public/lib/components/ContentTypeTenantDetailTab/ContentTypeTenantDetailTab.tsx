@@ -29,6 +29,8 @@ import { CONFIG, MODULE_PATHS } from '../../navigation.const';
 import { NAV_TENANT_COMPARTMENTS } from './ContentTypeTenantDetailTab.const';
 import { ContentTypeTenantDetailTabFormState } from './ContentTypeTenantDetailTab.types';
 
+console.log(LanguageHeader);
+
 const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
@@ -84,8 +86,6 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	const onSavePromptCancel = (): void => {
 		setShowConfirmModal(false);
 	};
-
-	console.log('cjecl');
 
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
