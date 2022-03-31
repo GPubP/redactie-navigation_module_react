@@ -1,5 +1,7 @@
 import { MultilanguageYup } from '@redactie/utils';
 
+import { PATTERN_PLACEHOLDERS } from '../ContentTypeDetailUrl/ContentTypeDetailUrl.const';
+
 export const NAV_TENANT_COMPARTMENTS = [{ label: 'URL', to: 'url' }];
 
 export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
@@ -25,6 +27,28 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 							// eslint-disable-next-line no-useless-escape
 							/^([^\[\]]*|\[[^\[\]]*\])*$/.test(value)
 					)
+					.test({
+						name: 'existingPattern',
+						test: function(value) {
+							if (value) {
+								const keys = PATTERN_PLACEHOLDERS(() => '', true).map(i => i.key);
+
+								// eslint-disable-next-line no-useless-escape
+								const keysInUrl = value.match(/(?=\[)[^\]]+./g) || [];
+								const unknownKeys = keysInUrl.filter(
+									(r: string) => !keys.includes(r)
+								);
+
+								return unknownKeys.length > 0
+									? this.createError({
+											message: `Opgelet, er werd geen resultaat gevonden voor ${unknownKeys[0]}, Verwijder of vervang de variabele.`,
+											path: this.path,
+									  })
+									: true;
+							}
+							return true;
+						},
+					})
 			),
 		}),
 	});

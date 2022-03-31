@@ -35,22 +35,28 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 							// eslint-disable-next-line no-useless-escape
 							/^([^\[\]]*|\[[^\[\]]*\])*$/.test(value)
 					)
-					.test(
-						'existingPattern',
-						'Opgelet, er werd geen resultaat gevonden voor een variabele, Verwijder of vervang de variabele.',
-						value => {
-							const fieldValue = value || '';
+					.test({
+						name: 'existingPattern',
+						test: function(value) {
+							if (value) {
+								const keys = PATTERN_PLACEHOLDERS(() => '', true).map(i => i.key);
 
-							const keys = PATTERN_PLACEHOLDERS(() => '', true).map(i => i.key);
+								// eslint-disable-next-line no-useless-escape
+								const keysInUrl = value.match(/(?=\[)[^\]]+./g) || [];
+								const unknownKeys = keysInUrl.filter(
+									(r: string) => !keys.includes(r)
+								);
 
-							// eslint-disable-next-line no-useless-escape
-							const keysInUrl = fieldValue.match(/(?=\[)[^]]+(?<!\])./g);
-
-							console.log({ fieldValue, keys, keysInUrl });
-
-							return keysInUrl.pop().some((r: string) => keys.includes(r));
-						}
-					)
+								return unknownKeys.length > 0
+									? this.createError({
+											message: `Opgelet, er werd geen resultaat gevonden voor ${unknownKeys[0]}, Verwijder of vervang de variabele.`,
+											path: this.path,
+									  })
+									: true;
+							}
+							return true;
+						},
+					})
 			),
 		}),
 	});
