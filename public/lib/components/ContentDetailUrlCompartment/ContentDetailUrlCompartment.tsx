@@ -7,7 +7,6 @@ import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import React, { FC, useRef } from 'react';
 
 import { useNavigationRights } from '../../hooks';
-import { VALIDATION_SCHEMA } from '../ContentDetailCompartment';
 
 const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	updateContentMeta,
@@ -40,7 +39,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 		updateContentMeta((values as ContentSchema).meta);
 	};
 
-	const handleResetPath = () => {
+	const handleResetPath = (): void => {
 		updateContentMeta({
 			...contentValue?.meta,
 			urlPath: {
@@ -66,7 +65,6 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 				enableReinitialize
 				initialValues={contentValue!}
 				onSubmit={onChange}
-				validationSchema={VALIDATION_SCHEMA}
 			>
 				{() => {
 					return (
