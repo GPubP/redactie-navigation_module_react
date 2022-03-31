@@ -143,5 +143,10 @@ export const ALERT_CONTAINER_IDS = {
 	siteStructureItemsOverview: 'site-structure-items-overview',
 };
 
-// TODO: Implement multilanguage
-export const LANG_OPTIONS = [{ key: 'nl', label: 'Nederlands (NL)', value: 'nl' }];
+export enum LangKeys {
+	generic = 'generic',
+}
+
+export const LANG_OPTIONS = [
+	{ key: LangKeys.generic, label: 'Taalonafhankelijk (alle talen)', value: LangKeys.generic },
+];
