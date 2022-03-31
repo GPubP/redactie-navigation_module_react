@@ -19,12 +19,12 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
-		if (!siteId || !site) {
+		if (!siteId) {
 			return;
 		}
 
 		menusFacade.getMenus(siteId, {
-			category: formatMenuCategory(site?.data.name),
+			category: formatMenuCategory(siteId),
 		});
 	}, [site, siteId]);
 
