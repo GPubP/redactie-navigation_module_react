@@ -167,7 +167,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
-					<DataLoader loadingState={languagesLoading && !languages} render={renderForm} />
+					<DataLoader loadingState={languagesLoading} render={renderForm} />
 					<ControlledModal
 						show={showConfirmModal}
 						onClose={onSavePromptCancel}

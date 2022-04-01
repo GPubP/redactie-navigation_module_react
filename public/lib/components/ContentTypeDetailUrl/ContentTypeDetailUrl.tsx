@@ -15,7 +15,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
-	const { setFieldValue, values } = useFormikContext<FormikValues>();
+	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 
@@ -47,7 +47,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"
+				required
 				onBlur={handleBlur}
+				state={
+					activeLanguage &&
+					pathOr(null, ['url', 'urlPattern', activeLanguage.key], errors) &&
+					'error'
+				}
 			/>
 			<Table
 				fixed
