@@ -18,11 +18,12 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
+import SiteStructureTab from './lib/components/SiteStructureTab/SiteStructureTab';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
-import { isEmpty } from './lib/helpers';
+import { canShowSiteStructure, isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -46,7 +47,6 @@ import {
 } from './lib/views';
 
 // akitaDevtools();
-
 registerTranslations();
 
 const NavigationComponent: FC<NavigationModuleProps<{ siteId: string }>> = ({
@@ -175,6 +175,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
+			canShowSiteStructure,
 		],
 	},
 	routes: [
@@ -284,7 +285,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (context, settings, value) => true,
+	show: () => true,
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
@@ -320,4 +321,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
+});
+
+sitesConnector.registerSiteStructureTab(CONFIG.name, {
+	label: 'Sitestructuur',
+	module: CONFIG.module,
+	component: SiteStructureTab,
+	containerId: 'update' as any,
 });
