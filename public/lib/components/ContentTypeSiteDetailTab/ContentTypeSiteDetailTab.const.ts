@@ -23,8 +23,8 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 					)
 					.matches(/^\//, "Het patroon moet beginnen met een '/'")
 					.matches(
-						/\[item:slug]/,
-						"De variabele '[item:slug]' ontbreekt. Daardoor is dit patroon mogelijk niet uniek. Voeg de variabele toe."
+						/\[item:slug]|\[item:id]/,
+						"De variabele '[item:slug]' of '[item:id]' ontbreekt. Daardoor is dit patroon mogelijk niet uniek. Voeg de variabele toe."
 					)
 					.test(
 						'doubleSlash',
