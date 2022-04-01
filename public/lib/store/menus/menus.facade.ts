@@ -1,13 +1,14 @@
 import { alertService, BaseEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
 
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { UpdateNavTreeDTO } from '../../navigation.types';
+import { NavTree } from '../../navigation.types';
 import {
-	CreateMenuDTO,
+	CreateMenuDto,
 	Menu,
 	MenusApiService,
 	menusApiService,
 	MenusResponse,
+	UpdateMenuDto,
 } from '../../services/menus';
 
 import { getAlertMessages } from './menus.messages';
@@ -44,6 +45,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 						return {
 							...menu,
+							category: menu.category.label,
 							lang: categoryArray[categoryArray.length - 1],
 						};
 					})
@@ -71,7 +73,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getMenu(siteId, uuid)
-			.then((response: Menu | null) => {
+			.then((response: NavTree | null) => {
 				if (!response) {
 					throw new Error(`Getting menu '${uuid}' failed!`);
 				}
@@ -81,6 +83,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				this.store.update({
 					menu: {
 						...response,
+						category: response.category.label,
 						lang: categoryArray[categoryArray.length - 1],
 					},
 					isFetchingOne: false,
@@ -94,7 +97,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public createMenu(siteId: string, body: CreateMenuDTO, alertId: string): void {
+	public createMenu(siteId: string, body: CreateMenuDto, alertId: string): void {
 		const { isCreating } = this.query.getValue();
 
 		if (isCreating) {
@@ -130,11 +133,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 			});
 	}
 
-	public async updateMenu(
-		siteId: string,
-		body: UpdateNavTreeDTO,
-		alertId: string
-	): Promise<void> {
+	public async updateMenu(siteId: string, body: UpdateMenuDto, alertId: string): Promise<void> {
 		const { isUpdating } = this.query.getValue();
 
 		if (isUpdating) {
@@ -145,7 +144,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 
 		return this.service
 			.updateMenu(siteId, body)
-			.then((response: Menu | null) => {
+			.then((response: NavTree | null) => {
 				if (!response) {
 					throw new Error(`Updating menu '${body.id}' failed!`);
 				}
@@ -153,6 +152,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 				const categoryArray = response.category.label.split('_');
 				const menu = {
 					...response,
+					category: response.category.label,
 					lang: categoryArray[categoryArray.length - 1],
 				};
 

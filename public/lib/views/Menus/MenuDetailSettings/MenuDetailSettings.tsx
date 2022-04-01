@@ -12,12 +12,13 @@ import {
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
 import languagesConnector from '../../../connectors/languages';
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { formatMenuCategory } from '../../../helpers/formatMenuCategory';
 import { useMenu, useMenuDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -207,7 +208,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 				onSubmit={onSave}
 				validationSchema={MENU_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ errors, submitForm, values, resetForm }) => {
+				{({ errors, submitForm, values, resetForm, setFieldValue }) => {
 					onChange(values);
 
 					return (
@@ -261,6 +262,13 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										name="lang"
 										required
 										options={languageOptions}
+										onChange={(e: ChangeEvent<HTMLInputElement>) => {
+											setFieldValue('lang', e.target.value);
+											setFieldValue(
+												'category',
+												formatMenuCategory(siteId, e.target.value)
+											);
+										}}
 									/>
 									<ErrorMessage
 										className="u-text-danger"

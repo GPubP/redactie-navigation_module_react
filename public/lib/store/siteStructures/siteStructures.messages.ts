@@ -1,8 +1,7 @@
-import { SiteStructure, UpdateSiteStructureDto } from '../../services/siteStructures';
+import { NavTree } from '../../navigation.types';
+import { UpdateSiteStructureDto } from '../../services/siteStructures';
 
-export const getAlertMessages = (
-	data: SiteStructure | UpdateSiteStructureDto
-): Record<string, any> => ({
+export const getAlertMessages = (data: NavTree | UpdateSiteStructureDto): Record<string, any> => ({
 	create: {
 		success: {
 			title: 'Aangemaakt',

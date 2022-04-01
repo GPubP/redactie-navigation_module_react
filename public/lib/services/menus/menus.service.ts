@@ -1,9 +1,15 @@
 import { SearchParams } from '@redactie/utils';
 
-import { UpdateNavTreeDTO } from '../../navigation.types';
+import { NavTree } from '../../navigation.types';
 import { api } from '../api';
 
-import { CreateMenuDTO, Menu, MenusResponse, OccurrencesResponse } from './menus.service.types';
+import {
+	CreateMenuDto,
+	Menu,
+	MenusResponse,
+	OccurrencesResponse,
+	UpdateMenuDto,
+} from './menus.service.types';
 
 export class MenusApiService {
 	public async getMenus(
@@ -17,11 +23,11 @@ export class MenusApiService {
 			.json();
 	}
 
-	public async getMenu(siteId: string, id: string): Promise<Menu | null> {
+	public async getMenu(siteId: string, id: string): Promise<NavTree | null> {
 		return api.get(`${siteId}/menus/${id}`).json();
 	}
 
-	public async createMenu(siteId: string, menu: CreateMenuDTO): Promise<Menu | null> {
+	public async createMenu(siteId: string, menu: CreateMenuDto): Promise<Menu | null> {
 		return api
 			.post(`${siteId}/menus`, {
 				json: menu,
@@ -29,7 +35,7 @@ export class MenusApiService {
 			.json();
 	}
 
-	public async updateMenu(siteId: string, menu: UpdateNavTreeDTO): Promise<Menu | null> {
+	public async updateMenu(siteId: string, menu: UpdateMenuDto): Promise<NavTree | null> {
 		return api
 			.put(`${siteId}/menus/${menu.id}`, {
 				json: menu,

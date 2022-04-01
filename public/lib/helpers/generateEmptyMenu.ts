@@ -1,11 +1,11 @@
 import { NAV_STATUSES } from '../components';
 import { LangKeys } from '../navigation.const';
-import { CreateMenuDTO } from '../services/menus';
+import { CreateMenuDto } from '../services/menus';
 
 export const generateEmptyMenu = (
 	siteId: string,
 	lang?: string
-): CreateMenuDTO & { lang: string } => ({
+): CreateMenuDto & { lang: string } => ({
 	label: '',
 	description: '',
 	publishStatus: NAV_STATUSES.DRAFT,
