@@ -6,6 +6,7 @@ import { resolveUrl } from '@wcm/pattern-resolver';
 import { FormikValues, useFormikContext } from 'formik';
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 
+import SitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
@@ -35,8 +36,15 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [resolvedPattern, setResolvedPattern] = useState<string>('');
 	const placeholders = PATTERN_PLACEHOLDERS(tModule, !!siteId);
+	const [site] = SitesConnector.hooks.useSite(siteId);
 
 	const urlResolver = placeholderToKeyValue(placeholders);
+
+	let preUrl = 'https://www.antwerpen.be';
+
+	if (site) {
+		preUrl = site.data.url[activeLanguage] || site.data.url;
+	}
 
 	useEffect(() => {
 		async function getResolvedPattern(): Promise<void> {
@@ -82,7 +90,8 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				<div className="u-bg-light u-padding-left u-padding-right u-padding-bottom">
 					<p>Voorbeeld</p>
 					<span>
-						https://www.antwerpen.be/<strong>{resolvedPattern}</strong>
+						{preUrl}
+						<strong>{resolvedPattern}</strong>
 					</span>
 				</div>
 			)}
