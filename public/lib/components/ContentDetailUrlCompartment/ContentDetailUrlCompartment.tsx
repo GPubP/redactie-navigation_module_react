@@ -18,7 +18,8 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	site,
 	formikRef,
 }) => {
-	const url = site?.data?.url;
+	const url =
+		typeof site?.data?.url === 'object' ? site?.data?.url[activeLanguage!] : site?.data?.url;
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
 	/**
 	 * Hooks
