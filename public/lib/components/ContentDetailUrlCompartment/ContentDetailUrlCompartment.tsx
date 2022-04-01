@@ -18,7 +18,8 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	site,
 	formikRef,
 }) => {
-	const url = site?.data?.url;
+	const url =
+		typeof site?.data?.url === 'object' ? site?.data?.url[activeLanguage!] : site?.data?.url;
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
 	/**
 	 * Hooks
@@ -82,7 +83,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 									>
 										<h5 className="u-margin-bottom-xs">
 											<i className="fa fa-info-circle u-margin-right-xs"></i>
-											Opgelet, dit content item gebruikt nog een andere url
+											Opgelet, dit content item gebruikt een andere url
 										</h5>
 										<p>
 											De content beheerder heeft het standaard pad voor dit
