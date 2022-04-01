@@ -7,6 +7,7 @@ import {
 import {
 	FormikOnChangeHandler,
 	handleMultilanguageFormErrors,
+	Language,
 	LeavePrompt,
 	RenderChildRoutes,
 } from '@redactie/utils';
@@ -26,7 +27,10 @@ import {
 	ContentTypeSiteDetailTabFormState,
 } from './ContentTypeSiteDetailTab.types';
 
-const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: string }> = ({
+const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
+	siteId: string;
+	activeLanguage: Language;
+}> = ({
 	value,
 	isLoading,
 	hasChanges,
@@ -34,6 +38,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: s
 	onCancel,
 	setFormValue,
 	siteId,
+	activeLanguage,
 }) => {
 	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
 	const [t] = translationsConnector.useCoreTranslation();
@@ -61,6 +66,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & { siteId: s
 							routes={siteContentTypeDetailTabRoutes}
 							extraOptions={{
 								siteId,
+								activeLanguage,
 							}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>
