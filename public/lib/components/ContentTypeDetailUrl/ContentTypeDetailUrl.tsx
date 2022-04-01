@@ -3,6 +3,7 @@ import { LanguageHeaderContext, Table } from '@acpaas-ui/react-editorial-compone
 import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
+import { pathOr } from 'ramda';
 import React, { ChangeEvent, FC, useContext, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
@@ -23,8 +24,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	};
 
 	const importPattern = (key: string): void => {
-		// TODO: Implement multilanguage
-		const urlPattern = values.url.urlPattern.nl;
+		const urlPattern = pathOr('', ['url', 'urlPattern', activeLanguage.key], values);
 
 		if (!cursorPosition) {
 			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}${key}`);

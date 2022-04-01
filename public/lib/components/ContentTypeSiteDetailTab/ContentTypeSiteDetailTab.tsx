@@ -1,7 +1,5 @@
 import { Button } from '@acpaas-ui/react-components';
 import {
-	ActionBar,
-	ActionBarContentSection,
 	ControlledModal,
 	ControlledModalBody,
 	ControlledModalFooter,
@@ -10,31 +8,19 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import {
-	DataLoader,
-	FormikOnChangeHandler,
-	Language,
-	LeavePrompt,
-	RenderChildRoutes,
-	useDetectValueChanges,
-	useNavigate,
-} from '@redactie/utils';
-import { Formik } from 'formik';
+import { DataLoader, Language, useDetectValueChanges, useNavigate } from '@redactie/utils';
 import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
-import { siteContentTypeDetailTabRoutes } from '../../..';
 import contentTypeConnector from '../../connectors/contentTypes';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 
-import {
-	NAV_SITE_COMPARTMENTS,
-	SITE_DETAIL_TAB_ALLOWED_PATHS,
-} from './ContentTypeSiteDetailTab.const';
+import ContentTypeSiteDetailForm from './ContentTypeSiteDetailForm';
+import { NAV_SITE_COMPARTMENTS } from './ContentTypeSiteDetailTab.const';
 import { ContentTypeSiteDetailTabFormState } from './ContentTypeSiteDetailTab.types';
 
 const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
@@ -134,51 +120,15 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				activeLanguage={activeLanguage}
 				onChangeLanguage={(language: string) => setActiveLanguage({ key: language })}
 			>
-				<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-					{({ submitForm }) => {
-						return (
-							<div className="u-margin-top">
-								<FormikOnChangeHandler onChange={setFormValue} />
-								<RenderChildRoutes
-									routes={siteContentTypeDetailTabRoutes}
-									extraOptions={{
-										siteId,
-									}}
-								/>
-								<ActionBar className="o-action-bar--fixed" isOpen>
-									<ActionBarContentSection>
-										<div className="u-wrapper row end-xs">
-											<Button
-												className="u-margin-right-xs"
-												onClick={onCancel}
-												negative
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-											</Button>
-											<Button
-												iconLeft={
-													isLoading ? 'circle-o-notch fa-spin' : null
-												}
-												disabled={isLoading || !hasChanges}
-												onClick={submitForm}
-												type="success"
-												htmlType="submit"
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-											</Button>
-										</div>
-									</ActionBarContentSection>
-								</ActionBar>
-								<LeavePrompt
-									allowedPaths={SITE_DETAIL_TAB_ALLOWED_PATHS}
-									shouldBlockNavigationOnConfirm
-									when={hasChanges}
-									onConfirm={submitForm}
-								/>
-							</div>
-						);
-					}}
-				</Formik>
+				<ContentTypeSiteDetailForm
+					value={value}
+					isLoading={isLoading}
+					hasChanges={hasChanges}
+					setFormValue={setFormValue}
+					onFormSubmit={onFormSubmit}
+					onCancel={onCancel}
+					siteId={siteId}
+				/>
 			</LanguageHeader>
 		);
 	};
@@ -202,7 +152,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
-					<DataLoader loadingState={languagesLoading} render={renderForm} />
+					<DataLoader loadingState={languagesLoading && !languages} render={renderForm} />
 					<ControlledModal
 						show={showConfirmModal}
 						onClose={onSavePromptCancel}
