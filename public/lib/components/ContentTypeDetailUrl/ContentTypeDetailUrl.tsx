@@ -48,12 +48,15 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 
 	useEffect(() => {
 		async function getResolvedPattern(): Promise<void> {
-			const resolvedUrl = await resolveUrl(values?.url?.urlPattern?.nl ?? '', urlResolver);
+			const resolvedUrl = await resolveUrl(
+				values?.url?.urlPattern?.[activeLanguage.key] ?? '',
+				urlResolver
+			);
 			setResolvedPattern(resolvedUrl);
 		}
 
 		getResolvedPattern();
-	}, [urlResolver, values]);
+	}, [activeLanguage.key, urlResolver, values]);
 
 	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
 		setCursorPosition(event.target.selectionStart);
