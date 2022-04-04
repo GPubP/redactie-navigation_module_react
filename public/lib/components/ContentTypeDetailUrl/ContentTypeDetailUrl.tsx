@@ -14,18 +14,26 @@ import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PATTERN_COLUMNS, PATTERN_PLACEHOLDERS } from './ContentTypeDetailUrl.const';
 import { PatternRowData } from './ContentTypeDetailUrl.types';
 
-function placeholderToKeyValue(placeholders: PatternRowData[]): { [key: string]: string } {
-	return placeholders.reduce((acc: any, { key: placeholder, example: value }) => {
-		const valueWithoutBrackets = placeholder.replace(/\[|\]/g, '');
-		const parent = valueWithoutBrackets?.split(':')[0] ?? '';
-		const key = valueWithoutBrackets?.split(':')[1];
+function placeholderToKeyValue(
+	placeholders: PatternRowData[]
+): { [key: string]: { [sub: string]: string } } {
+	return placeholders.reduce(
+		(
+			acc: { [key: string]: { [sub: string]: string } },
+			{ key: placeholder, example: value }
+		) => {
+			const valueWithoutBrackets = placeholder.replace(/\[|\]/g, '');
+			const parent = valueWithoutBrackets?.split(':')[0] ?? '';
+			const key = valueWithoutBrackets?.split(':')[1];
 
-		if (key) {
-			acc[parent] = { ...acc[parent], [key]: value };
-		}
+			if (key) {
+				acc[parent] = { ...acc[parent], [key]: value };
+			}
 
-		return acc;
-	}, {});
+			return acc;
+		},
+		{}
+	);
 }
 
 const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
