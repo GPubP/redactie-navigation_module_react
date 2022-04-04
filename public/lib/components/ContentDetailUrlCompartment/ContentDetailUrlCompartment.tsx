@@ -7,6 +7,7 @@ import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import { path } from 'ramda';
 import React, { FC, useRef } from 'react';
 
+import { getLangSiteUrl } from '../../helpers';
 import { useNavigationRights } from '../../hooks';
 
 const ContentTypeDetailUrl: FC<CompartmentProps> = ({
@@ -19,8 +20,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	site,
 	formikRef,
 }) => {
-	const url =
-		typeof site?.data?.url === 'object' ? site?.data?.url[activeLanguage!] : site?.data?.url;
+	const url = getLangSiteUrl(site, activeLanguage);
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
 	/**
 	 * Hooks
