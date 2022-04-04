@@ -9,7 +9,7 @@ import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 
 import SitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
-import { placeholderToKeyValue } from '../../helpers/contentTypeDetailUrl';
+import { placeholderToKeyValue } from '../../helpers/placeholderToKeyValue';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
 import { PATTERN_COLUMNS, PATTERN_PLACEHOLDERS } from './ContentTypeDetailUrl.const';
