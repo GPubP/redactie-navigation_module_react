@@ -90,8 +90,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				<div className="u-bg-light u-padding-left u-padding-right u-padding-bottom">
 					<p>Voorbeeld</p>
 					<span>
-						{preUrl}
-						<strong>{resolvedPattern}</strong>
+						{preUrl}/<strong>{resolvedPattern}</strong>
 					</span>
 				</div>
 			)}
