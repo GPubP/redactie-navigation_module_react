@@ -63,7 +63,7 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 
 				return {
 					key: currentLang?.key,
-					label: `${currentLang?.localizedName} (${currentLang?.key})`,
+					label: `${currentLang?.name} (${currentLang?.key})`,
 					value: currentLang?.key,
 				};
 			}),

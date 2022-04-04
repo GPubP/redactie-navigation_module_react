@@ -137,6 +137,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 			</div>
 		);
 	};
+
 	return (
 		<div className={cx('m-dataloader-container')}>
 			<DataLoader loadingState={initialLoading} render={renderView} notFoundMessage="" />
