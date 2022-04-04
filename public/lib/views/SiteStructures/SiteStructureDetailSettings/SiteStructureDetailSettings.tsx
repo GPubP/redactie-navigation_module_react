@@ -2,8 +2,10 @@ import { Button, RadioGroup, Textarea, TextField } from '@acpaas-ui/react-compon
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
 import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
-import React, { FC } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 
+import languagesConnector from '../../../connectors/languages';
+import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useSiteStructure, useSiteStructureDraft } from '../../../hooks';
 import {
@@ -18,15 +20,19 @@ import { siteStructuresFacade } from '../../../store/siteStructures';
 import { SITE_STRUCTURE_SETTINGS_VALIDATION_SCHEMA } from './SiteStructureDetailSettings.const';
 
 const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchProps>> = ({
+	match,
 	loading,
 	isCreating,
 	rights,
 	onSubmit,
 }) => {
+	const { siteId } = match.params;
 	const [siteStructure] = useSiteStructureDraft();
 	const { siteStructure: values } = useSiteStructure();
 	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, siteStructure);
+	const [, , , languages] = languagesConnector.hooks.useLanguages();
+	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	/**
 	 * Methods
@@ -44,6 +50,34 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 	};
 
 	const canEdit = isCreating ? true : rights.canUpdate;
+
+	const languageOptions = useMemo(() => {
+		if (!site || !languages) {
+			return [];
+		}
+
+		return [
+			...LANG_OPTIONS,
+			...(site.data.languages as string[]).map((lang: string) => {
+				const currentLang = languages?.find(language => language.uuid === lang);
+
+				return {
+					key: currentLang?.key,
+					label: `${currentLang?.localizedName} (${currentLang?.key})`,
+					value: currentLang?.key,
+				};
+			}),
+		].map(lang => ({ ...lang, disabled: true }));
+	}, [languages, site]);
+
+	useEffect(() => {
+		languagesConnector.languagesFacade.getLanguages({
+			active: true,
+			includeContentOccurrences: false,
+			site: siteId,
+			sort: 'name',
+		});
+	}, [siteId]);
 
 	/**
 	 * Render
@@ -116,12 +150,7 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 										label="Taal"
 										name="lang"
 										required
-										options={LANG_OPTIONS.map(option => {
-											return {
-												...option,
-												disabled: !canEdit,
-											};
-										})}
+										options={languageOptions}
 									/>
 									<ErrorMessage
 										className="u-text-danger"

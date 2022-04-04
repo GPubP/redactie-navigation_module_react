@@ -1,7 +1,5 @@
 import { Button } from '@acpaas-ui/react-components';
 import {
-	ActionBar,
-	ActionBarContentSection,
 	ControlledModal,
 	ControlledModalBody,
 	ControlledModalFooter,
@@ -10,31 +8,19 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import {
-	DataLoader,
-	FormikOnChangeHandler,
-	Language,
-	LeavePrompt,
-	RenderChildRoutes,
-	useDetectValueChanges,
-	useNavigate,
-} from '@redactie/utils';
-import { Formik } from 'formik';
+import { DataLoader, Language, useDetectValueChanges, useNavigate } from '@redactie/utils';
 import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
-import { siteContentTypeDetailTabRoutes } from '../../..';
 import contentTypeConnector from '../../connectors/contentTypes';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 
-import {
-	NAV_SITE_COMPARTMENTS,
-	SITE_DETAIL_TAB_ALLOWED_PATHS,
-} from './ContentTypeSiteDetailTab.const';
+import ContentTypeSiteDetailForm from './ContentTypeSiteDetailForm';
+import { NAV_SITE_COMPARTMENTS } from './ContentTypeSiteDetailTab.const';
 import { ContentTypeSiteDetailTabFormState } from './ContentTypeSiteDetailTab.types';
 
 const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
@@ -44,7 +30,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	siteId,
 	contentType,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
+	const [initialValues, setInitialValues] = useState<ContentTypeSiteDetailTabFormState>(
+		value?.config || {}
+	);
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [activeLanguage, setActiveLanguage] = useState<Language>();
@@ -79,10 +67,23 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 	// setup preselected language
 	useEffect(() => {
-		if (Array.isArray(languages) && !activeLanguage) {
-			setActiveLanguage(languages.find(l => l.primary) || languages[0]);
+		if (!(Array.isArray(languages) && !activeLanguage)) {
+			return;
 		}
-	}, [activeLanguage, languages]);
+
+		const currentLanguage = languages.find(l => l.primary) || languages[0];
+		setActiveLanguage(currentLanguage);
+
+		if (isEmpty(initialValues)) {
+			const form = {
+				url:
+					contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+						?.url || {},
+			};
+			setInitialValues(form);
+			setFormValue(form);
+		}
+	}, [activeLanguage, contentType.modulesConfig, initialValues, languages]);
 
 	const onConfirm = async (): Promise<void> => {
 		!metadataExists
@@ -134,51 +135,16 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				activeLanguage={activeLanguage}
 				onChangeLanguage={(language: string) => setActiveLanguage({ key: language })}
 			>
-				<Formik onSubmit={onFormSubmit} initialValues={initialValues}>
-					{({ submitForm }) => {
-						return (
-							<div className="u-margin-top">
-								<FormikOnChangeHandler onChange={setFormValue} />
-								<RenderChildRoutes
-									routes={siteContentTypeDetailTabRoutes}
-									extraOptions={{
-										siteId,
-									}}
-								/>
-								<ActionBar className="o-action-bar--fixed" isOpen>
-									<ActionBarContentSection>
-										<div className="u-wrapper row end-xs">
-											<Button
-												className="u-margin-right-xs"
-												onClick={onCancel}
-												negative
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-											</Button>
-											<Button
-												iconLeft={
-													isLoading ? 'circle-o-notch fa-spin' : null
-												}
-												disabled={isLoading || !hasChanges}
-												onClick={submitForm}
-												type="success"
-												htmlType="submit"
-											>
-												{t(CORE_TRANSLATIONS.BUTTON_SAVE)}
-											</Button>
-										</div>
-									</ActionBarContentSection>
-								</ActionBar>
-								<LeavePrompt
-									allowedPaths={SITE_DETAIL_TAB_ALLOWED_PATHS}
-									shouldBlockNavigationOnConfirm
-									when={hasChanges}
-									onConfirm={submitForm}
-								/>
-							</div>
-						);
-					}}
-				</Formik>
+				<ContentTypeSiteDetailForm
+					value={value}
+					isLoading={isLoading}
+					hasChanges={hasChanges}
+					setFormValue={setFormValue}
+					onFormSubmit={onFormSubmit}
+					onCancel={onCancel}
+					siteId={siteId}
+					activeLanguage={activeLanguage}
+				/>
 			</LanguageHeader>
 		);
 	};

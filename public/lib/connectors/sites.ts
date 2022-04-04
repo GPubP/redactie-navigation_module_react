@@ -1,10 +1,11 @@
 import Core, { ModuleRouteConfig } from '@redactie/redactie-core';
-import { SitesModuleAPI } from '@redactie/sites-module';
+import { ExternalTabOptions, SitesModuleAPI } from '@redactie/sites-module';
 
 class SitesConnector {
 	public static apiName = 'sites-module';
 	public api: SitesModuleAPI;
 
+	// reset
 	public get sitesFacade(): SitesModuleAPI['store']['sites']['facade'] {
 		return this.api.store.sites.facade;
 	}
@@ -19,6 +20,10 @@ class SitesConnector {
 
 	public get config(): SitesModuleAPI['config'] {
 		return this.api.config;
+	}
+
+	public registerSiteStructureTab(key: string, options: ExternalTabOptions): void | false {
+		return this.api ? this.api.registerSiteUpdateTab(key, options) : false;
 	}
 
 	constructor(api?: SitesModuleAPI) {

@@ -14,7 +14,12 @@ import { useParams } from 'react-router-dom';
 import formRendererConnector from '../../connectors/formRenderer';
 import sitesConnector from '../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
-import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
+import {
+	getInitialNavItemsFormValues,
+	getLangSiteUrl,
+	getPositionInputValue,
+	getTreeConfig,
+} from '../../helpers';
 import { extractSiblings } from '../../helpers/extractSiblings';
 import {
 	CascaderOption,
@@ -151,10 +156,20 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 															!!value?.meta.published
 														);
 
-														if (value?.meta.urlPath?.nl?.value) {
+														if (
+															value?.meta.urlPath?.[value?.meta.lang]
+																?.value
+														) {
 															setFieldValue(
 																'externalUrl',
-																`${site?.data.url}${value.meta.urlPath?.nl.value}`
+																`${getLangSiteUrl(
+																	site,
+																	value?.meta.lang
+																)}${
+																	value?.meta.urlPath?.[
+																		value?.meta.lang
+																	]?.value
+																}`
 															);
 														}
 

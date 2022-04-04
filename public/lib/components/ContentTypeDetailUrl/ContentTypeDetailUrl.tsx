@@ -4,6 +4,7 @@ import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { resolveUrl } from '@wcm/pattern-resolver';
 import { FormikValues, useFormikContext } from 'formik';
+import { pathOr } from 'ramda';
 import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 
 import SitesConnector from '../../connectors/sites';
@@ -31,7 +32,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
-	const { setFieldValue, values } = useFormikContext<FormikValues>();
+	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [resolvedPattern, setResolvedPattern] = useState<string>('');
@@ -63,8 +64,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	};
 
 	const importPattern = (key: string): void => {
-		// TODO: Implement multilanguage
-		const urlPattern = values.url.urlPattern.nl;
+		const urlPattern = pathOr('', ['url', 'urlPattern', activeLanguage.key], values);
 
 		if (!cursorPosition) {
 			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}${key}`);
@@ -87,7 +87,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"
+				required
 				onBlur={handleBlur}
+				state={
+					activeLanguage &&
+					pathOr(null, ['url', 'urlPattern', activeLanguage.key], errors) &&
+					'error'
+				}
 			/>
 			{resolvedPattern && (
 				<div className="u-bg-light u-padding-left u-padding-right u-padding-bottom">

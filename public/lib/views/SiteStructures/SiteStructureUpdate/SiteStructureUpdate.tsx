@@ -30,7 +30,7 @@ import {
 	TENANT_ROOT,
 } from '../../../navigation.const';
 import { NavigationRouteProps, SiteStructureMatchProps } from '../../../navigation.types';
-import { SiteStructure } from '../../../services/siteStructures';
+import { UpdateSiteStructureDto } from '../../../services/siteStructures';
 import { siteStructuresFacade } from '../../../store/siteStructures';
 
 import { SITE_STRUCTURE_ITEM_OPTIONS } from './SiteStructureUpdate.const';
@@ -138,17 +138,14 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 		siteStructuresFacade.setSiteStructureDraft(siteStructure);
 	};
 
-	const update = (updatedSiteStructure: SiteStructure): Promise<void> => {
+	const update = (updatedSiteStructure: UpdateSiteStructureDto): Promise<void> => {
 		if (!updatedSiteStructure) {
 			return Promise.resolve();
 		}
 
 		return siteStructuresFacade.updateSiteStructure(
 			siteId,
-			{
-				...updatedSiteStructure,
-				categoryId: updatedSiteStructure.category.id,
-			},
+			updatedSiteStructure,
 			ALERT_CONTAINER_IDS.settings
 		);
 	};

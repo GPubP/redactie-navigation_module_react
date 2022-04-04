@@ -1,6 +1,7 @@
 import { alertService, BaseEntityFacade, SearchParams } from '@redactie/utils';
 
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
+import { NavTree } from '../../navigation.types';
 import {
 	SiteStructure,
 	SiteStructuresApiService,
@@ -45,6 +46,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 
 						return {
 							...siteStructure,
+							category: siteStructure.category.label,
 							lang: categoryArray[categoryArray.length - 1],
 						};
 					})
@@ -71,7 +73,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 		this.store.setIsFetchingOne(true);
 		this.service
 			.getSiteStructure(siteId, uuid)
-			.then((response: SiteStructure) => {
+			.then((response: NavTree) => {
 				if (!response) {
 					throw new Error(`Getting siteStructure '${uuid}' failed!`);
 				}
@@ -81,6 +83,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 				this.store.update({
 					siteStructure: {
 						...response,
+						category: response.category.label,
 						lang: categoryArray[categoryArray.length - 1],
 					},
 					isFetchingOne: false,
@@ -143,7 +146,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 
 		return this.service
 			.updateSiteStructure(siteId, body)
-			.then((response: SiteStructure) => {
+			.then((response: NavTree) => {
 				if (!response) {
 					throw new Error(`Updating siteStructure '${body.id}' failed!`);
 				}
@@ -151,6 +154,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 				const categoryArray = response.category.label.split('_');
 				const siteStructure = {
 					...response,
+					category: response.category.label,
 					lang: categoryArray[categoryArray.length - 1],
 				};
 

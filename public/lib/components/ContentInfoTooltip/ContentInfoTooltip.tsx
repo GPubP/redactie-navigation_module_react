@@ -3,19 +3,20 @@ import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
 import { DataLoader, InfoTooltip, LoadingState } from '@redactie/utils';
 import classnames from 'classnames/bind';
+import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import contentConnector from '../../connectors/content';
-import moment from 'moment';
 
+import contentConnector from '../../connectors/content';
 import rolesRightsConnector from '../../connectors/rolesRights';
+import sitesConnector from '../../connectors/sites';
+import { getLangSiteUrl } from '../../helpers';
 import { useMenuItems } from '../../hooks';
 import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
 
 import styles from './ContentInfoTooltip.module.scss';
 import { Status } from './ContentInfoTooltip.types';
-import sitesConnector from '../../connectors/sites';
 const cx = classnames.bind(styles);
 
 const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
@@ -81,10 +82,12 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 									{item?.meta.description}
 								</div>
 							)}
-							{item?.meta.urlPath?.nl?.value && (
+							{item?.meta.urlPath?.[item?.meta.lang]?.value && (
 								<div className="u-margin-bottom-xs a-url">
 									<b>URL: </b>
-									{`${site?.data.url}${item?.meta.urlPath?.nl.value}`}
+									{`${getLangSiteUrl(site, item?.meta.lang)}${
+										item?.meta.urlPath?.[item?.meta.lang].value
+									}`}
 								</div>
 							)}
 							{item?.meta.created && (

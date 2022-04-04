@@ -28,7 +28,7 @@ import {
 	SITES_ROOT,
 } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationModuleProps } from '../../../navigation.types';
-import { CreateMenuDTO, Menu } from '../../../services/menus';
+import { CreateMenuDto, Menu } from '../../../services/menus';
 import { menusFacade } from '../../../store/menus';
 
 const MenuCreate: FC<NavigationModuleProps<NavigationMatchProps>> = ({
@@ -108,7 +108,7 @@ const MenuCreate: FC<NavigationModuleProps<NavigationMatchProps>> = ({
 					{
 						...generateEmptyMenu(siteId, sectionData.lang),
 						...omit(['category'], sectionData),
-					} as CreateMenuDTO,
+					} as CreateMenuDto,
 					alertId
 				);
 				break;

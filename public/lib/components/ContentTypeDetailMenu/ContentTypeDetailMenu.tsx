@@ -1,18 +1,21 @@
 import { RadioGroup } from '@acpaas-ui/react-components';
 import { ExternalTabProps } from '@redactie/content-module';
+import { Language } from '@redactie/utils';
 import { Field, FormikValues, useFormikContext } from 'formik';
 import React, { FC, useEffect } from 'react';
 
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
-import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { menusFacade } from '../../store/menus';
 import { MenusCheckboxList } from '../MenusCheckboxList';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
-const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
+const ContentTypeDetailMenu: FC<ExternalTabProps & { activeLanguage: Language }> = ({
+	siteId,
+	activeLanguage,
+}) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
@@ -23,9 +26,9 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 		}
 
 		menusFacade.getMenus(siteId, {
-			category: formatMenuCategory(siteId),
+			lang: activeLanguage.key,
 		});
-	}, [site, siteId]);
+	}, [activeLanguage, site, siteId]);
 
 	return (
 		<div>

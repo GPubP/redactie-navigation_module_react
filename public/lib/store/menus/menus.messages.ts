@@ -1,7 +1,8 @@
-import { CreateMenuDTO, Menu, UpdateMenuDTO } from '../../services/menus';
+import { NavTree } from '../../navigation.types';
+import { CreateMenuDto, UpdateMenuDto } from '../../services/menus';
 
 export const getAlertMessages = (
-	data: Menu | CreateMenuDTO | UpdateMenuDTO
+	data: NavTree | CreateMenuDto | UpdateMenuDto
 ): Record<string, any> => ({
 	create: {
 		success: {

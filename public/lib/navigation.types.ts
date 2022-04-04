@@ -181,16 +181,15 @@ export interface NavTreeMeta {
 	lastEditor: null;
 }
 
-export interface CreateNavTreeDTO {
+export interface CreateNavTreeDto {
 	label: string;
 	description: string;
 	category: string;
 	publishStatus: string;
 }
 
-export interface UpdateNavTreeDTO extends Omit<CreateNavTreeDTO, 'category'> {
+export interface UpdateNavTreeDto extends CreateNavTreeDto {
 	id: number;
-	categoryId: number;
 }
 
 export interface NavTree {
