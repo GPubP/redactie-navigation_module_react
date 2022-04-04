@@ -136,7 +136,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				onChangeLanguage={(language: string) => setActiveLanguage({ key: language })}
 			>
 				<ContentTypeSiteDetailForm
-					value={value}
+					value={initialValues}
 					isLoading={isLoading}
 					hasChanges={hasChanges}
 					setFormValue={setFormValue}
