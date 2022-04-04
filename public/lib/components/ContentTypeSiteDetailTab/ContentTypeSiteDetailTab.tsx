@@ -143,6 +143,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					onFormSubmit={onFormSubmit}
 					onCancel={onCancel}
 					siteId={siteId}
+					activeLanguage={activeLanguage}
 				/>
 			</LanguageHeader>
 		);
