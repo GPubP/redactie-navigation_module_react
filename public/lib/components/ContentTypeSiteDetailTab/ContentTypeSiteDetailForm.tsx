@@ -13,8 +13,8 @@ import { useParams } from 'react-router-dom';
 import { siteContentTypeDetailTabRoutes } from '../../..';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { getCompartmentErrors } from '../../helpers';
 
-import { getCompartmentErrors } from './ContentTypeSiteDetailForm.helpers';
 import {
 	FORM_VALIDATION_SCHEMA,
 	NavSiteCompartments,

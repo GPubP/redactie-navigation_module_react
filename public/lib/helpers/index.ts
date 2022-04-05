@@ -9,3 +9,4 @@ export * from './generateEmptyNavItem';
 export * from './getInitialNavItemsFormValues';
 export * from './canShowSiteStructure';
 export * from './getSiteUrl';
+export * from './getCompartmentErrors';
