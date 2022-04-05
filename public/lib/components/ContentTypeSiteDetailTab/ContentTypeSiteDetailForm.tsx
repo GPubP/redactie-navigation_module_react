@@ -31,7 +31,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	siteId: string;
 	activeLanguage: Language;
 }> = ({
-	value,
+	value = {},
 	isLoading,
 	hasChanges,
 	onFormSubmit,
@@ -40,7 +40,6 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	siteId,
 	activeLanguage,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = value?.config || {};
 	const [t] = translationsConnector.useCoreTranslation();
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const { setErrors } = useContext(LanguageHeaderContext);
@@ -55,7 +54,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	return (
 		<Formik
 			onSubmit={onFormSubmit}
-			initialValues={initialValues}
+			initialValues={value}
+			enableReinitialize={true}
 			validationSchema={() => FORM_VALIDATION_SCHEMA(languages || [])}
 		>
 			{({ submitForm }) => {
