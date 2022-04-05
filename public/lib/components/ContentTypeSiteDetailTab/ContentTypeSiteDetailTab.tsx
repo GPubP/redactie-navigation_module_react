@@ -100,9 +100,12 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 		if (isEmpty(initialValues)) {
 			const form = {
-				url:
-					contentType.modulesConfig.find(config => config.name === 'navigation')?.config
-						?.url || {},
+				url: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+					?.url || {
+					urlPattern: {
+						multilanguage: true,
+					},
+				},
 			};
 			setInitialValues(form);
 			setFormValue(form);
@@ -169,7 +172,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				onChangeLanguage={(language: string) => setActiveLanguage({ key: language })}
 			>
 				<ContentTypeSiteDetailForm
-					value={value}
+					value={initialValues}
 					formValue={formValue}
 					isLoading={isLoading}
 					hasChanges={hasChanges}
