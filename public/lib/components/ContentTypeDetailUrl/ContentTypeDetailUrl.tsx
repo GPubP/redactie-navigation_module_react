@@ -18,7 +18,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
-	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
+	const { setFieldValue, values, errors, handleBlur } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 
@@ -27,7 +27,8 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
-	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
+	const handleBlurEvent = (event: ChangeEvent<HTMLInputElement>): void => {
+		handleBlur(event);
 		setCursorPosition(event.target.selectionStart);
 	};
 
@@ -56,7 +57,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"
 				required
-				onBlur={handleBlur}
+				onBlur={handleBlurEvent}
 				state={
 					activeLanguage &&
 					pathOr(null, ['url', 'urlPattern', activeLanguage.key], errors) &&

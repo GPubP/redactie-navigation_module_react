@@ -19,6 +19,11 @@ export const SITE_DETAIL_TAB_ALLOWED_PATHS = [
 
 export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 	MultilanguageYup.object().shape({
+		menu: MultilanguageYup.object().shape({
+			allowMenus: MultilanguageYup.boolean().required(
+				"Geef aan of het gebruik van menu's toegestaan is"
+			),
+		}),
 		url: MultilanguageYup.object().shape({
 			urlPattern: MultilanguageYup.object().validateMultiLanguage(
 				languages,

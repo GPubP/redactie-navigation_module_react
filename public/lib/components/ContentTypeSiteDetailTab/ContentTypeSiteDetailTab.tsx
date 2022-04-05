@@ -106,6 +106,10 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 						multilanguage: true,
 					},
 				},
+				menu: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+					?.menu || {
+					allowMenus: 'false',
+				},
 			};
 			setInitialValues(form);
 			setFormValue(form);
