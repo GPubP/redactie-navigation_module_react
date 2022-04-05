@@ -55,7 +55,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	return (
 		<Formik
 			onSubmit={onFormSubmit}
-			initialValues={initialValues}
+			initialValues={value}
 			enableReinitialize={true}
 			validationSchema={() => FORM_VALIDATION_SCHEMA(languages || [])}
 		>
