@@ -3,9 +3,14 @@ import { MultilanguageYup } from '@redactie/utils';
 import { MODULE_PATHS, SITES_ROOT, TENANT_ROOT } from '../../navigation.const';
 import { PATTERN_PLACEHOLDERS } from '../ContentTypeDetailUrl/ContentTypeDetailUrl.const';
 
+export enum NavSiteCompartments {
+	url = 'url',
+	menu = 'menu',
+}
+
 export const NAV_SITE_COMPARTMENTS = [
-	{ label: 'URL', to: 'url' },
-	{ label: 'Menu', to: 'menu' },
+	{ label: 'URL', to: NavSiteCompartments.url },
+	{ label: 'Menu', to: NavSiteCompartments.menu },
 ];
 
 export const SITE_DETAIL_TAB_ALLOWED_PATHS = [
@@ -14,6 +19,11 @@ export const SITE_DETAIL_TAB_ALLOWED_PATHS = [
 
 export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 	MultilanguageYup.object().shape({
+		menu: MultilanguageYup.object().shape({
+			allowMenus: MultilanguageYup.boolean().required(
+				"Geef aan of het gebruik van menu's toegestaan is"
+			),
+		}),
 		url: MultilanguageYup.object().shape({
 			urlPattern: MultilanguageYup.object().validateMultiLanguage(
 				languages,

@@ -8,17 +8,23 @@ import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { menusFacade } from '../../store/menus';
+import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 import { MenusCheckboxList } from '../MenusCheckboxList';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
-const ContentTypeDetailMenu: FC<ExternalTabProps & { activeLanguage: Language }> = ({
-	siteId,
-	activeLanguage,
-}) => {
+const ContentTypeDetailMenu: FC<ExternalTabProps & {
+	activeLanguage: Language;
+	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
+}> = ({ siteId, activeLanguage, setActiveCompartment }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
+
+	useEffect(() => {
+		setActiveCompartment(NavSiteCompartments.menu);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (!siteId) {

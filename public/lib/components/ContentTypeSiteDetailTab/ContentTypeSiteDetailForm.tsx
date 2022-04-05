@@ -4,51 +4,63 @@ import {
 	ActionBarContentSection,
 	LanguageHeaderContext,
 } from '@acpaas-ui/react-editorial-components';
-import {
-	FormikOnChangeHandler,
-	handleMultilanguageFormErrors,
-	Language,
-	LeavePrompt,
-	RenderChildRoutes,
-} from '@redactie/utils';
+import { FormikOnChangeHandler, LeavePrompt, RenderChildRoutes } from '@redactie/utils';
 import { Formik, FormikErrors, FormikValues } from 'formik';
-import React, { FC, useContext } from 'react';
+import { isEmpty } from 'lodash';
+import React, { FC, useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import { siteContentTypeDetailTabRoutes } from '../../..';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 
+import { getCompartmentErrors } from './ContentTypeSiteDetailForm.helpers';
 import {
 	FORM_VALIDATION_SCHEMA,
+	NavSiteCompartments,
 	SITE_DETAIL_TAB_ALLOWED_PATHS,
 } from './ContentTypeSiteDetailTab.const';
-import {
-	ContentTypeSiteDetailFormProps,
-	ContentTypeSiteDetailTabFormState,
-} from './ContentTypeSiteDetailTab.types';
+import { ContentTypeSiteDetailFormProps } from './ContentTypeSiteDetailTab.types';
 
-const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
-	siteId: string;
-	activeLanguage: Language;
-}> = ({
+const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	value = {},
+	formValue,
 	isLoading,
 	hasChanges,
 	onFormSubmit,
 	onCancel,
 	setFormValue,
+	onValidateCompartments,
 	siteId,
 	activeLanguage,
 }) => {
+	const { child } = useParams<{ child: string }>();
 	const [t] = translationsConnector.useCoreTranslation();
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const { setErrors } = useContext(LanguageHeaderContext);
+	const [activeCompartment, setActiveCompartment] = useState(child ?? NavSiteCompartments.url);
+	const [currentFormErrors, setCurrentFormErrors] = useState<FormikErrors<FormikValues>>({});
 
-	const handleOnError = (values: any, formErrors: FormikErrors<FormikValues>): void => {
+	useEffect(() => {
+		setErrors(getCompartmentErrors(currentFormErrors, formValue, activeCompartment));
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeCompartment]);
+
+	const validateCompartments = (errors: FormikErrors<FormikValues>): void => {
+		const invalidCompartments = Object.values(NavSiteCompartments).filter(compartment => {
+			const compartmentErrors = getCompartmentErrors(errors, formValue, compartment);
+
+			return !!Object.values(compartmentErrors).find(langErrors => !isEmpty(langErrors));
+		});
+
+		onValidateCompartments(invalidCompartments);
+	};
+
+	const handleOnError = (values: FormikValues, formErrors: FormikErrors<FormikValues>): void => {
+		setCurrentFormErrors(formErrors);
+		validateCompartments(formErrors);
 		setFormValue(values);
-
-		const newErrors = handleMultilanguageFormErrors(formErrors, values);
-		setErrors(newErrors);
+		setErrors(getCompartmentErrors(formErrors, formValue, activeCompartment));
 	};
 
 	return (
@@ -67,6 +79,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 							extraOptions={{
 								siteId,
 								activeLanguage,
+								setActiveCompartment,
 							}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>

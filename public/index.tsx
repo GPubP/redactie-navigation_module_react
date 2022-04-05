@@ -298,11 +298,6 @@ export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 
 export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 	{
-		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
-		breadcrumb: false,
-		component: ContentTypeDetailUrl,
-	},
-	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,

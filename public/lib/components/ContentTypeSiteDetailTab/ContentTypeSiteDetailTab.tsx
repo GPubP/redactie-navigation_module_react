@@ -8,7 +8,13 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import { DataLoader, Language, useDetectValueChanges, useNavigate } from '@redactie/utils';
+import {
+	DataLoader,
+	Language,
+	NavListItem,
+	useDetectValueChanges,
+	useNavigate,
+} from '@redactie/utils';
 import { isEmpty } from 'ramda';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
@@ -48,8 +54,26 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	}>();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
+	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
 
 	const history = useHistory();
+
+	useEffect(() => {
+		setNavlist(
+			NAV_SITE_COMPARTMENTS.map(compartment => ({
+				...compartment,
+				activeClassName: 'is-active',
+				to: generatePath(`${MODULE_PATHS.site.contentTypeDetailExternalChild}`, {
+					contentTypeUuid,
+					tab: CONFIG.name,
+					child: compartment.to,
+					siteId,
+				}),
+				key: compartment.to,
+			}))
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [contentTypeUuid, siteId]);
 
 	useEffect(() => {
 		if (!child) {
@@ -76,9 +100,16 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 		if (isEmpty(initialValues)) {
 			const form = {
-				url:
-					contentType.modulesConfig.find(config => config.name === 'navigation')?.config
-						?.url || {},
+				url: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+					?.url || {
+					urlPattern: {
+						multilanguage: true,
+					},
+				},
+				menu: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
+					?.menu || {
+					allowMenus: 'false',
+				},
 			};
 			setInitialValues(form);
 			setFormValue(form);
@@ -120,6 +151,15 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		setShowConfirmModal(true);
 	};
 
+	const onValidateCompartments = (invalidCompartments: string[]): void => {
+		setNavlist(
+			navList.map(compartment => ({
+				...compartment,
+				hasError: invalidCompartments.includes(compartment.key),
+			}))
+		);
+	};
+
 	const onSavePromptCancel = (): void => {
 		setShowConfirmModal(false);
 	};
@@ -137,6 +177,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			>
 				<ContentTypeSiteDetailForm
 					value={initialValues}
+					formValue={formValue}
 					isLoading={isLoading}
 					hasChanges={hasChanges}
 					setFormValue={setFormValue}
@@ -144,6 +185,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					onCancel={onCancel}
 					siteId={siteId}
 					activeLanguage={activeLanguage}
+					onValidateCompartments={onValidateCompartments}
 				/>
 			</LanguageHeader>
 		);
@@ -152,19 +194,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
 			<div className="col-xs-12 col-md-3 u-margin-bottom">
-				<NavList
-					items={NAV_SITE_COMPARTMENTS.map(compartment => ({
-						...compartment,
-						activeClassName: 'is-active',
-						to: generatePath(`${MODULE_PATHS.site.contentTypeDetailExternalChild}`, {
-							contentTypeUuid,
-							tab: CONFIG.name,
-							child: compartment.to,
-							siteId,
-						}),
-					}))}
-					linkComponent={NavLink}
-				/>
+				<NavList items={navList} linkComponent={NavLink} />
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
