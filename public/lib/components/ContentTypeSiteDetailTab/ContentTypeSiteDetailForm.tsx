@@ -31,7 +31,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	siteId: string;
 	activeLanguage: Language;
 }> = ({
-	value,
+	value = {},
 	isLoading,
 	hasChanges,
 	onFormSubmit,
