@@ -4,20 +4,28 @@ import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr } from 'ramda';
-import React, { ChangeEvent, FC, useContext, useState } from 'react';
+import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
+import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 
 import { PATTERN_COLUMNS, PATTERN_PLACEHOLDERS } from './ContentTypeDetailUrl.const';
 
-const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
+const ContentTypeDetailUrl: FC<ExternalTabProps & {
+	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
+}> = ({ setActiveCompartment }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [cursorPosition, setCursorPosition] = useState<number | null>(null);
 	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
+
+	useEffect(() => {
+		setActiveCompartment(NavSiteCompartments.url);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
 		setCursorPosition(event.target.selectionStart);
