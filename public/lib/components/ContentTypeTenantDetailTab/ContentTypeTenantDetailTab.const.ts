@@ -2,7 +2,11 @@ import { MultilanguageYup } from '@redactie/utils';
 
 import { PATTERN_PLACEHOLDERS } from '../ContentTypeDetailUrl/ContentTypeDetailUrl.const';
 
-export const NAV_TENANT_COMPARTMENTS = [{ label: 'URL', to: 'url' }];
+export enum NavTenantCompartments {
+	url = 'url',
+}
+
+export const NAV_TENANT_COMPARTMENTS = [{ label: 'URL', to: NavTenantCompartments.url }];
 
 export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 	MultilanguageYup.object().shape({

@@ -8,7 +8,13 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
-import { DataLoader, Language, useDetectValueChanges, useNavigate } from '@redactie/utils';
+import {
+	DataLoader,
+	Language,
+	NavListItem,
+	useDetectValueChanges,
+	useNavigate,
+} from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
@@ -49,8 +55,25 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate();
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
+	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
 
 	const history = useHistory();
+
+	useEffect(() => {
+		setNavlist(
+			NAV_TENANT_COMPARTMENTS.map(compartment => ({
+				...compartment,
+				activeClassName: 'is-active',
+				to: generatePath(`${MODULE_PATHS.tenantContentTypeDetailExternalChild}`, {
+					contentTypeUuid,
+					tab: CONFIG.name,
+					child: compartment.to,
+				}),
+				key: compartment.to,
+			}))
+		);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [contentTypeUuid]);
 
 	useEffect(() => {
 		if (!child) {
@@ -82,6 +105,15 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 		setShowConfirmModal(true);
 	};
 
+	const onValidateCompartments = (invalidCompartments: string[]): void => {
+		setNavlist(
+			navList.map(compartment => ({
+				...compartment,
+				hasError: invalidCompartments.includes(compartment.key),
+			}))
+		);
+	};
+
 	const onSavePromptCancel = (): void => {
 		setShowConfirmModal(false);
 	};
@@ -99,11 +131,13 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 			>
 				<ContentTypeTenantDetailForm
 					value={value}
+					formValue={formValue}
 					isLoading={isLoading}
 					hasChanges={hasChanges}
 					setFormValue={setFormValue}
 					onFormSubmit={onFormSubmit}
 					onCancel={onCancel}
+					onValidateCompartments={onValidateCompartments}
 				/>
 			</LanguageHeader>
 		);
@@ -112,18 +146,7 @@ const ContentTypeTenantDetailTab: FC<ExternalTabProps> = ({
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
 			<div className="col-xs-12 col-md-3 u-margin-bottom">
-				<NavList
-					items={NAV_TENANT_COMPARTMENTS.map(compartment => ({
-						...compartment,
-						activeClassName: 'is-active',
-						to: generatePath(`${MODULE_PATHS.tenantContentTypeDetailExternalChild}`, {
-							contentTypeUuid,
-							tab: CONFIG.name,
-							child: compartment.to,
-						}),
-					}))}
-					linkComponent={NavLink}
-				/>
+				<NavList items={navList} linkComponent={NavLink} />
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
