@@ -42,8 +42,6 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	const [currentFormErrors, setCurrentFormErrors] = useState<FormikErrors<FormikValues>>({});
 
 	useEffect(() => {
-		console.log(getCompartmentErrors(currentFormErrors, formValue, activeCompartment));
-
 		setErrors(getCompartmentErrors(currentFormErrors, formValue, activeCompartment));
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeCompartment]);
