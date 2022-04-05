@@ -71,11 +71,13 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.menusOverview,
-	guards: [
-		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.menuSecurityRights.read,
-		]),
-	],
+	guardOptions: {
+		guards: [
+			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
+		],
+	},
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
