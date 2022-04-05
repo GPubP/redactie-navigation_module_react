@@ -2,11 +2,14 @@ import { TextField } from '@acpaas-ui/react-components';
 import { LanguageHeaderContext, Table } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
 import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
+import { resolveUrl } from '@wcm/pattern-resolver';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr } from 'ramda';
-import React, { ChangeEvent, FC, useContext, useState } from 'react';
+import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 
+import SitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
+import { placeholderToKeyValue } from '../../helpers/placeholderToKeyValue';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
 import { PATTERN_COLUMNS, PATTERN_PLACEHOLDERS } from './ContentTypeDetailUrl.const';
@@ -18,6 +21,29 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 	const { setFieldValue, values, errors } = useFormikContext<FormikValues>();
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
+	const [resolvedPattern, setResolvedPattern] = useState<string>('');
+	const placeholders = PATTERN_PLACEHOLDERS(tModule, !!siteId);
+	const [site] = SitesConnector.hooks.useSite(siteId);
+
+	const urlResolver = placeholderToKeyValue(placeholders);
+
+	let preUrl = 'https://www.antwerpen.be';
+
+	if (site) {
+		preUrl = site.data.url[activeLanguage.key] || site.data.url;
+	}
+
+	useEffect(() => {
+		async function getResolvedPattern(): Promise<void> {
+			const resolvedUrl = await resolveUrl(
+				values?.url?.urlPattern?.[activeLanguage.key] ?? '',
+				urlResolver
+			);
+			setResolvedPattern(resolvedUrl);
+		}
+
+		getResolvedPattern();
+	}, [activeLanguage.key, urlResolver, values]);
 
 	const handleBlur = (event: ChangeEvent<HTMLInputElement>): void => {
 		setCursorPosition(event.target.selectionStart);
@@ -55,11 +81,19 @@ const ContentTypeDetailUrl: FC<ExternalTabProps> = () => {
 					'error'
 				}
 			/>
+			{resolvedPattern && (
+				<div className="u-bg-light u-padding-left u-padding-right u-padding-bottom">
+					<p>Voorbeeld</p>
+					<span>
+						{preUrl}/<strong>{resolvedPattern}</strong>
+					</span>
+				</div>
+			)}
 			<Table
 				fixed
 				className="u-margin-top"
 				columns={PATTERN_COLUMNS(t, tModule, importPattern)}
-				rows={PATTERN_PLACEHOLDERS(tModule, !!siteId)}
+				rows={placeholders}
 			/>
 		</div>
 	);
