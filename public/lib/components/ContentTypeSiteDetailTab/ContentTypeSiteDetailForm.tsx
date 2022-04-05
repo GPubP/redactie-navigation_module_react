@@ -40,7 +40,6 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps & {
 	siteId,
 	activeLanguage,
 }) => {
-	const initialValues: ContentTypeSiteDetailTabFormState = value || {};
 	const [t] = translationsConnector.useCoreTranslation();
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const { setErrors } = useContext(LanguageHeaderContext);
