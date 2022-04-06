@@ -38,6 +38,10 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 			);
 		}
 
+		if (!config) {
+			return contentType.meta.urlPath?.pattern;
+		}
+
 		return config?.config?.url?.urlPattern[activeLanguage];
 	}, [activeLanguage, contentType, site]);
 
