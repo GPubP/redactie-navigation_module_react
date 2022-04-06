@@ -23,7 +23,7 @@ import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
-import { canShowSiteStructure, isEmpty } from './lib/helpers';
+import { canShowSiteStructure, guardSiteStructure, isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -71,11 +71,13 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.menusOverview,
-	guards: [
-		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.menuSecurityRights.read,
-		]),
-	],
+	guardOptions: {
+		guards: [
+			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
+		],
+	},
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
@@ -160,11 +162,14 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.siteStructuresOverview,
-	guards: [
-		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.siteStructuresSecurityRights.read,
-		]),
-	],
+	guardOptions: {
+		guards: [
+			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+				rolesRightsConnector.siteStructuresSecurityRights.read,
+			]),
+			guardSiteStructure,
+		],
+	},
 	navigation: {
 		renderContext: 'site',
 		context: 'site',

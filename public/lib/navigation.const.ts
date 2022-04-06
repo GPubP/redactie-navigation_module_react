@@ -11,6 +11,8 @@ const SITE_STRUCTURES_DETAIL_BASE_PATH = '/sitestructuren/:siteStructureId';
 const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
 
 export const MODULE_PATHS = {
+	forbidden403: '/403',
+
 	admin: `/content/overzicht`,
 
 	root: MENUS_BASE_PATH,
