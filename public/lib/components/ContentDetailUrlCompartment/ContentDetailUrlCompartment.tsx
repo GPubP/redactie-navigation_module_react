@@ -5,10 +5,11 @@ import { ContentMeta } from '@redactie/content-module/dist/lib/services/content'
 import { FormikOnChangeHandler, useSiteContext } from '@redactie/utils';
 import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import { path } from 'ramda';
-import React, { FC, useRef } from 'react';
+import React, { FC, useMemo, useRef } from 'react';
 
 import { getLangSiteUrl } from '../../helpers';
 import { useNavigationRights } from '../../hooks';
+import { CONFIG } from '../../navigation.const';
 
 const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	updateContentMeta,
@@ -22,6 +23,24 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 }) => {
 	const url = getLangSiteUrl(site, activeLanguage);
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
+	const contentTypeUrlPattern = useMemo(() => {
+		if (!contentType?.modulesConfig || !activeLanguage) {
+			return '';
+		}
+
+		let config = (contentType?.modulesConfig || []).find(
+			moduleConfig => moduleConfig.site === site?.uuid && moduleConfig.name === CONFIG.name
+		);
+
+		if (!config) {
+			config = (contentType?.modulesConfig || []).find(
+				moduleConfig => moduleConfig.name === CONFIG.name
+			);
+		}
+
+		return config?.config?.url?.urlPattern[activeLanguage];
+	}, [activeLanguage, contentType, site]);
+
 	/**
 	 * Hooks
 	 */
@@ -47,7 +66,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 			urlPath: {
 				...contentValue?.meta.urlPath,
 				[activeLanguage!]: {
-					pattern: contentType.meta.urlPath?.pattern!,
+					pattern: contentTypeUrlPattern!,
 					value: '',
 				},
 			},
@@ -77,7 +96,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 								{path(['meta', 'urlPath', activeLanguage!, 'pattern'])(
 									contentItem
 								) &&
-									contentType.meta.urlPath?.pattern !==
+									contentTypeUrlPattern !==
 										(contentItem?.meta?.urlPath &&
 											contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
 									contentItem?._id && (
@@ -92,8 +111,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 											</h5>
 											<p>
 												De content beheerder heeft het standaard pad voor
-												dit item ingesteld op `
-												{contentType.meta.urlPath?.pattern}`
+												dit item ingesteld op `{contentTypeUrlPattern}`
 												<br />
 												Wil je de url van dit content item bijwerken?
 											</p>
@@ -119,7 +137,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 										/>
 										<small className="u-block u-text-light u-margin-top-xs">
 											Bepaal het pad voor dit item. Het standaard pad is
-											&quot;{contentType.meta.urlPath?.pattern}
+											&quot;{contentTypeUrlPattern}
 											&quot;.
 										</small>
 									</div>
