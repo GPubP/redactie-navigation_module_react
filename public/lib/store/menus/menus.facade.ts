@@ -1,6 +1,7 @@
 import { alertService, BaseEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
+import { Observable } from 'rxjs';
 
-import { ALERT_CONTAINER_IDS } from '../../navigation.const';
+import { ALERT_CONTAINER_IDS, LangKeys } from '../../navigation.const';
 import { NavTree } from '../../navigation.types';
 import {
 	CreateMenuDto,
@@ -39,7 +40,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.set(
+				this.store.upsertMany(
 					response._embedded.resourceList.map(menu => {
 						const categoryArray = menu.category.label.split('_');
 
@@ -272,6 +273,12 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public unsetMenu(): void {
 		this.store.update({
 			menu: undefined,
+		});
+	}
+
+	public selectLanguageMenus(lang: string): Observable<Menu[]> {
+		return menusQuery.selectAll({
+			filterBy: menu => menu.lang === lang || menu.lang === LangKeys.generic,
 		});
 	}
 }
