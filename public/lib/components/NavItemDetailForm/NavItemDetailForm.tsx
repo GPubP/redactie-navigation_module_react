@@ -6,8 +6,8 @@ import {
 } from '@acpaas-ui/react-editorial-components';
 import { ContentModel } from '@redactie/content-module';
 import { InputFieldProps } from '@redactie/form-renderer-module';
-import { FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
-import { ErrorMessage, Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
+import { ErrorMessage, FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
+import { Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
