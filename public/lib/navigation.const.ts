@@ -10,6 +10,8 @@ const SITE_STRUCTURES_BASE_PATH = '/sitestructuren';
 const SITE_STRUCTURES_DETAIL_BASE_PATH = '/sitestructuren/:siteStructureId';
 const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
 const MENU_ITEMS_BASE_PATH = '/menus/:menuId/menu-items';
+export const CONTENT_REF_BASE_PATH = '/content-referentie';
+export const HYPERLINK_BASE_PATH = '/hyperlink';
 const SITE_STRUCTURES_ITEMS_BASE_PATH = '/sitestructuren/:siteStructureId/sitestructuur-items';
 
 export const MODULE_PATHS = {
@@ -40,14 +42,14 @@ export const MODULE_PATHS = {
 		menuDetailSettings: `${SITE_ROOT}/menus/:menuId/instellingen`,
 		contentTypeMenu: `${SITE_ROOT}/content-types/:contentTypeId`,
 		menuItems: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}`,
-		createContentRefMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/content-referentie/aanmaken`,
-		createContentRefMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/content-referentie/aanmaken/instellingen`,
-		contentRefMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/content-referentie/:menuItemId`,
-		contentRefMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/content-referentie/:menuItemId/instellingen`,
-		createHyperLinkMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/hyperlink/aanmaken`,
-		createHyperLinkMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/hyperlink/aanmaken/instellingen`,
-		hyperLinkMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/hyperlink/:menuItemId`,
-		hyperLinkMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}/hyperlink/:menuItemId/instellingen`,
+		createContentRefMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken`,
+		createContentRefMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken/instellingen`,
+		contentRefMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:menuItemId`,
+		contentRefMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:menuItemId/instellingen`,
+		createHyperLinkMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken`,
+		createHyperLinkMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken/instellingen`,
+		hyperLinkMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId`,
+		hyperLinkMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId/instellingen`,
 		contentTypeDetailExternal: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,
 		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
 		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
@@ -59,10 +61,10 @@ export const MODULE_PATHS = {
 		siteStructureDetail: `${SITE_ROOT}/sitestructuren/:siteStructureId`,
 		siteStructureDetailSettings: `${SITE_ROOT}/sitestructuren/:siteStructureId/instellingen`,
 		siteStructureItems: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}`,
-		createContentRefSiteStructureItem: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}/content-referentie/aanmaken`,
-		createContentRefSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}/content-referentie/aanmaken/instellingen`,
-		contentRefSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}/content-referentie/:siteStructureItemId`,
-		contentRefSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}/content-referentie/:siteStructureItemId/instellingen`,
+		createContentRefSiteStructureItem: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken`,
+		createContentRefSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken/instellingen`,
+		contentRefSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId`,
+		contentRefSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId/instellingen`,
 	},
 };
 

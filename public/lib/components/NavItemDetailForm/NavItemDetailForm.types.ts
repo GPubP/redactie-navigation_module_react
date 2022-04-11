@@ -1,12 +1,13 @@
 import { LoadingState } from '@redactie/utils';
 import { FormikValues } from 'formik';
 
-import { NavItem, NavRights, NavTree, RearrangeNavItem } from '../../navigation.types';
+import { NavItem, NavItemType, NavRights, NavTree, RearrangeNavItem } from '../../navigation.types';
 
 export interface NavItemDetailFormProps {
 	navTree: NavTree;
 	navItem: NavItem;
 	navItems: NavItem[];
+	navItemType?: NavItemType;
 	rights: NavRights;
 	upsertingState: LoadingState;
 	loading: boolean;

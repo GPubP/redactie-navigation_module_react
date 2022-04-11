@@ -14,7 +14,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { generateEmptyNavItem } from '../../../helpers';
+import { generateEmptyNavItem, getNavItemType } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft, useMenuItems } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -25,7 +25,11 @@ import {
 import { MenuItemMatchProps, NavigationModuleProps } from '../../../navigation.types';
 import { MenuItemModel, menuItemsFacade } from '../../../store/menuItems';
 
-const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, match }) => {
+const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
+	location,
+	route,
+	match,
+}) => {
 	const { siteId, menuId } = match.params;
 
 	/**
@@ -87,6 +91,8 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 	/**
 	 * Render
 	 */
+
+	const menuItemType = getNavItemType(location.pathname);
 	const pageTitle = `Menu-item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
 
 	const renderChildRoutes = (): ReactElement => (
@@ -99,6 +105,7 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 				menu,
 				menuItem,
 				menuItemDraft,
+				menuItemType,
 			}}
 		/>
 	);
