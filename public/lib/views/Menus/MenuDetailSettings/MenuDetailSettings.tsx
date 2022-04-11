@@ -229,11 +229,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										required
 										state={errors.label && 'error'}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="label"
-									/>
+									<ErrorMessage name="label" />
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke naam.
 									</div>
@@ -249,11 +245,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										required
 										state={errors.description && 'error'}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="description"
-									/>
+									<ErrorMessage name="description" />
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke beschrijving.
 									</div>
@@ -276,11 +268,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 											);
 										}}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="lang"
-									/>
+									<ErrorMessage name="lang" />
 								</div>
 							</div>
 							<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>
