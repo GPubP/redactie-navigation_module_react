@@ -3,7 +3,7 @@ import { FormikValues } from 'formik';
 export interface ContentTypeTenantDetailTabFormState {
 	url: {
 		urlPattern: {
-			multilanguage: boolean;
+			multiLanguage: boolean;
 			[lang: string]: string | boolean;
 		};
 	};

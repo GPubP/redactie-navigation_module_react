@@ -4,7 +4,7 @@ import { FormikValues } from 'formik';
 export interface ContentTypeSiteDetailTabFormState {
 	url: {
 		urlPattern: {
-			multilanguage: boolean;
+			multiLanguage: boolean;
 			[lang: string]: string | boolean;
 		};
 	};
