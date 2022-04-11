@@ -10,8 +10,14 @@ import {
 	TextField,
 } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
-import { ErrorMessage, Field, Formik } from 'formik';
+import {
+	AlertContainer,
+	DeletePrompt,
+	ErrorMessage,
+	LeavePrompt,
+	useDetectValueChanges,
+} from '@redactie/utils';
+import { Field, Formik } from 'formik';
 import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
