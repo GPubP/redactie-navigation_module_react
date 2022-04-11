@@ -4,7 +4,6 @@ import { Language } from '@redactie/utils';
 import { Field, FormikValues, useFormikContext } from 'formik';
 import React, { FC, useEffect } from 'react';
 
-import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { menusFacade } from '../../store/menus';
@@ -19,7 +18,6 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 }> = ({ siteId, activeLanguage, setActiveCompartment }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
-	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
 		setActiveCompartment(NavSiteCompartments.menu);
@@ -34,7 +32,7 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 		menusFacade.getMenus(siteId, {
 			lang: activeLanguage.key,
 		});
-	}, [activeLanguage, site, siteId]);
+	}, [activeLanguage, siteId]);
 
 	return (
 		<div>
@@ -43,7 +41,6 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 			</div>
 			<div className="row u-margin-top">
 				<div className="col-xs-12 col-sm-6">
-					{/* TODO: find out why changing language does not update radiogroup selection */}
 					<Field
 						as={RadioGroup}
 						name="menu.allowMenus"
@@ -66,7 +63,10 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 						</small>
 					</div>
 					<div className="u-margin-top">
-						<MenusCheckboxList name="menu.allowedMenus" />
+						<MenusCheckboxList
+							name="menu.allowedMenus"
+							activeLanguage={activeLanguage}
+						/>
 					</div>
 				</div>
 			)}
