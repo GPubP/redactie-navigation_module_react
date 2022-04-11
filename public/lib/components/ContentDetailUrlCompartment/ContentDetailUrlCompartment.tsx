@@ -110,7 +110,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 											type="danger"
 										>
 											<h5 className="u-margin-bottom-xs">
-												<i className="fa fa-info-circle u-margin-right-xs"></i>
+												<i className="fa fa-info-circle u-margin-right-xs" />
 												Opgelet, dit content item gebruikt een andere url
 											</h5>
 											<p>

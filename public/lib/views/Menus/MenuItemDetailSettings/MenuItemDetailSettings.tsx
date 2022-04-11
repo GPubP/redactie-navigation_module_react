@@ -161,7 +161,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 						MODULE_TRANSLATIONS.MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION
 					),
 				}}
-			></NavItemDetailForm>
+			/>
 			{menuItem?.id && canDelete && renderDelete()}
 		</>
 	);

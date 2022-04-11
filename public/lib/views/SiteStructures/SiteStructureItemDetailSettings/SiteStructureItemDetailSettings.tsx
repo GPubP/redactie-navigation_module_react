@@ -173,7 +173,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 						MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION
 					),
 				}}
-			></NavItemDetailForm>
+			/>
 			{siteStructureItem?.id && canDelete && renderDelete()}
 		</>
 	);

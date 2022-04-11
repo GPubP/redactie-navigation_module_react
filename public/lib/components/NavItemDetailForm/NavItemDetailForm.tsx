@@ -267,7 +267,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 																e.stopPropagation();
 																setFieldValue('position', []);
 															}}
-														></Button>
+														/>
 													</span>
 												)}
 											</div>

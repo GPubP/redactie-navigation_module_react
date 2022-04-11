@@ -21,7 +21,6 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { formatSiteStructureCategory } from '../../../helpers/formatSiteStructureCategory';
 import { useSiteStructures } from '../../../hooks/useSiteStructures';
 import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationRouteProps } from '../../../navigation.types';

@@ -1,17 +1,15 @@
 import { CardTitle, Label } from '@acpaas-ui/react-components';
 import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
-import { DataLoader, InfoTooltip, LoadingState } from '@redactie/utils';
+import { DataLoader, InfoTooltip } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import contentConnector from '../../connectors/content';
-import rolesRightsConnector from '../../connectors/rolesRights';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
-import { useMenuItems } from '../../hooks';
 import { NavItem } from '../../navigation.types';
 import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
