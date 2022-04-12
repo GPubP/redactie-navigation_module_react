@@ -10,8 +10,14 @@ import {
 	TextField,
 } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
-import { ErrorMessage, Field, Formik } from 'formik';
+import {
+	AlertContainer,
+	DeletePrompt,
+	ErrorMessage,
+	LeavePrompt,
+	useDetectValueChanges,
+} from '@redactie/utils';
+import { Field, Formik } from 'formik';
 import React, { ChangeEvent, FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { generatePath, Link } from 'react-router-dom';
 
@@ -223,11 +229,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										required
 										state={errors.label && 'error'}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="label"
-									/>
+									<ErrorMessage name="label" />
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke naam.
 									</div>
@@ -243,11 +245,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 										required
 										state={errors.description && 'error'}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="description"
-									/>
+									<ErrorMessage name="description" />
 									<div className="u-text-light u-margin-top-xs">
 										Geef het menu een duidelijke beschrijving.
 									</div>
@@ -270,11 +268,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 											);
 										}}
 									/>
-									<ErrorMessage
-										className="u-text-danger"
-										component="p"
-										name="lang"
-									/>
+									<ErrorMessage name="lang" />
 								</div>
 							</div>
 							<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>

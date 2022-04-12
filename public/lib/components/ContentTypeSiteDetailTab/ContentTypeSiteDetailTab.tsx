@@ -46,6 +46,10 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		siteId
 	);
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
+	const [hasUrlChanges, resetUrlChangeDetection] = useDetectValueChanges(
+		!isLoading,
+		formValue.url
+	);
 	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);
 	const { contentTypeUuid, child } = useParams<{
@@ -144,11 +148,15 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 		setMetadataExists(true);
 		setShowConfirmModal(false);
-		resetChangeDetection();
+		resetUrlChangeDetection();
 	};
 
 	const onFormSubmit = (): void => {
-		setShowConfirmModal(true);
+		if (hasUrlChanges) {
+			return setShowConfirmModal(true);
+		}
+
+		onConfirm();
 	};
 
 	const onValidateCompartments = (invalidCompartments: string[]): void => {
