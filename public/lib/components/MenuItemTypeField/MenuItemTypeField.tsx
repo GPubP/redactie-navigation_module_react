@@ -119,7 +119,7 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 				<>
 					<Field
 						as={TextField}
-						addonLeft="https://"
+						addonleft="https://"
 						disabled={!canEdit}
 						label="Hyperlink"
 						name="externalUrl"

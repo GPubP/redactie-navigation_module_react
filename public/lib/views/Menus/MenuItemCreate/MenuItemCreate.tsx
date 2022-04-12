@@ -82,7 +82,12 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 	/**
 	 * Methods
 	 */
-	const createItem = (payload: MenuItemModel): void => {
+	const createItem = (values: MenuItemModel): void => {
+		const payload = {
+			...values,
+			externalUrl: `https://${values.externalUrl}`,
+		};
+
 		menuItemsFacade
 			.createMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.menuItemsOverview)
 			.then(response => {
