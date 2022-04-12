@@ -95,12 +95,12 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id }: MenuItemsTableRow) {
-			return (
+		component(value: string, { id, url }: MenuItemsTableRow) {
+			return id && !url ? (
 				<div>
 					<ContentInfoTooltip id={id} />
 				</div>
-			);
+			) : null;
 		},
 	},
 	{
