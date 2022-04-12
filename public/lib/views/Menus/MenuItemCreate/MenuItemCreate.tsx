@@ -70,10 +70,14 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 		})
 	);
 
+	const menuItemType = getNavItemType(location.pathname);
+
 	useEffect(() => {
-		menuItemsFacade.setMenuItem(generateEmptyNavItem());
-		menuItemsFacade.setMenuItemDraft(generateEmptyNavItem());
-	}, []);
+		const emptyMenuItem = generateEmptyNavItem(menuItemType);
+
+		menuItemsFacade.setMenuItem(emptyMenuItem);
+		menuItemsFacade.setMenuItemDraft(emptyMenuItem);
+	}, [menuItemType]);
 
 	/**
 	 * Methods
@@ -92,7 +96,6 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 	 * Render
 	 */
 
-	const menuItemType = getNavItemType(location.pathname);
 	const pageTitle = `Menu-item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
 
 	const renderChildRoutes = (): ReactElement => (

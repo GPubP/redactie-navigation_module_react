@@ -4,31 +4,23 @@ import {
 	ActionBarContentSection,
 	Cascader,
 } from '@acpaas-ui/react-editorial-components';
-import { ContentModel } from '@redactie/content-module';
-import { InputFieldProps } from '@redactie/form-renderer-module';
-import { FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
-import { ErrorMessage, Field, FieldProps, Formik, FormikProps, FormikValues } from 'formik';
+import { ErrorMessage, FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
+import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';
-import { useParams } from 'react-router-dom';
 
-import formRendererConnector from '../../connectors/formRenderer';
-import sitesConnector from '../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
-import {
-	getInitialNavItemsFormValues,
-	getLangSiteUrl,
-	getPositionInputValue,
-	getTreeConfig,
-} from '../../helpers';
+import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
 import { extractSiblings } from '../../helpers/extractSiblings';
 import {
 	CascaderOption,
 	NavItem,
 	NavItemDetailForm,
+	NavItemType,
 	NavTree,
 	RearrangeNavItem,
 } from '../../navigation.types';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
+import { MenuItemTypeField } from '../MenuItemTypeField';
 import { RearrangeModal } from '../RearrangeModal';
 
 import { NAV_ITEM_SETTINGS_VALIDATION_SCHEMA } from './NavItemDetailForm.const';
@@ -37,6 +29,7 @@ import { NavItemDetailFormProps } from './NavItemDetailForm.types';
 const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	navItem,
 	navItems,
+	navItemType = NavItemType.internal,
 	navTree,
 	rights,
 	loading,
@@ -48,8 +41,6 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	onChange,
 	onSave,
 }) => {
-	const { siteId } = useParams<{ siteId: string }>();
-	const [site] = sitesConnector.hooks.useSite(siteId);
 	const [contentItemPublished, setContentItemPublished] = useState(false);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
@@ -77,19 +68,9 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 		return getInitialNavItemsFormValues(navItem, treeConfig.options);
 	}, [navItem, treeConfig.options]);
 
-	const ContentSelect: React.FC<InputFieldProps> | null | undefined = useMemo(() => {
-		const fieldRegistry = formRendererConnector.api.fieldRegistry;
-
-		if (!fieldRegistry) {
-			return null;
-		}
-
-		return fieldRegistry.get('content', 'contentReference')?.component;
-	}, []);
-
 	const handlePositionOnChange = (
 		value: number[],
-		setFieldValue: FormikProps<FormikValues>['setFieldValue']
+		setFieldValue: FormikProps<NavItemDetailForm>['setFieldValue']
 	): void => {
 		setFieldValue('position', value);
 	};
@@ -104,22 +85,28 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 		setShowRearrange(false);
 	};
 
-	if (!ContentSelect) {
-		return null;
-	}
-
 	return (
 		<Formik
 			enableReinitialize
 			initialValues={initialValues}
 			onSubmit={onSave}
-			validationSchema={NAV_ITEM_SETTINGS_VALIDATION_SCHEMA}
+			validationSchema={NAV_ITEM_SETTINGS_VALIDATION_SCHEMA(navItemType)}
 		>
-			{({ values, errors, submitForm, resetForm, getFieldHelpers, setFieldValue }) => {
+			{({
+				values,
+				touched,
+				errors,
+				submitForm,
+				resetForm,
+				getFieldHelpers,
+				setFieldValue,
+			}) => {
 				return (
 					<>
 						<FormikOnChangeHandler
-							onChange={(values: FormikValues) => onChange(values)}
+							onChange={(values: FormikValues) =>
+								onChange(values as NavItemDetailForm)
+							}
 						/>
 						{copy.description && <p className="u-margin-bottom">{copy.description}</p>}
 						<div className="row">
@@ -130,88 +117,22 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 									label="Label"
 									name="label"
 									required
-									state={errors.label && 'error'}
+									state={touched.label && errors.label && 'error'}
 								/>
 								<ErrorMessage name="label" />
 								<small className="u-block u-margin-top-xs">{copy.label}</small>
 							</div>
 							<div className="col-xs-12 col-md-6">
-								<Field name="slug">
-									{(fieldProps: FieldProps<any, {}>) => {
-										return (
-											<ContentSelect
-												key={values.slug}
-												fieldProps={fieldProps}
-												fieldHelperProps={{
-													...getFieldHelpers('slug'),
-													setValue: (value: ContentModel) => {
-														setFieldValue('slug', value?.meta.slug?.nl);
-														setFieldValue(
-															'publishStatus',
-															value?.meta.published
-																? NAV_STATUSES.PUBLISHED
-																: NAV_STATUSES.DRAFT
-														);
-														setContentItemPublished(
-															!!value?.meta.published
-														);
-
-														if (
-															value?.meta.urlPath?.[value?.meta.lang]
-																?.value
-														) {
-															setFieldValue(
-																'externalUrl',
-																`${getLangSiteUrl(
-																	site,
-																	value?.meta.lang
-																)}${
-																	value?.meta.urlPath?.[
-																		value?.meta.lang
-																	]?.value
-																}`
-															);
-														}
-
-														if (!values?.label) {
-															setFieldValue(
-																'label',
-																value?.meta.label
-															);
-														}
-
-														// This will not work until fields are returned by the content select
-														// TODO: see if we should return fields because of this
-														if (
-															!values?.description &&
-															value?.fields?.teaser?.text
-														) {
-															setFieldValue(
-																'description',
-																value.fields.teaser.text
-															);
-														}
-													},
-												}}
-												fieldSchema={
-													{
-														label: 'Link',
-														name: 'slug',
-														config: {
-															returnByValue: true,
-															disabled: !canEdit,
-															bySlug: true,
-															required: true,
-														},
-													} as any
-												}
-											/>
-										);
-									}}
-								</Field>
-								<small className="u-block u-margin-top-xs">
-									Zoek en selecteer een content item
-								</small>
+								<MenuItemTypeField
+									canEdit={canEdit}
+									errors={errors}
+									touched={touched}
+									type={navItemType}
+									values={values}
+									getFieldHelpers={getFieldHelpers}
+									setFieldValue={setFieldValue}
+									setContentItemPublished={setContentItemPublished}
+								/>
 							</div>
 						</div>
 						<div className="row u-margin-top">
@@ -284,7 +205,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 										</Button>
 									)}
 								</div>
-								<ErrorMessage name="description" />
+								<ErrorMessage name="position" />
 								<small className="u-block u-margin-top-xs">
 									Selecteer op welke plek in de boom je dit item wilt hangen.
 								</small>
@@ -297,7 +218,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 									disabled={!canEdit}
 									label="Beschrijving"
 									name="description"
-									state={errors.description && 'error'}
+									state={touched.description && errors.description && 'error'}
 								/>
 								<ErrorMessage name="description" />
 								<small className="u-block u-margin-top-xs">
