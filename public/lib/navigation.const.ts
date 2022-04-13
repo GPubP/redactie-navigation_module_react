@@ -12,7 +12,7 @@ const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
 const MENU_ITEMS_BASE_PATH = '/menus/:menuId/menu-items';
 export const CONTENT_REF_BASE_PATH = '/content-referentie';
 export const HYPERLINK_BASE_PATH = '/hyperlink';
-export const SUBTITLE_BASE_PATH = '/subtitle';
+export const SUBTITLE_BASE_PATH = '/tussentitel';
 const SITE_STRUCTURES_ITEMS_BASE_PATH = '/sitestructuren/:siteStructureId/sitestructuur-items';
 
 export const MODULE_PATHS = {
@@ -88,7 +88,7 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/hyperlink`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/subtitle`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/tussentitel`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items/content-referentie`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${CONTENT_TYPE_DETAIL_BASE_PATH}${uuidRegex}/:tab/:child`,
