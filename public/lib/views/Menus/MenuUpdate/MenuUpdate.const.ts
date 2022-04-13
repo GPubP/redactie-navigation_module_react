@@ -9,9 +9,8 @@ export const MENU_ITEM_OPTIONS = [
 		path: MODULE_PATHS.site.createHyperLinkMenuItem,
 		label: 'Hyperlink',
 	},
-	// TODO: DEVELOP AND UNCOMMENT
-	// {
-	// 	path: MODULE_PATHS.site.menuItems.createTitle,
-	// 	label: 'Tussentitel',
-	// },
+	{
+		path: MODULE_PATHS.site.createSubtitleMenuItem,
+		label: 'Tussentitel',
+	},
 ];

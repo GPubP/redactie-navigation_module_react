@@ -85,7 +85,7 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 	const createItem = (values: MenuItemModel): void => {
 		const payload = {
 			...values,
-			externalUrl: `https://${values.externalUrl}`,
+			externalUrl: values.properties?.type !== 'external' ? '' : `https://${values.externalUrl}`,
 		};
 
 		menuItemsFacade
