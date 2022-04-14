@@ -74,6 +74,10 @@ export const MODULE_PATHS = {
 		createHyperlinkSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken/instellingen`,
 		hyperlinkSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:siteStructureItemId`,
 		hyperlinkSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:siteStructureItemId/instellingen`,
+		createSubtitleSiteStructureItem: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/aanmaken`,
+		createSubtitleSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/aanmaken/instellingen`,
+		subtitleSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/:siteStructureItemId`,
+		subtitleSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/:siteStructureItemId/instellingen`,
 	},
 };
 

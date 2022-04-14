@@ -294,6 +294,32 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.createSubtitleSiteStructureItem,
+			breadcrumb: false,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.subtitleSiteStructureItemDetail,
+			breadcrumb: false,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.siteStructureDetail,
 			breadcrumb: false,
 			component: SiteStructureUpdate,
