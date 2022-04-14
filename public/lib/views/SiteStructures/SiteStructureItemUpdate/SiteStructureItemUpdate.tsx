@@ -16,7 +16,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { getMenuItemTypeByValue } from '../../../helpers';
+import { createDraftNavItem, createNavItemPayload, getMenuItemTypeByValue } from '../../../helpers';
 import { useSiteStructure, useSiteStructureItem, useSiteStructureItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -114,14 +114,9 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 
 	useEffect(() => {
 		if (siteStructureItemLoadingState !== LoadingState.Loading && siteStructureItem) {
-			const draftSiteStructureItem = {
-				...siteStructureItem,
-				externalUrl: siteStructureItem.externalUrl
-					? siteStructureItem.externalUrl.replace('https://', '')
-					: siteStructureItem.externalUrl,
-			};
-
-			siteStructureItemsFacade.setSiteStructureItemDraft(draftSiteStructureItem);
+			siteStructureItemsFacade.setSiteStructureItemDraft(
+				createDraftNavItem(siteStructureItem)
+			);
 		}
 	}, [siteId, siteStructureItem, siteStructureItemLoadingState]);
 
@@ -149,11 +144,13 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 			return Promise.resolve();
 		}
 
+		const payload = createNavItemPayload(updatedSiteStructureItem);
+
 		return siteStructureItemsFacade
 			.updateSiteStructureItem(
 				siteId,
 				siteStructureId,
-				updatedSiteStructureItem,
+				payload,
 				ALERT_CONTAINER_IDS.siteStructureItemsOverview
 			)
 			.then(() => {

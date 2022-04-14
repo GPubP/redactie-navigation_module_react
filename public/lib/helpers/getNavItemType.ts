@@ -1,5 +1,6 @@
 import { CONTENT_REF_BASE_PATH, HYPERLINK_BASE_PATH, MODULE_PATHS } from '../navigation.const';
 import { NavItem, NavItemType } from '../navigation.types';
+import { MenuItem } from '../services/menuItems';
 
 export const getNavItemType = (pathname: string): NavItemType => {
 	const matchesContentRef = pathname.includes(CONTENT_REF_BASE_PATH);
@@ -45,4 +46,28 @@ export const getSiteStructureItemPath = (type: NavItemType): string => {
 		case NavItemType.external:
 			return MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings;
 	}
+};
+
+export const createDraftNavItem = (menuItem: NavItem): NavItem => {
+	return {
+		...menuItem,
+		externalUrl:
+			menuItem.properties?.type === NavItemType.internal
+				? menuItem.externalUrl.replace('https://', '')
+				: menuItem.externalUrl,
+	};
+};
+
+export const createNavItemPayload = (menuItem: MenuItem): MenuItem => {
+	return {
+		...menuItem,
+		...(menuItem.properties?.type !== NavItemType.section || menuItem.externalUrl
+			? {
+					externalUrl:
+						menuItem.properties?.type === NavItemType.internal
+							? `https://${menuItem.externalUrl}`
+							: menuItem.externalUrl,
+			  }
+			: { externalUrl: '' }),
+	};
 };

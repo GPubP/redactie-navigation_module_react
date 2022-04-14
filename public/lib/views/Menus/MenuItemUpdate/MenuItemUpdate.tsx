@@ -16,7 +16,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { getMenuItemTypeByValue } from '../../../helpers';
+import { createDraftNavItem, createNavItemPayload, getMenuItemTypeByValue } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -108,14 +108,7 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 
 	useEffect(() => {
 		if (menuItemLoadingState !== LoadingState.Loading && menuItem) {
-			const draftMenuItem = {
-				...menuItem,
-				externalUrl: menuItem.externalUrl
-					? menuItem.externalUrl.replace('https://', '')
-					: menuItem.externalUrl,
-			};
-
-			menuItemsFacade.setMenuItemDraft(draftMenuItem);
+			menuItemsFacade.setMenuItemDraft(createDraftNavItem(menuItem));
 		}
 	}, [siteId, menuItemLoadingState, menuItem]);
 
@@ -139,8 +132,10 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 			return Promise.resolve();
 		}
 
+		const payload = createNavItemPayload(updatedMenuItem);
+
 		return menuItemsFacade
-			.updateMenuItem(siteId, menuId, updatedMenuItem, ALERT_CONTAINER_IDS.menuItemsOverview)
+			.updateMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.menuItemsOverview)
 			.then(() => {
 				forceNavigateToOverview();
 			});

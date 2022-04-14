@@ -14,7 +14,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { generateEmptyNavItem, getNavItemType } from '../../../helpers';
+import { createNavItemPayload, generateEmptyNavItem, getNavItemType } from '../../../helpers';
 import {
 	useSiteStructure,
 	useSiteStructureItem,
@@ -98,14 +98,7 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	 * Methods
 	 */
 	const createItem = (values: SiteStructureItemModel): void => {
-		const payload = {
-			...values,
-			// TODO: chck whether this is wrong
-			externalUrl:
-				values.properties?.type !== NavItemType.external
-					? ''
-					: `https://${values.externalUrl}`,
-		};
+		const payload = createNavItemPayload(values);
 
 		siteStructureItemsFacade
 			.createSiteStructureItem(
