@@ -70,6 +70,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 					!!(siteStructureItem.parents || []).length ||
 					(siteStructureItem.childItemCount || 0) > 0,
 				navigate: (siteStructureItemId: number) => {
+					// TODO: change this once properties.type is available from items call
 					const siteStructureItemType = getMenuItemTypeByValue(siteStructureItem);
 					const siteStructureItemDetailPath = getSiteStructureItemPath(
 						siteStructureItemType
