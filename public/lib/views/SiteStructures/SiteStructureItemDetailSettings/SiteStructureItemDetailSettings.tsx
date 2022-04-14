@@ -155,7 +155,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			</div>
 			<NavItemDetailForm
 				navTree={(siteStructure as unknown) as NavTree}
-				navItem={siteStructureItem as SiteStructureItem}
+				navItem={siteStructureItemDraft as SiteStructureItem}
 				navItems={siteStructureItems as SiteStructureItem[]}
 				navItemType={siteStructureItemType}
 				rights={rights}

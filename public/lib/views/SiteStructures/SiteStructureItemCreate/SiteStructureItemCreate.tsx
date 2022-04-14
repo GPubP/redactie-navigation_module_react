@@ -27,11 +27,7 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import {
-	NavigationModuleProps,
-	NavItemType,
-	SiteStructureItemMatchProps,
-} from '../../../navigation.types';
+import { NavigationModuleProps, SiteStructureItemMatchProps } from '../../../navigation.types';
 import {
 	SiteStructureItemModel,
 	siteStructureItemsFacade,

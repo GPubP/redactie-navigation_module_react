@@ -146,7 +146,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			</div>
 			<NavItemDetailForm
 				navTree={(menu as unknown) as NavTree}
-				navItem={menuItem as MenuItem}
+				navItem={menuItemDraft as MenuItem}
 				navItems={menuItems as MenuItem[]}
 				navItemType={menuItemType}
 				rights={rights}

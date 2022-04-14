@@ -22,7 +22,7 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import { MenuItemMatchProps, NavigationModuleProps, NavItemType } from '../../../navigation.types';
+import { MenuItemMatchProps, NavigationModuleProps } from '../../../navigation.types';
 import { MenuItemModel, menuItemsFacade } from '../../../store/menuItems';
 
 const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({

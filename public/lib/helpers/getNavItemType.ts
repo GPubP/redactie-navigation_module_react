@@ -52,7 +52,7 @@ export const createDraftNavItem = (menuItem: NavItem): NavItem => {
 	return {
 		...menuItem,
 		externalUrl:
-			menuItem.properties?.type === NavItemType.internal
+			menuItem.properties?.type === NavItemType.external
 				? menuItem.externalUrl.replace('https://', '')
 				: menuItem.externalUrl,
 	};
@@ -64,7 +64,7 @@ export const createNavItemPayload = (menuItem: MenuItem): MenuItem => {
 		...(menuItem.properties?.type !== NavItemType.section || menuItem.externalUrl
 			? {
 					externalUrl:
-						menuItem.properties?.type === NavItemType.internal
+						menuItem.properties?.type === NavItemType.external
 							? `https://${menuItem.externalUrl}`
 							: menuItem.externalUrl,
 			  }

@@ -14,7 +14,6 @@ import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	MenuDetailRouteProps,
 	NavigationMatchProps,
-	NavItemType,
 	RearrangeNavItem,
 } from '../../../navigation.types';
 import { MenuItem } from '../../../services/menuItems';
