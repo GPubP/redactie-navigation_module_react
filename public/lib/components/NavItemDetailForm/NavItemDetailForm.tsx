@@ -4,8 +4,6 @@ import {
 	ActionBarContentSection,
 	Cascader,
 } from '@acpaas-ui/react-editorial-components';
-import { ContentModel } from '@redactie/content-module';
-import { InputFieldProps } from '@redactie/form-renderer-module';
 import { ErrorMessage, FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
 import { Field, Formik, FormikProps, FormikValues } from 'formik';
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';

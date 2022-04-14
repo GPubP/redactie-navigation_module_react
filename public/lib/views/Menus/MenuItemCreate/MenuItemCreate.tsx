@@ -14,7 +14,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { generateEmptyNavItem, getNavItemType } from '../../../helpers';
+import { createNavItemPayload, generateEmptyNavItem, getNavItemType } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft, useMenuItems } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -22,7 +22,7 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import { MenuItemMatchProps, NavigationModuleProps, NavItemType } from '../../../navigation.types';
+import { MenuItemMatchProps, NavigationModuleProps } from '../../../navigation.types';
 import { MenuItemModel, menuItemsFacade } from '../../../store/menuItems';
 
 const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
@@ -83,10 +83,7 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 	 * Methods
 	 */
 	const createItem = (values: MenuItemModel): void => {
-		const payload = {
-			...values,
-			externalUrl: values.properties?.type === NavItemType.section ? '' : `https://${values.externalUrl}`,
-		};
+		const payload = createNavItemPayload(values);
 
 		menuItemsFacade
 			.createMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.menuItemsOverview)

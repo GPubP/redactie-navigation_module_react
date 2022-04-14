@@ -50,7 +50,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		!isLoading,
 		formValue.url
 	);
-	const [hasChanges, resetChangeDetection] = useDetectValueChanges(!isLoading, formValue);
+	const [hasChanges] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);
 	const { contentTypeUuid, child } = useParams<{
 		contentTypeUuid: string;

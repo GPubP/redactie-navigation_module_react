@@ -28,6 +28,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	siteStructure,
 	siteStructureItem,
 	siteStructureItemDraft,
+	siteStructureItemType,
 }) => {
 	const { siteId, siteStructureId } = useParams<{ siteStructureId?: string; siteId: string }>();
 	const [t] = translationsConnector.useCoreTranslation();
@@ -154,8 +155,9 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			</div>
 			<NavItemDetailForm
 				navTree={(siteStructure as unknown) as NavTree}
-				navItem={siteStructureItem as SiteStructureItem}
+				navItem={siteStructureItemDraft as SiteStructureItem}
 				navItems={siteStructureItems as SiteStructureItem[]}
+				navItemType={siteStructureItemType}
 				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}

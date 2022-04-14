@@ -14,7 +14,6 @@ import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	MenuDetailRouteProps,
 	NavigationMatchProps,
-	NavItemType,
 	RearrangeNavItem,
 } from '../../../navigation.types';
 import { MenuItem } from '../../../services/menuItems';
@@ -68,6 +67,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = () => 
 				hasChildren:
 					!!(menuItem.parents || []).length || (menuItem.childItemCount || 0) > 0,
 				navigate: (menuItemId: number) => {
+					// TODO: change this once properties.type is available from items call
 					const menuItemType = getMenuItemTypeByValue(menuItem);
 					const menuItemDetailPath = getMenuItemPath(menuItemType);
 

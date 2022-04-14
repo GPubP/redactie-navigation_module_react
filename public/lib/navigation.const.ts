@@ -70,6 +70,10 @@ export const MODULE_PATHS = {
 		createContentRefSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken/instellingen`,
 		contentRefSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId`,
 		contentRefSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId/instellingen`,
+		createHyperlinkSiteStructureItem: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken`,
+		createHyperlinkSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken/instellingen`,
+		hyperlinkSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:siteStructureItemId`,
+		hyperlinkSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:siteStructureItemId/instellingen`,
 	},
 };
 
@@ -86,11 +90,12 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}${MENUS_BASE_PATH}`,
 		`${TENANT_ROOT}${SITE_STRUCTURES_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/hyperlink`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/tussentitel`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${CONTENT_REF_BASE_PATH}`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${HYPERLINK_BASE_PATH}`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${SUBTITLE_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items/content-referentie`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${CONTENT_REF_BASE_PATH}`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${HYPERLINK_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${CONTENT_TYPE_DETAIL_BASE_PATH}${uuidRegex}/:tab/:child`,
 	],
 	extraBreadcrumbs: [
@@ -150,10 +155,10 @@ export const SITE_STRUCTURE_DETAIL_TABS: ContextHeaderTab[] = [
 	SITE_STRUCTURE_DETAIL_TAB_MAP.siteStructureItems,
 ];
 
-export const CONFIG: Readonly<{ name: string; module: string }> = {
+export const CONFIG: Readonly<{ name: string; module: string }> = Object.freeze({
 	name: 'navigation',
 	module: 'navigation-module',
-};
+});
 
 export const ALERT_CONTAINER_IDS = {
 	settings: 'settings',
