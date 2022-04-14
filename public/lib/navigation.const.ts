@@ -9,6 +9,10 @@ const MENUS_DETAIL_BASE_PATH = '/menus/:menuId';
 const SITE_STRUCTURES_BASE_PATH = '/sitestructuren';
 const SITE_STRUCTURES_DETAIL_BASE_PATH = '/sitestructuren/:siteStructureId';
 const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
+const MENU_ITEMS_BASE_PATH = '/menus/:menuId/menu-items';
+export const CONTENT_REF_BASE_PATH = '/content-referentie';
+export const HYPERLINK_BASE_PATH = '/hyperlink';
+const SITE_STRUCTURES_ITEMS_BASE_PATH = '/sitestructuren/:siteStructureId/sitestructuur-items';
 
 export const MODULE_PATHS = {
 	forbidden403: '/403',
@@ -37,11 +41,15 @@ export const MODULE_PATHS = {
 		menuDetail: `${SITE_ROOT}/menus/:menuId`,
 		menuDetailSettings: `${SITE_ROOT}/menus/:menuId/instellingen`,
 		contentTypeMenu: `${SITE_ROOT}/content-types/:contentTypeId`,
-		menuItems: `${SITE_ROOT}/menus/:menuId/menu-items`,
-		createContentRefMenuItem: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/aanmaken`,
-		createContentRefMenuItemSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/aanmaken/instellingen`,
-		contentRefMenuItemDetail: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId`,
-		contentRefMenuItemDetailSettings: `${SITE_ROOT}/menus/:menuId/menu-items/content-referentie/:menuItemId/instellingen`,
+		menuItems: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}`,
+		createContentRefMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken`,
+		createContentRefMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken/instellingen`,
+		contentRefMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:menuItemId`,
+		contentRefMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:menuItemId/instellingen`,
+		createHyperLinkMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken`,
+		createHyperLinkMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken/instellingen`,
+		hyperLinkMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId`,
+		hyperLinkMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId/instellingen`,
 		contentTypeDetailExternal: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,
 		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
 		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
@@ -52,14 +60,16 @@ export const MODULE_PATHS = {
 		createSiteStructureSettings: `${SITE_ROOT}/sitestructuren/aanmaken/instellingen`,
 		siteStructureDetail: `${SITE_ROOT}/sitestructuren/:siteStructureId`,
 		siteStructureDetailSettings: `${SITE_ROOT}/sitestructuren/:siteStructureId/instellingen`,
-		siteStructureItems: `${SITE_ROOT}/sitestructuren/:siteStructureId/sitestructuur-items`,
-		createContentRefSiteStructureItem: `${SITE_ROOT}/sitestructuren/:siteStructureId/sitestructuur-items/content-referentie/aanmaken`,
-		createContentRefSiteStructureItemSettings: `${SITE_ROOT}/sitestructuren/:siteStructureId/sitestructuur-items/content-referentie/aanmaken/instellingen`,
-		contentRefSiteStructureItemDetail: `${SITE_ROOT}/sitestructuren/:siteStructureId/sitestructuur-items/content-referentie/:siteStructureItemId`,
-		contentRefSiteStructureItemDetailSettings: `${SITE_ROOT}/sitestructuren/:siteStructureId/sitestructuur-items/content-referentie/:siteStructureItemId/instellingen`,
+		siteStructureItems: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}`,
+		createContentRefSiteStructureItem: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken`,
+		createContentRefSiteStructureItemSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/aanmaken/instellingen`,
+		contentRefSiteStructureItemDetail: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId`,
+		contentRefSiteStructureItemDetailSettings: `${SITE_ROOT}${SITE_STRUCTURES_ITEMS_BASE_PATH}${CONTENT_REF_BASE_PATH}/:siteStructureItemId/instellingen`,
 	},
 };
 
+const uuidRegex =
+	'([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})';
 export const BREADCRUMB_OPTIONS = (
 	generatePath: NavigateGenerateFn,
 	extraBreadcrumbs: Breadcrumb[] = []
@@ -70,11 +80,12 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}/sites`,
 		`${TENANT_ROOT}${MENUS_BASE_PATH}`,
 		`${TENANT_ROOT}${SITE_STRUCTURES_BASE_PATH}`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items/content-referentie`,
-		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})${CONTENT_TYPE_DETAIL_BASE_PATH}([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})/:tab/:child`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/content-referentie`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items/hyperlink`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items/content-referentie`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${CONTENT_TYPE_DETAIL_BASE_PATH}${uuidRegex}/:tab/:child`,
 	],
 	extraBreadcrumbs: [
 		{

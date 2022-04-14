@@ -232,7 +232,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 																			[]
 																		);
 																	}}
-																></Button>
+																/>
 															</span>
 														)}
 													</div>

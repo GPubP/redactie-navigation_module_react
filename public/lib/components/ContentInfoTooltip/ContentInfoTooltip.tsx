@@ -1,17 +1,15 @@
 import { CardTitle, Label } from '@acpaas-ui/react-components';
 import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
-import { DataLoader, InfoTooltip, LoadingState } from '@redactie/utils';
+import { DataLoader, InfoTooltip } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import contentConnector from '../../connectors/content';
-import rolesRightsConnector from '../../connectors/rolesRights';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
-import { useMenuItems } from '../../hooks';
 import { NavItem } from '../../navigation.types';
 import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
@@ -21,7 +19,11 @@ import { Status } from './ContentInfoTooltip.types';
 const cx = classnames.bind(styles);
 
 const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
-	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
+	const { siteId, menuId, siteStructureId } = useParams<{
+		menuId?: string;
+		siteStructureId?: string;
+		siteId: string;
+	}>();
 	const [item, setItem] = useState<ContentSchema | null>();
 	const [menuItem, setMenuItem] = useState<NavItem | null>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
@@ -29,14 +31,15 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		if (!siteId || !menuId || !id) {
+		if (!siteId || !id || !(menuId || siteStructureId)) {
 			return;
 		}
 
 		menuItemsApiService
-			.getMenuItem(siteId, menuId, id.toString())
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.getMenuItem(siteId, (menuId || siteStructureId)!, id.toString())
 			.then(async item => setMenuItem(item));
-	}, [siteId, menuId, id]);
+	}, [siteId, menuId, id, siteStructureId]);
 
 	const handleVisibilityChange = (isVisible: boolean): void => {
 		if (!isVisible || !!item || !menuItem) {

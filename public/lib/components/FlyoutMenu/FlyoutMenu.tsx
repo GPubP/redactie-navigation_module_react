@@ -1,11 +1,7 @@
 import { useNavigate } from '@redactie/utils';
-import classNames from 'classnames/bind';
 import React, { FC } from 'react';
 
 import { SITES_ROOT } from '../../navigation.const';
-
-import styles from './FlyoutMenu.module.scss';
-const cx = classNames.bind(styles);
 
 const FlyoutMenu: FC<{
 	items: { label: string; path: string }[];
@@ -14,17 +10,17 @@ const FlyoutMenu: FC<{
 	const { navigate } = useNavigate(SITES_ROOT);
 
 	return (
-		<>
+		<ul className="m-selectable-list m-selectable-list--no-border">
 			{items.map((item, i) => (
-				<div
-					className={cx('m-flyout-menu__entry')}
+				<li
+					className="m-selectable-list__item u-clickable"
 					onClick={() => navigate(item.path, navigateProps)}
 					key={i}
 				>
 					{item.label}
-				</div>
+				</li>
 			))}
-		</>
+		</ul>
 	);
 };
 

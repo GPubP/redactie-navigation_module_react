@@ -137,6 +137,32 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.createHyperLinkMenuItem,
+			breadcrumb: false,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.createHyperLinkMenuItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createHyperLinkMenuItemSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.hyperLinkMenuItemDetail,
+			breadcrumb: false,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.hyperLinkMenuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.hyperLinkMenuItemDetailSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.menuDetail,
 			breadcrumb: false,
 			component: MenuUpdate,

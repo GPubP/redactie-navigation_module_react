@@ -3,7 +3,7 @@ import { object, string } from 'yup';
 import { MODULE_PATHS, SITES_ROOT, TENANT_ROOT } from '../../../navigation.const';
 
 export const MENU_SETTINGS_VALIDATION_SCHEMA = object().shape({
-	label: string().required('Label is een verplicht veld'),
+	label: string().required('Een menu moet een naam hebben'),
 	description: string().required('Beschrijving is een verplicht veld'),
 	lang: string().required('Taal is een verplicht veld'),
 });

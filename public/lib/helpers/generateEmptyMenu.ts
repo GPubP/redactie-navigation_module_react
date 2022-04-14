@@ -8,7 +8,7 @@ export const generateEmptyMenu = (
 ): CreateMenuDto & { lang: string } => ({
 	label: '',
 	description: '',
-	publishStatus: NAV_STATUSES.DRAFT,
+	publishStatus: NAV_STATUSES.PUBLISHED,
 	category: `menu_${siteId}_${lang || LangKeys.generic}`,
 	lang: lang || LangKeys.generic,
 });
