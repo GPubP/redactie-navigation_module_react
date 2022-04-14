@@ -7,6 +7,7 @@ import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import { path } from 'ramda';
 import React, { FC, useMemo, useRef } from 'react';
 
+import contentConnector from '../../connectors/content';
 import { getLangSiteUrl } from '../../helpers';
 import { useNavigationRights } from '../../hooks';
 import { CONFIG } from '../../navigation.const';
@@ -23,27 +24,16 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 }) => {
 	const url = getLangSiteUrl(site, activeLanguage);
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
-	const contentTypeUrlPattern = useMemo(() => {
-		if (!contentType?.modulesConfig || !activeLanguage) {
-			return '';
-		}
-
-		let config = (contentType?.modulesConfig || []).find(
-			moduleConfig => moduleConfig.site === site?.uuid && moduleConfig.name === CONFIG.name
-		);
-
-		if (!config) {
-			config = (contentType?.modulesConfig || []).find(
-				moduleConfig => moduleConfig.name === CONFIG.name
-			);
-		}
-
-		if (!config) {
-			return contentType.meta.urlPath?.pattern;
-		}
-
-		return config?.config?.url?.urlPattern[activeLanguage];
-	}, [activeLanguage, contentType, site]);
+	const contentTypeUrlPattern = useMemo(
+		() =>
+			contentConnector.api.getCTUrlPattern(
+				contentType,
+				activeLanguage || '',
+				CONFIG.name,
+				site
+			),
+		[activeLanguage, contentType, site]
+	);
 
 	/**
 	 * Hooks
