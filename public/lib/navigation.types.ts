@@ -138,6 +138,7 @@ export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
 	siteStructure: SiteStructure | undefined;
 	siteStructureItem: SiteStructureItem | undefined;
 	siteStructureItemDraft: SiteStructureItem | undefined;
+	siteStructureItemType: NavItemType;
 }
 
 export interface NavRights {

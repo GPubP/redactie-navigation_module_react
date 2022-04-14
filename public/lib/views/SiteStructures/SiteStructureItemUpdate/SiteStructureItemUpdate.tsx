@@ -16,6 +16,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { getMenuItemTypeByValue } from '../../../helpers';
 import { useSiteStructure, useSiteStructureItem, useSiteStructureItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -113,7 +114,14 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 
 	useEffect(() => {
 		if (siteStructureItemLoadingState !== LoadingState.Loading && siteStructureItem) {
-			siteStructureItemsFacade.setSiteStructureItemDraft(siteStructureItem);
+			const draftSiteStructureItem = {
+				...siteStructureItem,
+				externalUrl: siteStructureItem.externalUrl
+					? siteStructureItem.externalUrl.replace('https://', '')
+					: siteStructureItem.externalUrl,
+			};
+
+			siteStructureItemsFacade.setSiteStructureItemDraft(draftSiteStructureItem);
 		}
 	}, [siteId, siteStructureItem, siteStructureItemLoadingState]);
 
@@ -171,6 +179,9 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	/**
 	 * Render
 	 */
+
+	const siteStructureItemType =
+		siteStructureItem?.properties?.type ?? getMenuItemTypeByValue(siteStructureItem);
 	const pageTitle = `${
 		siteStructureItemDraft?.label ? `'${siteStructureItemDraft?.label}'` : 'Sitestructuur-item'
 	} ${t(CORE_TRANSLATIONS.ROUTING_UPDATE)}`;
@@ -192,6 +203,7 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 					siteStructure,
 					siteStructureItem,
 					siteStructureItemDraft,
+					siteStructureItemType,
 				}}
 			/>
 		);

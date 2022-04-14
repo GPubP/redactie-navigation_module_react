@@ -7,9 +7,10 @@ import { NAV_STATUSES } from '../../../components';
 import { RearrangeModal } from '../../../components/RearrangeModal';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { getMenuItemTypeByValue, getSiteStructureItemPath } from '../../../helpers';
 import { extractSiblings } from '../../../helpers/extractSiblings';
 import { useSiteStructureItems } from '../../../hooks';
-import { ALERT_CONTAINER_IDS, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
+import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	NavigationMatchProps,
 	RearrangeNavItem,
@@ -68,12 +69,18 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 				hasChildren:
 					!!(siteStructureItem.parents || []).length ||
 					(siteStructureItem.childItemCount || 0) > 0,
-				navigate: (siteStructureItemId: number) =>
-					navigate(MODULE_PATHS.site.contentRefSiteStructureItemDetailSettings, {
+				navigate: (siteStructureItemId: number) => {
+					const siteStructureItemType = getMenuItemTypeByValue(siteStructureItem);
+					const siteStructureItemDetailPath = getSiteStructureItemPath(
+						siteStructureItemType
+					);
+
+					navigate(siteStructureItemDetailPath, {
 						siteId,
 						siteStructureId,
 						siteStructureItemId,
-					}),
+					});
+				},
 			};
 		});
 	};

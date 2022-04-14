@@ -14,7 +14,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { generateEmptyNavItem } from '../../../helpers';
+import { generateEmptyNavItem, getNavItemType } from '../../../helpers';
 import {
 	useSiteStructure,
 	useSiteStructureItem,
@@ -27,13 +27,18 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import { NavigationModuleProps, SiteStructureItemMatchProps } from '../../../navigation.types';
+import {
+	NavigationModuleProps,
+	NavItemType,
+	SiteStructureItemMatchProps,
+} from '../../../navigation.types';
 import {
 	SiteStructureItemModel,
 	siteStructureItemsFacade,
 } from '../../../store/siteStructureItems';
 
 const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchProps>> = ({
+	location,
 	route,
 	match,
 }) => {
@@ -80,15 +85,28 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 		})
 	);
 
+	const siteStructureItemType = getNavItemType(location.pathname);
+
 	useEffect(() => {
-		siteStructureItemsFacade.setSiteStructureItem(generateEmptyNavItem());
-		siteStructureItemsFacade.setSiteStructureItemDraft(generateEmptyNavItem());
-	}, []);
+		const emptyNavItem = generateEmptyNavItem(siteStructureItemType);
+
+		siteStructureItemsFacade.setSiteStructureItem(emptyNavItem);
+		siteStructureItemsFacade.setSiteStructureItemDraft(emptyNavItem);
+	}, [siteStructureItemType]);
 
 	/**
 	 * Methods
 	 */
-	const createItem = (payload: SiteStructureItemModel): void => {
+	const createItem = (values: SiteStructureItemModel): void => {
+		const payload = {
+			...values,
+			// TODO: chck whether this is wrong
+			externalUrl:
+				values.properties?.type !== NavItemType.external
+					? ''
+					: `https://${values.externalUrl}`,
+		};
+
 		siteStructureItemsFacade
 			.createSiteStructureItem(
 				siteId,
@@ -118,6 +136,7 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 				siteStructure,
 				siteStructureItem,
 				siteStructureItemDraft,
+				siteStructureItemType,
 			}}
 		/>
 	);

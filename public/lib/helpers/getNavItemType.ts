@@ -36,3 +36,13 @@ export const getMenuItemPath = (type: NavItemType): string => {
 			return MODULE_PATHS.site.hyperLinkMenuItemDetailSettings;
 	}
 };
+
+export const getSiteStructureItemPath = (type: NavItemType): string => {
+	switch (type) {
+		case NavItemType.internal:
+		default:
+			return MODULE_PATHS.site.contentRefSiteStructureItemDetailSettings;
+		case NavItemType.external:
+			return MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings;
+	}
+};
