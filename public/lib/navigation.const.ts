@@ -12,6 +12,7 @@ const CONTENT_TYPE_DETAIL_BASE_PATH = `/content-types/:contentTypeUuid`;
 const MENU_ITEMS_BASE_PATH = '/menus/:menuId/menu-items';
 export const CONTENT_REF_BASE_PATH = '/content-referentie';
 export const HYPERLINK_BASE_PATH = '/hyperlink';
+export const SUBTITLE_BASE_PATH = '/tussentitel';
 const SITE_STRUCTURES_ITEMS_BASE_PATH = '/sitestructuren/:siteStructureId/sitestructuur-items';
 
 export const MODULE_PATHS = {
@@ -50,6 +51,10 @@ export const MODULE_PATHS = {
 		createHyperLinkMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/aanmaken/instellingen`,
 		hyperLinkMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId`,
 		hyperLinkMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${HYPERLINK_BASE_PATH}/:menuItemId/instellingen`,
+		createSubtitleMenuItem: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/aanmaken`,
+		createSubtitleMenuItemSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/aanmaken/instellingen`,
+		subtitleMenuItemDetail: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/:menuItemId`,
+		subtitleMenuItemDetailSettings: `${SITE_ROOT}${MENU_ITEMS_BASE_PATH}${SUBTITLE_BASE_PATH}/:menuItemId/instellingen`,
 		contentTypeDetailExternal: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,
 		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
 		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
@@ -87,6 +92,7 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${CONTENT_REF_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${HYPERLINK_BASE_PATH}`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${MENUS_DETAIL_BASE_PATH}/menu-items${SUBTITLE_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${CONTENT_REF_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${HYPERLINK_BASE_PATH}`,

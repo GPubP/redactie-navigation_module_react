@@ -22,7 +22,7 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import { MenuItemMatchProps, NavigationModuleProps } from '../../../navigation.types';
+import { MenuItemMatchProps, NavigationModuleProps, NavItemType } from '../../../navigation.types';
 import { MenuItemModel, menuItemsFacade } from '../../../store/menuItems';
 
 const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
@@ -85,7 +85,7 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 	const createItem = (values: MenuItemModel): void => {
 		const payload = {
 			...values,
-			externalUrl: `https://${values.externalUrl}`,
+			externalUrl: values.properties?.type === NavItemType.section ? '' : `https://${values.externalUrl}`,
 		};
 
 		menuItemsFacade
