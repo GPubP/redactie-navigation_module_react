@@ -1,6 +1,6 @@
 {
   "name": "@redactie/navigation-module",
-  "version": "2.3.3",
+  "version": "2.3.4",
   "description": "redactie navigation module",
   "main": "dist/redactie-navigation-module.umd.js",
   "types": "dist/index.d.ts",
@@ -42,7 +42,7 @@
     "@commitlint/cli": "8.3.5",
     "@commitlint/config-conventional": "8.3.4",
     "@datorama/akita": "4.22.0",
-    "@redactie/content-module": "^1.15.3-4",
+    "@redactie/content-module": "^1.15.13",
     "@redactie/content-types-module": "3.6.0",
     "@redactie/form-renderer-module": "^1.8.8",
     "@redactie/language-module": "0.0.2",
