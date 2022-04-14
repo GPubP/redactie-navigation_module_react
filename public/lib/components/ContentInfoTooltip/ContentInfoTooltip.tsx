@@ -19,7 +19,11 @@ import { Status } from './ContentInfoTooltip.types';
 const cx = classnames.bind(styles);
 
 const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
-	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
+	const { siteId, menuId, siteStructureId } = useParams<{
+		menuId?: string;
+		siteStructureId?: string;
+		siteId: string;
+	}>();
 	const [item, setItem] = useState<ContentSchema | null>();
 	const [menuItem, setMenuItem] = useState<NavItem | null>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
@@ -27,14 +31,15 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		if (!siteId || !menuId || !id) {
+		if (!siteId || !id || !(menuId || siteStructureId)) {
 			return;
 		}
 
 		menuItemsApiService
-			.getMenuItem(siteId, menuId, id.toString())
+			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			.getMenuItem(siteId, (menuId || siteStructureId)!, id.toString())
 			.then(async item => setMenuItem(item));
-	}, [siteId, menuId, id]);
+	}, [siteId, menuId, id, siteStructureId]);
 
 	const handleVisibilityChange = (isVisible: boolean): void => {
 		if (!isVisible || !!item || !menuItem) {
