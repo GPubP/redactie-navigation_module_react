@@ -20,35 +20,52 @@ module.exports = {
 		'prettier/react',
 	],
 	env: {
-		'browser': true,
-		'amd': true,
-		'node': true
+		browser: true,
+		amd: true,
+		node: true,
 	},
 	rules: {
-		'@typescript-eslint/explicit-function-return-type': ['warn', {
-			allowExpressions: true,
-		}],
+		'@typescript-eslint/explicit-function-return-type': [
+			'warn',
+			{
+				allowExpressions: true,
+			},
+		],
 		'@typescript-eslint/no-var-requires': 0,
 		'@typescript-eslint/no-explicit-any': 0,
+		'react/self-closing-comp': 'warn',
 		'react-hooks/rules-of-hooks': 'error',
 		'react-hooks/exhaustive-deps': 'warn',
 		'import/first': 'error',
 		'import/no-duplicates': 'error',
-		'import/order': ['error', {
-			alphabetize: { order: 'asc' },
-			'newlines-between': 'always',
-		}],
-		'sort-imports': ['warn', {
-			ignoreCase: true,
-			ignoreDeclarationSort: true,
-		}],
+		'import/order': [
+			'error',
+			{
+				alphabetize: { order: 'asc' },
+				'newlines-between': 'always',
+			},
+		],
+		'sort-imports': [
+			'warn',
+			{
+				ignoreCase: true,
+				ignoreDeclarationSort: true,
+			},
+		],
+		semi: 'off',
+		'@typescript-eslint/semi': ['error', 'always', { omitLastInOneLineBlock: true }],
 	},
-	"overrides": [
+	overrides: [
 		{
-				"files": ["**/*.tsx"],
-				"rules": {
-						"react/prop-types": "off"
-				}
-		}
-	]
+			files: ['**/*.tsx'],
+			rules: {
+				'react/prop-types': 'off',
+			},
+		},
+	],
+	settings: {
+		react: {
+			version: 'detect',
+		},
+	},
 };

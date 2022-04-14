@@ -1,7 +1,8 @@
 import { NAV_STATUSES } from '../components';
+import { NavItemType } from '../navigation.types';
 import { MenuItem } from '../services/menuItems';
 
-export const generateEmptyNavItem = (): MenuItem => ({
+export const generateEmptyNavItem = (type: NavItemType = NavItemType.internal): MenuItem => ({
 	description: '',
 	label: '',
 	logicalId: '',
@@ -9,4 +10,7 @@ export const generateEmptyNavItem = (): MenuItem => ({
 	slug: '',
 	externalUrl: '',
 	items: [],
+	properties: {
+		type,
+	},
 });

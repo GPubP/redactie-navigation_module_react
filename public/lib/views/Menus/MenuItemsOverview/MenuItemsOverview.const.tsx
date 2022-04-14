@@ -4,8 +4,8 @@ import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import React from 'react';
-import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 
+import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
 

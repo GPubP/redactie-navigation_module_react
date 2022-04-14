@@ -130,6 +130,7 @@ export interface MenuItemDetailRouteProps<Params = MenuRouteParams>
 	menu: Menu | undefined;
 	menuItem: MenuItem | undefined;
 	menuItemDraft: MenuItem | undefined;
+	menuItemType: NavItemType;
 }
 
 export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
@@ -157,6 +158,15 @@ export interface NavItem {
 	weight?: number;
 	parents?: NavItem[];
 	childItemCount?: number;
+	properties?: {
+		type: NavItemType;
+	};
+}
+
+export enum NavItemType {
+	internal = 'internal',
+	external = 'external',
+	section = 'section',
 }
 
 export interface EmbeddedNavItems {

@@ -24,6 +24,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	menu,
 	menuItem,
 	menuItemDraft,
+	menuItemType,
 }) => {
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [t] = translationsConnector.useCoreTranslation();
@@ -147,6 +148,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 				navTree={(menu as unknown) as NavTree}
 				navItem={menuItem as MenuItem}
 				navItems={menuItems as MenuItem[]}
+				navItemType={menuItemType}
 				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}
@@ -161,7 +163,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 						MODULE_TRANSLATIONS.MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION
 					),
 				}}
-			></NavItemDetailForm>
+			/>
 			{menuItem?.id && canDelete && renderDelete()}
 		</>
 	);
