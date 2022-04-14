@@ -242,6 +242,32 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.createHyperlinkSiteStructureItem,
+			breadcrumb: false,
+			component: SiteStructureItemCreate,
+			redirect: MODULE_PATHS.site.createHyperlinkSiteStructureItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createHyperlinkSiteStructureItemSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.hyperlinkSiteStructureItemDetail,
+			breadcrumb: false,
+			component: SiteStructureItemUpdate,
+			redirect: MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.siteStructureDetail,
 			breadcrumb: false,
 			component: SiteStructureUpdate,
