@@ -226,7 +226,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 								</small>
 							</div>
 						</div>
-						{values.slug && (
+						{navItemType === NavItemType.internal && (
 							<div className="row u-margin-top">
 								<div className="col-xs-12">
 									<label className="u-block u-margin-bottom-xs">Status</label>

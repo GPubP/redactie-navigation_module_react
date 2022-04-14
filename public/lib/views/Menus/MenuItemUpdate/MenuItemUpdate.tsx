@@ -16,6 +16,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { getMenuItemTypeByValue } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -107,7 +108,14 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 
 	useEffect(() => {
 		if (menuItemLoadingState !== LoadingState.Loading && menuItem) {
-			menuItemsFacade.setMenuItemDraft(menuItem);
+			const draftMenuItem = {
+				...menuItem,
+				externalUrl: menuItem.externalUrl
+					? menuItem.externalUrl.replace('https://', '')
+					: menuItem.externalUrl,
+			};
+
+			menuItemsFacade.setMenuItemDraft(draftMenuItem);
 		}
 	}, [siteId, menuItemLoadingState, menuItem]);
 
@@ -151,6 +159,8 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 	/**
 	 * Render
 	 */
+
+	const menuItemType = menuItem?.properties?.type ?? getMenuItemTypeByValue(menuItem);
 	const pageTitle = `${menuItemDraft?.label ? `'${menuItemDraft?.label}'` : 'Menu-item'} ${t(
 		CORE_TRANSLATIONS.ROUTING_UPDATE
 	)}`;
@@ -172,6 +182,7 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 					menu,
 					menuItem,
 					menuItemDraft,
+					menuItemType,
 				}}
 			/>
 		);

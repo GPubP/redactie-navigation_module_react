@@ -7,12 +7,14 @@ import { NAV_STATUSES } from '../../../components';
 import { RearrangeModal } from '../../../components/RearrangeModal';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { getMenuItemPath, getMenuItemTypeByValue } from '../../../helpers';
 import { extractSiblings } from '../../../helpers/extractSiblings';
 import { useMenuItems } from '../../../hooks';
-import { ALERT_CONTAINER_IDS, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
+import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	MenuDetailRouteProps,
 	NavigationMatchProps,
+	NavItemType,
 	RearrangeNavItem,
 } from '../../../navigation.types';
 import { MenuItem } from '../../../services/menuItems';
@@ -65,12 +67,16 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = () => 
 				rows: transformItemsToRows(menuItem.items),
 				hasChildren:
 					!!(menuItem.parents || []).length || (menuItem.childItemCount || 0) > 0,
-				navigate: (menuItemId: number) =>
-					navigate(MODULE_PATHS.site.contentRefMenuItemDetailSettings, {
+				navigate: (menuItemId: number) => {
+					const menuItemType = getMenuItemTypeByValue(menuItem);
+					const menuItemDetailPath = getMenuItemPath(menuItemType);
+
+					navigate(menuItemDetailPath, {
 						siteId,
 						menuId,
 						menuItemId,
-					}),
+					});
+				},
 			};
 		});
 	};
