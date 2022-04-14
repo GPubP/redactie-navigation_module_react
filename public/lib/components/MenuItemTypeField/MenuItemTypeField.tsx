@@ -61,6 +61,7 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 													? NAV_STATUSES.PUBLISHED
 													: NAV_STATUSES.DRAFT
 											);
+											setFieldValue('externalReference', value?.uuid);
 											setContentItemPublished(!!value?.meta.published);
 
 											if (value?.meta.urlPath?.[value?.meta.lang]?.value) {
