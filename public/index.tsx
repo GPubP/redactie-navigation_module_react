@@ -296,26 +296,26 @@ sitesConnector.registerRoutes({
 		{
 			path: MODULE_PATHS.site.createSubtitleSiteStructureItem,
 			breadcrumb: false,
-			component: MenuItemCreate,
+			component: SiteStructureItemCreate,
 			redirect: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
 					breadcrumb: false,
-					component: MenuItemDetailSettings,
+					component: SiteStructureItemDetailSettings,
 				},
 			],
 		},
 		{
 			path: MODULE_PATHS.site.subtitleSiteStructureItemDetail,
 			breadcrumb: false,
-			component: MenuItemUpdate,
+			component: SiteStructureItemUpdate,
 			redirect: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
 			routes: [
 				{
 					path: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
 					breadcrumb: false,
-					component: MenuItemDetailSettings,
+					component: SiteStructureItemDetailSettings,
 				},
 			],
 		},
