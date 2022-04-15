@@ -7,12 +7,13 @@ import { NAV_STATUSES } from '../../../components';
 import { RearrangeModal } from '../../../components/RearrangeModal';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { getMenuItemTypeByValue, getSiteStructureItemPath } from '../../../helpers';
+import { getSiteStructureItemPath } from '../../../helpers';
 import { extractSiblings } from '../../../helpers/extractSiblings';
 import { useSiteStructureItems } from '../../../hooks';
 import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	NavigationMatchProps,
+	NavItemType,
 	RearrangeNavItem,
 	SiteStructureDetailRouteProps,
 } from '../../../navigation.types';
@@ -60,18 +61,20 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 		siteStructureItems: SiteStructureItem[]
 	): SiteStructureItemsTableRow[] => {
 		return (siteStructureItems || []).map(siteStructureItem => {
+			const siteStructureItemType =
+				siteStructureItem.properties?.type ?? NavItemType.internal;
+
 			return {
 				id: siteStructureItem.id as number,
 				label: siteStructureItem.label,
 				url: siteStructureItem.externalUrl,
+				type: siteStructureItemType,
 				active: siteStructureItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(siteStructureItem.items),
 				hasChildren:
 					!!(siteStructureItem.parents || []).length ||
 					(siteStructureItem.childItemCount || 0) > 0,
 				navigate: (siteStructureItemId: number) => {
-					// TODO: change this once properties.type is available from items call
-					const siteStructureItemType = getMenuItemTypeByValue(siteStructureItem);
 					const siteStructureItemDetailPath = getSiteStructureItemPath(
 						siteStructureItemType
 					);

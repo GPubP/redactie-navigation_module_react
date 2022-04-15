@@ -1,7 +1,10 @@
+import { NavItemType } from '../../../navigation.types';
+
 export interface SiteStructureItemsTableRow {
 	id: number;
 	label: string;
 	url: string;
+	type: NavItemType;
 	active: boolean;
 	hasChildren: boolean;
 	rows: SiteStructureItemsTableRow[];

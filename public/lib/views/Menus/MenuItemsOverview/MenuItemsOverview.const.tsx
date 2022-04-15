@@ -8,6 +8,7 @@ import React from 'react';
 import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { NavItemType } from '../../../navigation.types';
 
 import styles from './MenuItemsOverview.module.scss';
 import { MenuItemsTableRow } from './MenuItemsOverview.types';
@@ -95,8 +96,8 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id, url }: MenuItemsTableRow) {
-			return id && !url ? (
+		component(value: string, { id, type }: MenuItemsTableRow) {
+			return id && type === NavItemType.internal ? (
 				<div>
 					<ContentInfoTooltip id={id} />
 				</div>
