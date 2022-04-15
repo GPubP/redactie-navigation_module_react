@@ -87,12 +87,9 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 							<FormikOnChangeHandler onChange={onFormChange} />
 							<CardBody>
 								<h2 className="h3 u-margin-bottom">URL</h2>
-								{path(['meta', 'urlPath', activeLanguage!, 'pattern'])(
-									contentItem
-								) &&
-									contentTypeUrlPattern !==
-										(contentItem?.meta?.urlPath &&
-											contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
+								{contentTypeUrlPattern !==
+									(contentItem?.meta?.urlPath &&
+										contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
 									contentItem?._id && (
 										<Alert
 											className="u-margin-bottom"
