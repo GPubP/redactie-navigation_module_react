@@ -12,7 +12,6 @@ import {
 	LoadingState,
 	RenderChildRoutes,
 	useNavigate,
-	useOnNextRender,
 	useRoutes,
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
@@ -31,7 +30,7 @@ import {
 	TENANT_ROOT,
 } from '../../../navigation.const';
 import { NavigationRouteProps, SiteStructureMatchProps } from '../../../navigation.types';
-import { SiteStructure } from '../../../services/siteStructures';
+import { UpdateSiteStructureDto } from '../../../services/siteStructures';
 import { siteStructuresFacade } from '../../../store/siteStructures';
 
 import { SITE_STRUCTURE_ITEM_OPTIONS } from './SiteStructureUpdate.const';
@@ -47,7 +46,7 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [t] = translationsConnector.useCoreTranslation();
 	const { siteId, siteStructureId } = useParams<{ siteStructureId?: string; siteId: string }>();
-	const { navigate, generatePath } = useNavigate(SITES_ROOT);
+	const { generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const isSiteStructureItemsOverview = useMemo(
 		() =>
@@ -85,9 +84,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 				rolesRightsConnector.siteStructuresSecurityRights.update,
 			]),
-			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
-				rolesRightsConnector.siteStructuresSecurityRights.delete,
-			]),
 		}),
 		[mySecurityrights]
 	);
@@ -102,9 +98,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 	}, [removeSiteStructureLoadingState]);
 	const [siteStructureDraft] = useSiteStructureDraft();
 	const activeTabs = useActiveTabs(SITE_STRUCTURE_DETAIL_TABS, location.pathname);
-	const [forceNavigateToOverview] = useOnNextRender(() =>
-		navigate(MODULE_PATHS.site.siteStructuresOverview, { siteId })
-	);
 
 	useEffect(() => {
 		if (
@@ -145,28 +138,15 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 		siteStructuresFacade.setSiteStructureDraft(siteStructure);
 	};
 
-	const update = (updatedSiteStructure: SiteStructure): Promise<void> => {
+	const update = (updatedSiteStructure: UpdateSiteStructureDto): Promise<void> => {
 		if (!updatedSiteStructure) {
 			return Promise.resolve();
 		}
 
 		return siteStructuresFacade.updateSiteStructure(
 			siteId,
-			{
-				...updatedSiteStructure,
-				categoryId: updatedSiteStructure.category.id,
-			},
+			updatedSiteStructure,
 			ALERT_CONTAINER_IDS.settings
-		);
-	};
-
-	const deleteSiteStructure = async (siteStructure: SiteStructure): Promise<void> => {
-		return (
-			siteStructuresFacade
-				.deleteSiteStructure(siteId, siteStructure)
-				.then(forceNavigateToOverview)
-				// eslint-disable-next-line @typescript-eslint/no-empty-function
-				.catch(() => {})
 		);
 	};
 
@@ -192,7 +172,6 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 				extraOptions={{
 					onCancel,
 					onSubmit: update,
-					onDelete: deleteSiteStructure,
 					routes: route.routes,
 					loading: isLoading,
 					removing: isRemoving,

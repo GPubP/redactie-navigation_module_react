@@ -1,18 +1,11 @@
-import {
-	Button,
-	Card,
-	CardBody,
-	CardDescription,
-	CardTitle,
-	RadioGroup,
-	Textarea,
-	TextField,
-} from '@acpaas-ui/react-components';
+import { Button, RadioGroup, Textarea, TextField } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
+import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
 import { ErrorMessage, Field, Formik } from 'formik';
-import React, { FC, ReactElement, useState } from 'react';
+import React, { FC, useEffect, useMemo } from 'react';
 
+import languagesConnector from '../../../connectors/languages';
+import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useSiteStructure, useSiteStructureDraft } from '../../../hooks';
 import {
@@ -27,18 +20,19 @@ import { siteStructuresFacade } from '../../../store/siteStructures';
 import { SITE_STRUCTURE_SETTINGS_VALIDATION_SCHEMA } from './SiteStructureDetailSettings.const';
 
 const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchProps>> = ({
+	match,
 	loading,
 	isCreating,
-	isRemoving,
 	rights,
 	onSubmit,
-	onDelete,
 }) => {
+	const { siteId } = match.params;
 	const [siteStructure] = useSiteStructureDraft();
 	const { siteStructure: values } = useSiteStructure();
 	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, siteStructure);
-	const [showDeleteModal, setShowDeleteModal] = useState(false);
+	const [, , , languages] = languagesConnector.hooks.useLanguages();
+	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	/**
 	 * Methods
@@ -56,22 +50,34 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 	};
 
 	const canEdit = isCreating ? true : rights.canUpdate;
-	const canDelete = isCreating ? false : rights.canDelete;
 
-	const onDeletePromptConfirm = async (): Promise<void> => {
-		if (!values) {
-			return;
+	const languageOptions = useMemo(() => {
+		if (!site || !languages) {
+			return [];
 		}
 
-		resetIsChanged();
+		return [
+			...LANG_OPTIONS,
+			...(site.data.languages as string[]).map((lang: string) => {
+				const currentLang = languages?.find(language => language.uuid === lang);
 
-		await onDelete(values);
-		setShowDeleteModal(false);
-	};
+				return {
+					key: currentLang?.key,
+					label: `${currentLang?.name} (${currentLang?.key})`,
+					value: currentLang?.key,
+				};
+			}),
+		].map(lang => ({ ...lang, disabled: true }));
+	}, [languages, site]);
 
-	const onDeletePromptCancel = (): void => {
-		setShowDeleteModal(false);
-	};
+	useEffect(() => {
+		languagesConnector.languagesFacade.getLanguages({
+			active: true,
+			includeContentOccurrences: false,
+			site: siteId,
+			sort: 'name',
+		});
+	}, [siteId]);
 
 	/**
 	 * Render
@@ -80,37 +86,6 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 	if (!siteStructure || !values) {
 		return null;
 	}
-
-	const renderDelete = (): ReactElement => {
-		return (
-			<>
-				<Card className="u-margin-top">
-					<CardBody>
-						<CardTitle>Verwijderen</CardTitle>
-						<CardDescription>
-							Opgelet: Indien je deze sitestructuur verwijderd kan hij niet meer
-							gebruikt worden.
-						</CardDescription>
-						<Button
-							onClick={() => setShowDeleteModal(true)}
-							className="u-margin-top"
-							type="danger"
-							iconLeft="trash-o"
-						>
-							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
-						</Button>
-					</CardBody>
-				</Card>
-				<DeletePrompt
-					body="Ben je zeker dat je deze sitestructuur wil verwijderen? Dit kan niet ongedaan gemaakt worden."
-					isDeleting={isRemoving}
-					show={showDeleteModal}
-					onCancel={onDeletePromptCancel}
-					onConfirm={onDeletePromptConfirm}
-				/>
-			</>
-		);
-	};
 
 	return (
 		<>
@@ -175,12 +150,7 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 										label="Taal"
 										name="lang"
 										required
-										options={LANG_OPTIONS.map(option => {
-											return {
-												...option,
-												disabled: !canEdit,
-											};
-										})}
+										options={languageOptions}
 									/>
 									<ErrorMessage
 										className="u-text-danger"
@@ -223,7 +193,6 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 					);
 				}}
 			</Formik>
-			{!isCreating && canDelete && renderDelete()}
 		</>
 	);
 };

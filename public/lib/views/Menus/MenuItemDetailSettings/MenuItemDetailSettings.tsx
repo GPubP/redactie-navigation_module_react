@@ -10,9 +10,8 @@ import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/tr
 import { useMenuItems } from '../../../hooks';
 import { MODULE_TRANSLATIONS } from '../../../i18next/translations.const';
 import { ALERT_CONTAINER_IDS } from '../../../navigation.const';
-import { MenuItemDetailRouteProps, RearrangeNavItem } from '../../../navigation.types';
+import { MenuItemDetailRouteProps, NavTree, RearrangeNavItem } from '../../../navigation.types';
 import { MenuItem } from '../../../services/menuItems';
-import { Menu } from '../../../services/menus';
 import { menuItemsFacade } from '../../../store/menuItems';
 import { menusFacade } from '../../../store/menus';
 
@@ -25,6 +24,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	menu,
 	menuItem,
 	menuItemDraft,
+	menuItemType,
 }) => {
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
 	const [t] = translationsConnector.useCoreTranslation();
@@ -145,9 +145,10 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<NavItemDetailForm
-				navTree={menu as Menu}
-				navItem={menuItem as MenuItem}
+				navTree={(menu as unknown) as NavTree}
+				navItem={menuItemDraft as MenuItem}
 				navItems={menuItems as MenuItem[]}
+				navItemType={menuItemType}
 				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}
@@ -162,7 +163,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 						MODULE_TRANSLATIONS.MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION
 					),
 				}}
-			></NavItemDetailForm>
+			/>
 			{menuItem?.id && canDelete && renderDelete()}
 		</>
 	);

@@ -16,6 +16,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { createDraftNavItem, createNavItemPayload, getMenuItemTypeByValue } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
@@ -107,7 +108,7 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 
 	useEffect(() => {
 		if (menuItemLoadingState !== LoadingState.Loading && menuItem) {
-			menuItemsFacade.setMenuItemDraft(menuItem);
+			menuItemsFacade.setMenuItemDraft(createDraftNavItem(menuItem));
 		}
 	}, [siteId, menuItemLoadingState, menuItem]);
 
@@ -131,8 +132,10 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 			return Promise.resolve();
 		}
 
+		const payload = createNavItemPayload(updatedMenuItem);
+
 		return menuItemsFacade
-			.updateMenuItem(siteId, menuId, updatedMenuItem, ALERT_CONTAINER_IDS.menuItemsOverview)
+			.updateMenuItem(siteId, menuId, payload, ALERT_CONTAINER_IDS.menuItemsOverview)
 			.then(() => {
 				forceNavigateToOverview();
 			});
@@ -151,6 +154,8 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 	/**
 	 * Render
 	 */
+
+	const menuItemType = menuItem?.properties?.type ?? getMenuItemTypeByValue(menuItem);
 	const pageTitle = `${menuItemDraft?.label ? `'${menuItemDraft?.label}'` : 'Menu-item'} ${t(
 		CORE_TRANSLATIONS.ROUTING_UPDATE
 	)}`;
@@ -172,6 +177,7 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 					menu,
 					menuItem,
 					menuItemDraft,
+					menuItemType,
 				}}
 			/>
 		);

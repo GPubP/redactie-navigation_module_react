@@ -5,8 +5,8 @@ import { useMenus } from '../../hooks';
 
 import { MenusCheckboxListProps } from './MenusCheckboxList.types';
 
-const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ name }) => {
-	const [menusLoadingState, menus] = useMenus();
+const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ name, activeLanguage }) => {
+	const [menusLoadingState, menus] = useMenus(activeLanguage.key);
 
 	const menuOptions = useMemo(() => {
 		if (menusLoadingState !== LoadingState.Loaded || !menus?.length) {

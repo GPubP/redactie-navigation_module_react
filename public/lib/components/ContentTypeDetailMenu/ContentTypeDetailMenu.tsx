@@ -1,32 +1,38 @@
 import { RadioGroup } from '@acpaas-ui/react-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import { FormikMultilanguageField } from '@redactie/utils';
-import { FormikValues, useFormikContext } from 'formik';
+import { Language } from '@redactie/utils';
+import { Field, FormikValues, useFormikContext } from 'formik';
 import React, { FC, useEffect } from 'react';
 
-import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
-import { formatMenuCategory } from '../../helpers/formatMenuCategory';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { menusFacade } from '../../store/menus';
+import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 import { MenusCheckboxList } from '../MenusCheckboxList';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
-const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
+const ContentTypeDetailMenu: FC<ExternalTabProps & {
+	activeLanguage: Language;
+	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
+}> = ({ siteId, activeLanguage, setActiveCompartment }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
-	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	useEffect(() => {
-		if (!siteId || !site) {
+		setActiveCompartment(NavSiteCompartments.menu);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+
+	useEffect(() => {
+		if (!siteId) {
 			return;
 		}
 
 		menusFacade.getMenus(siteId, {
-			category: formatMenuCategory(site?.data.name),
+			lang: activeLanguage.key,
 		});
-	}, [site, siteId]);
+	}, [activeLanguage, siteId]);
 
 	return (
 		<div>
@@ -35,20 +41,18 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 			</div>
 			<div className="row u-margin-top">
 				<div className="col-xs-12 col-sm-6">
-					<FormikMultilanguageField
-						asComponent={RadioGroup}
+					<Field
+						as={RadioGroup}
 						name="menu.allowMenus"
 						options={ALLOW_MENUS_OPTIONS}
 						onChange={(e: any) => {
-							// TODO: Implement multilanguage
-							setFieldValue('menu.allowMenus.nl', e.target.value);
-							setFieldValue('menu.allowedMenus.nl', []);
+							setFieldValue('menu.allowMenus', e.target.value);
+							setFieldValue(`menu.allowedMenus`, {});
 						}}
 					/>
 				</div>
 			</div>
-			{/* // TODO: Implement multilanguage */}
-			{`${values?.menu?.allowMenus.nl}` === 'true' && (
+			{`${values?.menu?.allowMenus}` === 'true' && (
 				<div>
 					<div className="u-margin-top u-flex u-flex-column">
 						<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_MENU_AVAILABLE_MENUS_TITLE)}</p>
@@ -59,7 +63,10 @@ const ContentTypeDetailMenu: FC<ExternalTabProps> = ({ siteId }) => {
 						</small>
 					</div>
 					<div className="u-margin-top">
-						<MenusCheckboxList name="menu.allowedMenus" />
+						<MenusCheckboxList
+							name="menu.allowedMenus"
+							activeLanguage={activeLanguage}
+						/>
 					</div>
 				</div>
 			)}

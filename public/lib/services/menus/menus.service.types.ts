@@ -2,20 +2,22 @@ import { ContentTypeSchema } from '@redactie/content-module';
 import { Links, Page } from '@redactie/utils';
 
 import {
-	CreateNavTreeDTO,
+	CreateNavTreeDto,
 	EmbeddedNavTree,
 	ListApiResponse,
 	NavTree,
-	UpdateNavTreeDTO,
+	UpdateNavTreeDto,
 } from '../../navigation.types';
 
 /////////////////////////////////
 // GET MENUS TYPES ---------------------
 /////////////////////////////////
 export type MenusResponse = ListApiResponse<EmbeddedNavTree>;
-export type CreateMenuDTO = CreateNavTreeDTO;
-export type UpdateMenuDTO = UpdateNavTreeDTO;
-export type Menu = NavTree;
+export type CreateMenuDto = CreateNavTreeDto;
+export type UpdateMenuDto = UpdateNavTreeDto;
+export interface Menu extends Omit<NavTree, 'category'> {
+	category: string;
+}
 
 ///////////////////////////////////////
 // GET MENU OCCURRENCES ---------------------

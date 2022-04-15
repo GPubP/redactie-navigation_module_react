@@ -9,6 +9,7 @@ import { take } from 'rxjs/operators';
 
 import {
 	ContentDetailCompartment,
+	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
 	ContentTypeDetailSiteStructure,
 	ContentTypeDetailTab,
@@ -18,11 +19,12 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
+import SiteStructureTab from './lib/components/SiteStructureTab/SiteStructureTab';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
-import { isEmpty } from './lib/helpers';
+import { canShowSiteStructure, guardSiteStructure, isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -36,7 +38,6 @@ import {
 	MenuItemUpdate,
 	MenuOverview,
 	MenuUpdate,
-	SiteStructureCreate,
 	SiteStructureDetailSettings,
 	SiteStructureItemCreate,
 	SiteStructureItemDetailSettings,
@@ -47,7 +48,6 @@ import {
 } from './lib/views';
 
 // akitaDevtools();
-
 registerTranslations();
 
 const NavigationComponent: FC<NavigationModuleProps<{ siteId: string }>> = ({
@@ -72,11 +72,13 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.menusOverview,
-	guards: [
-		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.menuSecurityRights.read,
-		]),
-	],
+	guardOptions: {
+		guards: [
+			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
+		],
+	},
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
@@ -136,6 +138,58 @@ sitesConnector.registerRoutes({
 			],
 		},
 		{
+			path: MODULE_PATHS.site.createHyperLinkMenuItem,
+			breadcrumb: false,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.createHyperLinkMenuItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createHyperLinkMenuItemSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.hyperLinkMenuItemDetail,
+			breadcrumb: false,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.hyperLinkMenuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.hyperLinkMenuItemDetailSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.createSubtitleMenuItem,
+			breadcrumb: false,
+			component: MenuItemCreate,
+			redirect: MODULE_PATHS.site.createSubtitleMenuItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createSubtitleMenuItemSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.subtitleMenuItemDetail,
+			breadcrumb: false,
+			component: MenuItemUpdate,
+			redirect: MODULE_PATHS.site.subtitleMenuItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.subtitleMenuItemDetailSettings,
+					breadcrumb: false,
+					component: MenuItemDetailSettings,
+				},
+			],
+		},
+		{
 			path: MODULE_PATHS.site.menuDetail,
 			breadcrumb: false,
 			component: MenuUpdate,
@@ -161,11 +215,14 @@ sitesConnector.registerRoutes({
 	breadcrumb: false,
 	component: NavigationComponent,
 	redirect: MODULE_PATHS.site.siteStructuresOverview,
-	guards: [
-		rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
-			rolesRightsConnector.siteStructuresSecurityRights.read,
-		]),
-	],
+	guardOptions: {
+		guards: [
+			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+				rolesRightsConnector.siteStructuresSecurityRights.read,
+			]),
+			guardSiteStructure,
+		],
+	},
 	navigation: {
 		renderContext: 'site',
 		context: 'site',
@@ -176,6 +233,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
+			canShowSiteStructure,
 		],
 	},
 	routes: [
@@ -183,19 +241,6 @@ sitesConnector.registerRoutes({
 			path: MODULE_PATHS.site.siteStructuresOverview,
 			breadcrumb: false,
 			component: SiteStructureOverview,
-		},
-		{
-			path: MODULE_PATHS.site.createSiteStructure,
-			breadcrumb: false,
-			component: SiteStructureCreate,
-			redirect: MODULE_PATHS.site.createSiteStructureSettings,
-			routes: [
-				{
-					path: MODULE_PATHS.site.createSiteStructureSettings,
-					breadcrumb: false,
-					component: SiteStructureDetailSettings,
-				},
-			],
 		},
 		{
 			path: MODULE_PATHS.site.createContentRefSiteStructureItem,
@@ -218,6 +263,58 @@ sitesConnector.registerRoutes({
 			routes: [
 				{
 					path: MODULE_PATHS.site.contentRefSiteStructureItemDetailSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.createHyperlinkSiteStructureItem,
+			breadcrumb: false,
+			component: SiteStructureItemCreate,
+			redirect: MODULE_PATHS.site.createHyperlinkSiteStructureItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createHyperlinkSiteStructureItemSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.hyperlinkSiteStructureItemDetail,
+			breadcrumb: false,
+			component: SiteStructureItemUpdate,
+			redirect: MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.hyperlinkSiteStructureItemDetailSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.createSubtitleSiteStructureItem,
+			breadcrumb: false,
+			component: SiteStructureItemCreate,
+			redirect: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.createSubtitleSiteStructureItemSettings,
+					breadcrumb: false,
+					component: SiteStructureItemDetailSettings,
+				},
+			],
+		},
+		{
+			path: MODULE_PATHS.site.subtitleSiteStructureItemDetail,
+			breadcrumb: false,
+			component: SiteStructureItemUpdate,
+			redirect: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
+			routes: [
+				{
+					path: MODULE_PATHS.site.subtitleSiteStructureItemDetailSettings,
 					breadcrumb: false,
 					component: SiteStructureItemDetailSettings,
 				},
@@ -282,6 +379,25 @@ contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	},
 });
 
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
+	label: 'URL',
+	module: CONFIG.module,
+	component: ContentDetailUrlCompartment,
+	isValid: false,
+	beforeSubmit,
+	afterSubmit,
+	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
+		const navModuleValue = values.modulesData?.navigation || {};
+
+		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
+			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		}
+
+		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+	},
+	show: () => true,
+});
+
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 	{
 		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
@@ -291,11 +407,6 @@ export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 ];
 
 export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
-	{
-		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
-		breadcrumb: false,
-		component: ContentTypeDetailUrl,
-	},
 	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
 		breadcrumb: false,
@@ -320,4 +431,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	containerId: 'update' as any,
 	show: (context: any) => context.ctType === 'content-types',
 	disabled: false,
+});
+
+sitesConnector.registerSiteStructureTab(CONFIG.name, {
+	label: 'Sitestructuur',
+	module: CONFIG.module,
+	component: SiteStructureTab,
+	containerId: 'update' as any,
 });

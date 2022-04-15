@@ -10,9 +10,12 @@ import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/tr
 import { useSiteStructureItems } from '../../../hooks';
 import { MODULE_TRANSLATIONS } from '../../../i18next/translations.const';
 import { ALERT_CONTAINER_IDS } from '../../../navigation.const';
-import { RearrangeNavItem, SiteStructureItemDetailRouteProps } from '../../../navigation.types';
+import {
+	NavTree,
+	RearrangeNavItem,
+	SiteStructureItemDetailRouteProps,
+} from '../../../navigation.types';
 import { SiteStructureItem } from '../../../services/siteStructureItems';
-import { SiteStructure } from '../../../services/siteStructures';
 import { siteStructureItemsFacade } from '../../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../../store/siteStructures';
 
@@ -25,6 +28,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	siteStructure,
 	siteStructureItem,
 	siteStructureItemDraft,
+	siteStructureItemType,
 }) => {
 	const { siteId, siteStructureId } = useParams<{ siteStructureId?: string; siteId: string }>();
 	const [t] = translationsConnector.useCoreTranslation();
@@ -150,9 +154,10 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<NavItemDetailForm
-				navTree={siteStructure as SiteStructure}
-				navItem={siteStructureItem as SiteStructureItem}
+				navTree={(siteStructure as unknown) as NavTree}
+				navItem={siteStructureItemDraft as SiteStructureItem}
 				navItems={siteStructureItems as SiteStructureItem[]}
+				navItemType={siteStructureItemType}
 				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}
@@ -170,7 +175,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 						MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION
 					),
 				}}
-			></NavItemDetailForm>
+			/>
 			{siteStructureItem?.id && canDelete && renderDelete()}
 		</>
 	);

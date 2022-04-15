@@ -1,8 +1,6 @@
-import { Button } from '@acpaas-ui/react-components';
 import {
 	Container,
 	ContextHeader,
-	ContextHeaderActionsSection,
 	ContextHeaderTopSection,
 	PaginatedTable,
 } from '@acpaas-ui/react-editorial-components';
@@ -23,14 +21,8 @@ import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { formatSiteStructureCategory } from '../../../helpers/formatSiteStructureCategory';
 import { useSiteStructures } from '../../../hooks/useSiteStructures';
-import {
-	BREADCRUMB_OPTIONS,
-	LANG_OPTIONS,
-	MODULE_PATHS,
-	SITES_ROOT,
-} from '../../../navigation.const';
+import { BREADCRUMB_OPTIONS, MODULE_PATHS, SITES_ROOT } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationRouteProps } from '../../../navigation.types';
 import { siteStructuresFacade } from '../../../store/siteStructures';
 
@@ -64,14 +56,6 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 		return loadingState === LoadingState.Loading;
 	}, [loadingState]);
 
-	const canCreate = useMemo(() => {
-		return (
-			!!LANG_OPTIONS?.find(
-				lang => !(siteStructures || [])?.find(structure => structure.lang === lang.key)
-			) && loadingState === LoadingState.Loaded
-		);
-	}, [loadingState, siteStructures]);
-
 	useEffect(() => {
 		if (loadingState !== LoadingState.Loading) {
 			return setInitialLoading(LoadingState.Loaded);
@@ -85,7 +69,6 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 
 		siteStructuresFacade.getSiteStructures(siteId, {
 			...query,
-			category: formatSiteStructureCategory(site?.data.name),
 			includeItemCount: true,
 		} as SearchParams);
 	}, [query, site, siteId]);
@@ -149,18 +132,6 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 		<>
 			<ContextHeader title="Sitestructuren">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
-				<ContextHeaderActionsSection>
-					{canCreate && (
-						<Button
-							iconLeft="plus"
-							onClick={() =>
-								navigate(MODULE_PATHS.site.createSiteStructure, { siteId })
-							}
-						>
-							{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
-						</Button>
-					)}
-				</ContextHeaderActionsSection>
 			</ContextHeader>
 			<Container>
 				<AlertContainer containerId={'siteStructures-overview'} />

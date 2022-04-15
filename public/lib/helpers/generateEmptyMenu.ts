@@ -1,13 +1,14 @@
 import { NAV_STATUSES } from '../components';
-import { CreateMenuDTO } from '../services/menus';
+import { LangKeys } from '../navigation.const';
+import { CreateMenuDto } from '../services/menus';
 
 export const generateEmptyMenu = (
-	siteName: string | undefined
-): CreateMenuDTO & { lang: string } => ({
+	siteId: string,
+	lang?: string
+): CreateMenuDto & { lang: string } => ({
 	label: '',
 	description: '',
-	publishStatus: NAV_STATUSES.DRAFT,
-	category: `menu_${siteName}_nl`,
-	// TODO: Implement multilanguage
-	lang: 'nl',
+	publishStatus: NAV_STATUSES.PUBLISHED,
+	category: `menu_${siteId}_${lang || LangKeys.generic}`,
+	lang: lang || LangKeys.generic,
 });

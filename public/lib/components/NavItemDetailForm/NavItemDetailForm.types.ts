@@ -1,12 +1,19 @@
 import { LoadingState } from '@redactie/utils';
-import { FormikValues } from 'formik';
 
-import { NavItem, NavRights, NavTree, RearrangeNavItem } from '../../navigation.types';
+import {
+	NavItem,
+	NavItemDetailForm,
+	NavItemType,
+	NavRights,
+	NavTree,
+	RearrangeNavItem,
+} from '../../navigation.types';
 
 export interface NavItemDetailFormProps {
 	navTree: NavTree;
 	navItem: NavItem;
 	navItems: NavItem[];
+	navItemType?: NavItemType;
 	rights: NavRights;
 	upsertingState: LoadingState;
 	loading: boolean;
@@ -18,6 +25,6 @@ export interface NavItemDetailFormProps {
 		statusCheckbox: string;
 	};
 	onRearrange: (items: RearrangeNavItem[]) => Promise<void>;
-	onChange: (values: FormikValues) => void;
+	onChange: (values: NavItemDetailForm) => void;
 	onSave: () => void;
 }

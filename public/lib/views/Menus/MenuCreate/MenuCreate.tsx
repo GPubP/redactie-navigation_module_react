@@ -12,6 +12,7 @@ import {
 	useNavigate,
 	useRoutes,
 } from '@redactie/utils';
+import { omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -27,7 +28,7 @@ import {
 	SITES_ROOT,
 } from '../../../navigation.const';
 import { NavigationMatchProps, NavigationModuleProps } from '../../../navigation.types';
-import { CreateMenuDTO, Menu } from '../../../services/menus';
+import { CreateMenuDto, Menu } from '../../../services/menus';
 import { menusFacade } from '../../../store/menus';
 
 const MenuCreate: FC<NavigationModuleProps<NavigationMatchProps>> = ({
@@ -105,9 +106,9 @@ const MenuCreate: FC<NavigationModuleProps<NavigationMatchProps>> = ({
 				menusFacade.createMenu(
 					siteId,
 					{
-						...generateEmptyMenu(site?.data.name),
-						...sectionData,
-					} as CreateMenuDTO,
+						...generateEmptyMenu(siteId, sectionData.lang),
+						...omit(['category'], sectionData),
+					} as CreateMenuDto,
 					alertId
 				);
 				break;
@@ -125,7 +126,7 @@ const MenuCreate: FC<NavigationModuleProps<NavigationMatchProps>> = ({
 			extraOptions={{
 				tenantId,
 				routes: route.routes,
-				menu: menu || generateEmptyMenu(site?.data.name),
+				menu: menu || generateEmptyMenu(siteId),
 				loading: isLoading,
 				isCreating: true,
 				onCancel: navigateToOverview,

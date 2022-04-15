@@ -31,7 +31,7 @@ import {
 	TENANT_ROOT,
 } from '../../../navigation.const';
 import { NavigationRouteProps } from '../../../navigation.types';
-import { Menu } from '../../../services/menus';
+import { Menu, UpdateMenuDto } from '../../../services/menus';
 import { menusFacade } from '../../../store/menus';
 
 import { MENU_ITEM_OPTIONS } from './MenuUpdate.const';
@@ -146,19 +146,12 @@ const MenuUpdate: FC<NavigationRouteProps<{ menuId?: string; siteId: string }>> 
 		menusFacade.setMenuDraft(menu);
 	};
 
-	const updateMenu = (updatedMenu: Menu): Promise<void> => {
+	const updateMenu = (updatedMenu: UpdateMenuDto): Promise<void> => {
 		if (!updatedMenu) {
 			return Promise.resolve();
 		}
 
-		return menusFacade.updateMenu(
-			siteId,
-			{
-				...updatedMenu,
-				categoryId: updatedMenu.category.id,
-			},
-			ALERT_CONTAINER_IDS.settings
-		);
+		return menusFacade.updateMenu(siteId, updatedMenu, ALERT_CONTAINER_IDS.settings);
 	};
 
 	const deleteMenu = async (menu: Menu): Promise<void> => {
@@ -196,7 +189,7 @@ const MenuUpdate: FC<NavigationRouteProps<{ menuId?: string; siteId: string }>> 
 					onDelete: deleteMenu,
 					routes: route.routes,
 					loading: isLoading,
-					removing: isRemoving,
+					isRemoving,
 					rights,
 				}}
 			/>

@@ -47,6 +47,7 @@ export interface NavigationSecurityRights {
 	read: boolean;
 	update: boolean;
 	delete: boolean;
+	contentPathUpdate: boolean;
 	replace: boolean;
 }
 
@@ -129,6 +130,7 @@ export interface MenuItemDetailRouteProps<Params = MenuRouteParams>
 	menu: Menu | undefined;
 	menuItem: MenuItem | undefined;
 	menuItemDraft: MenuItem | undefined;
+	menuItemType: NavItemType;
 }
 
 export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
@@ -136,6 +138,7 @@ export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
 	siteStructure: SiteStructure | undefined;
 	siteStructureItem: SiteStructureItem | undefined;
 	siteStructureItemDraft: SiteStructureItem | undefined;
+	siteStructureItemType: NavItemType;
 }
 
 export interface NavRights {
@@ -156,6 +159,15 @@ export interface NavItem {
 	weight?: number;
 	parents?: NavItem[];
 	childItemCount?: number;
+	properties?: {
+		type: NavItemType;
+	};
+}
+
+export enum NavItemType {
+	internal = 'internal',
+	external = 'external',
+	section = 'section',
 }
 
 export interface EmbeddedNavItems {
@@ -180,16 +192,15 @@ export interface NavTreeMeta {
 	lastEditor: null;
 }
 
-export interface CreateNavTreeDTO {
+export interface CreateNavTreeDto {
 	label: string;
 	description: string;
 	category: string;
 	publishStatus: string;
 }
 
-export interface UpdateNavTreeDTO extends Omit<CreateNavTreeDTO, 'category'> {
+export interface UpdateNavTreeDto extends CreateNavTreeDto {
 	id: number;
-	categoryId: number;
 }
 
 export interface NavTree {
