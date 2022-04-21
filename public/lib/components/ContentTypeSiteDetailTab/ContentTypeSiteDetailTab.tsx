@@ -50,6 +50,10 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		!isLoading,
 		formValue.url
 	);
+	const [hasSiteStructureChanges, resetSiteStructureChangeDetection] = useDetectValueChanges(
+		!isLoading,
+		formValue.sitestructuur
+	);
 	const [hasChanges] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);
 	const { contentTypeUuid, child } = useParams<{
@@ -149,10 +153,11 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		setMetadataExists(true);
 		setShowConfirmModal(false);
 		resetUrlChangeDetection();
+		resetSiteStructureChangeDetection();
 	};
 
 	const onFormSubmit = (): void => {
-		if (hasUrlChanges) {
+		if (hasUrlChanges || hasSiteStructureChanges) {
 			return setShowConfirmModal(true);
 		}
 
