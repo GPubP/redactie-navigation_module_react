@@ -1,4 +1,4 @@
-import { Checkbox, RadioGroup, TextField } from '@acpaas-ui/react-components';
+import { Button, Checkbox, RadioGroup } from '@acpaas-ui/react-components';
 import { Cascader, LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
 import {
@@ -72,10 +72,30 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 		setFieldValue(`sitestructuur.position.${activeLanguage.key}`, value);
 	};
 
+	const handleGetOptions = () => {
+		const value = pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values);
+
+		return SITE_STRUCTURE_POSITION_OPTIONS.map(i => {
+			if (i.value === 'limited' && value.length === 0) {
+				return { ...i, disabled: true };
+			}
+			return i;
+		});
+	};
+
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
+		const value = pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values);
+		const disabled =
+			!treeConfig.options.length ||
+			loadingState === LoadingState.Loading ||
+			fetchingState === LoadingState.Loading;
+
 		return (
 			<div
-				className={classNames('a-input has-icon-right', { 'is-required': props.required })}
+				className={classNames('a-input has-icon-right', {
+					'is-required': props.required,
+					'has-error': pathOr(false, ['state', 'error'])(props),
+				})}
 				style={{ flexGrow: 1 }}
 			>
 				<label className="a-input__label" htmlFor="text-field">
@@ -84,24 +104,44 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 				<small>Bepaal de standaardpositie voor items van dit content type.</small>
 				<Cascader
 					changeOnSelect
-					value={siteStructure?.id}
+					value={value}
 					options={treeConfig.options}
+					disabled={disabled}
 					onChange={(value: number[]) => handlePositionOnChange(value)}
 				>
-					<TextField
-						state={props.state}
-						onChange={() => null}
-						disabled={
-							!treeConfig.options.length ||
-							loadingState === LoadingState.Loading ||
-							fetchingState === LoadingState.Loading
-						}
-						placeholder={props.placeholder as string}
-						value={getPositionInputValue(
-							treeConfig?.options,
-							pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values)
+					<div className="a-input__wrapper">
+						<input
+							onChange={() => null}
+							disabled={disabled}
+							placeholder={props.placeholder as string}
+							value={getPositionInputValue(treeConfig.options, value)}
+						/>
+
+						{value.length > 0 && (
+							<span
+								className="fa"
+								style={{
+									pointerEvents: 'initial',
+									cursor: 'pointer',
+								}}
+							>
+								<Button
+									icon="close"
+									ariaLabel="Close"
+									size="small"
+									transparent
+									style={{
+										top: '-2px',
+									}}
+									onClick={(e: React.SyntheticEvent) => {
+										e.preventDefault();
+										e.stopPropagation();
+										setFieldValue('sitestructuur.position', []);
+									}}
+								/>
+							</span>
 						)}
-					/>
+					</div>
 				</Cascader>
 			</div>
 		);
@@ -121,7 +161,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 						as={RadioGroup}
 						id="structurePosition"
 						name="sitestructuur.structurePosition"
-						options={SITE_STRUCTURE_POSITION_OPTIONS}
+						options={handleGetOptions()}
 						value={
 							values.sitestructuur?.structurePosition ||
 							SITE_STRUCTURE_POSITION_OPTIONS[0].value
