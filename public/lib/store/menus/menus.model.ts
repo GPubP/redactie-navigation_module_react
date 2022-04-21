@@ -12,6 +12,9 @@ export type MenuModel = Menu;
 export interface MenusState extends BaseEntityState<MenuModel, string> {
 	meta?: Page;
 	menu?: MenuModel;
+	cachedMenus?: {
+		[lang: string]: MenuModel[];
+	};
 	menuDraft?: MenuModel;
 	occurrences?: ContentTypeSchema[];
 	isFetchingOccurrences: LoadingState;

@@ -20,8 +20,10 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public readonly meta$ = this.query.meta$;
 	public readonly menus$ = this.query.menus$;
 	public readonly menu$ = this.query.menu$;
+	public readonly cachedMenus$ = this.query.cachedMenus$;
 	public readonly menuDraft$ = this.query.menuDraft$;
 	public readonly occurrences$ = this.query.occurrences$;
+
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 
 	public getMenus(siteId: string, searchParams: SearchParams): void {
@@ -32,36 +34,53 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		}
 
 		this.store.setIsFetching(true);
+		const requestedLang = searchParams.lang;
+		const cachedMenus = this.store.getValue().cachedMenus;
 
-		this.service
-			.getMenus(siteId, searchParams)
-			.then((response: MenusResponse | null) => {
-				if (!response) {
-					throw new Error('Getting menus failed!');
-				}
+		if (cachedMenus?.[requestedLang]) {
+			this.store.upsertMany(cachedMenus[requestedLang]);
 
-				this.store.upsertMany(
-					response._embedded.resourceList.map(menu => {
-						const categoryArray = menu.category.label.split('_');
-
-						return {
-							...menu,
-							category: menu.category.label,
-							lang: categoryArray[categoryArray.length - 1],
-						};
-					})
-				);
-				this.store.update({
-					meta: response._page,
-					isFetching: false,
-				});
-			})
-			.catch(error => {
-				this.store.update({
-					error,
-					isFetching: false,
-				});
+			this.store.update({
+				isFetching: false,
 			});
+		} else {
+			this.service
+				.getMenus(siteId, searchParams)
+				.then((response: MenusResponse | null) => {
+					console.log('searchParams', searchParams);
+
+					if (!response) {
+						throw new Error('Getting menus failed!');
+					}
+
+					this.store.upsertMany(
+						response._embedded.resourceList.map(menu => {
+							const categoryArray = menu.category.label.split('_');
+
+							const menuToAdd = {
+								...menu,
+								category: menu.category.label,
+								lang: categoryArray[categoryArray.length - 1],
+							};
+
+							this.cacheMenu(menuToAdd, requestedLang);
+
+							return menuToAdd;
+						})
+					);
+
+					this.store.update({
+						meta: response._page,
+						isFetching: false,
+					});
+				})
+				.catch(error => {
+					this.store.update({
+						error,
+						isFetching: false,
+					});
+				});
+		}
 	}
 
 	public getMenu(siteId: string, uuid: string): void {
@@ -255,6 +274,25 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	public setMenu(menu: Menu): void {
 		this.store.update({
 			menu,
+		});
+	}
+
+	public cacheMenu(menu: Menu, lang: string): void {
+		if (!menu.lang) {
+			return;
+		}
+
+		const cachedMenus = this.query.getValue().cachedMenus?.[lang] || [];
+
+		if (cachedMenus.map(({ label }) => label).includes(menu.label)) {
+			return;
+		}
+
+		this.store.update({
+			cachedMenus: {
+				...(this.query.getValue().cachedMenus || {}),
+				[lang]: [...cachedMenus, menu],
+			},
 		});
 	}
 

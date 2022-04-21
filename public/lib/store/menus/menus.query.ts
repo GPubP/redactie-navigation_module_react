@@ -13,6 +13,9 @@ export class MenusQuery extends BaseEntityQuery<MenusState> {
 	public menu$ = this.select(state => state.menu).pipe(
 		filter(menu => !isNil(menu), distinctUntilChanged())
 	);
+	public cachedMenus$ = this.select(state => state.cachedMenus).pipe(
+		filter(menu => !isNil(menu), distinctUntilChanged())
+	);
 	public menuDraft$ = this.select(state => state.menuDraft).pipe(
 		filter(menuDraft => !isNil(menuDraft), distinctUntilChanged())
 	);
