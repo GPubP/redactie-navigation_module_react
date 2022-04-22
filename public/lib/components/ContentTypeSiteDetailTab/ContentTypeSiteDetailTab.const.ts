@@ -11,7 +11,7 @@ export enum NavSiteCompartments {
 
 export const NAV_SITE_COMPARTMENTS = [
 	{ label: 'URL', to: NavSiteCompartments.url },
-	{ label: 'Menu', to: NavSiteCompartments.menu },
+	{ label: "Menu's", to: NavSiteCompartments.menu },
 	{ label: 'Sitestructuur', to: NavSiteCompartments.siteStructure },
 ];
 

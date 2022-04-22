@@ -16,7 +16,7 @@ import {
 	useNavigate,
 } from '@redactie/utils';
 import { isEmpty } from 'ramda';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
 import contentTypeConnector from '../../connectors/contentTypes';
@@ -63,6 +63,10 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
 	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
+	const activeCompartment = useMemo(
+		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
+		[child]
+	);
 
 	const history = useHistory();
 
@@ -211,6 +215,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">
+					<h3 className="u-margin-bottom">{activeCompartment?.label}</h3>
 					<DataLoader loadingState={languagesLoading} render={renderForm} />
 					<ControlledModal
 						show={showConfirmModal}
