@@ -198,8 +198,15 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 													<div className="a-input__wrapper">
 														<input
 															onChange={() => null}
-															disabled={readonly}
-															placeholder="Kies een positie in de boom"
+															disabled={
+																readonly ||
+																!treeConfig.options.length
+															}
+															placeholder={
+																!treeConfig.options.length
+																	? 'Geen opties beschikbaar'
+																	: 'Kies een positie in de boom'
+															}
 															value={getPositionInputValue(
 																treeConfig.options,
 																values.position
@@ -239,7 +246,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 												</Cascader>
 												<small>
 													Selecteer op welke plek je de pagina in de
-													navigatieboom wilt hangen.
+													navigatieboom wilt hangen. Indien je geen
+													positie selecteerd zal de pagina in de root van
+													de navigatieboom geplaatst worden.
 												</small>
 											</div>
 										)}
