@@ -22,7 +22,7 @@ class SitesConnector {
 		return this.api.config;
 	}
 
-	public registerSiteStructureTab(key: string, options: ExternalTabOptions): void | false {
+	public registerSiteUpdateTab(key: string, options: ExternalTabOptions): void | false {
 		return this.api ? this.api.registerSiteUpdateTab(key, options) : false;
 	}
 

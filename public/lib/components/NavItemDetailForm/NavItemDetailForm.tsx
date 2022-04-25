@@ -159,7 +159,11 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 													disabled={
 														!canEdit || !treeConfig.options.length
 													}
-													placeholder="Kies een positie in de boom"
+													placeholder={
+														!treeConfig.options.length
+															? 'Geen opties beschikbaar'
+															: 'Kies een positie in de boom'
+													}
 													value={getPositionInputValue(
 														treeConfig.options,
 														values.position
@@ -208,6 +212,8 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 								<ErrorMessage name="position" />
 								<small className="u-block u-margin-top-xs">
 									Selecteer op welke plek in de boom je dit item wilt hangen.
+									Indien je geen positie selecteerd zal de pagina in de root van
+									de navigatieboom geplaatst worden.
 								</small>
 							</div>
 						</div>

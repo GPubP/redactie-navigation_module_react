@@ -23,7 +23,7 @@ import { SiteStructure } from '../../services/siteStructures';
 import { siteStructuresFacade } from '../../store/siteStructures';
 const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const { values, errors, setFieldValue } = useFormikContext<FormikValues>();
+	const { values, setFieldValue } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
@@ -72,17 +72,6 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 		setFieldValue(`sitestructuur.position.${activeLanguage.key}`, value);
 	};
 
-	const handleGetOptions = () => {
-		const value = pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values);
-
-		return SITE_STRUCTURE_POSITION_OPTIONS.map(i => {
-			if (i.value === 'limited' && value.length === 0) {
-				return { ...i, disabled: true };
-			}
-			return i;
-		});
-	};
-
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
 		const value = pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values);
 		const disabled =
@@ -101,7 +90,10 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 				<label className="a-input__label" htmlFor="text-field">
 					{props.label as string}
 				</label>
-				<small>Bepaal de standaardpositie voor items van dit content type.</small>
+				<small>
+					Bepaal de standaardpositie voor items van dit content type. Indien je geen
+					positie selecteerd zullen items in de root van het menu geplaatst worden.
+				</small>
 				<Cascader
 					changeOnSelect
 					value={value}
@@ -113,7 +105,11 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 						<input
 							onChange={() => null}
 							disabled={disabled}
-							placeholder={props.placeholder as string}
+							placeholder={
+								!treeConfig.options.length
+									? 'Geen opties beschikbaar'
+									: 'Selecteer een positie'
+							}
 							value={getPositionInputValue(treeConfig.options, value)}
 						/>
 
@@ -161,7 +157,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 						as={RadioGroup}
 						id="structurePosition"
 						name="sitestructuur.structurePosition"
-						options={handleGetOptions()}
+						options={SITE_STRUCTURE_POSITION_OPTIONS}
 						value={
 							values.sitestructuur?.structurePosition ||
 							SITE_STRUCTURE_POSITION_OPTIONS[0].value
@@ -178,17 +174,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 								label="Standaard positie"
 								name="sitestructuur.position"
 								placeholder="Selecteer een positie"
-								//required={values.sitestructuur?.structurePosition === 'limited'}
-								state={
-									activeLanguage &&
-									values.sitestructuur?.structurePosition === 'limited' &&
-									pathOr(
-										null,
-										['sitestructuur', 'position', activeLanguage.key],
-										errors
-									) &&
-									'error'
-								}
+								required={values.sitestructuur?.structurePosition === 'limited'}
 							/>
 							{values.sitestructuur?.structurePosition === 'limited' && (
 								<div className="u-margin-top-xs">

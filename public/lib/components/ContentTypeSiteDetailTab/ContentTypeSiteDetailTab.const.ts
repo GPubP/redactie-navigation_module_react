@@ -11,7 +11,7 @@ export enum NavSiteCompartments {
 
 export const NAV_SITE_COMPARTMENTS = [
 	{ label: 'URL', to: NavSiteCompartments.url },
-	{ label: 'Menu', to: NavSiteCompartments.menu },
+	{ label: "Menu's", to: NavSiteCompartments.menu },
 	{ label: 'Sitestructuur', to: NavSiteCompartments.siteStructure },
 ];
 
@@ -71,22 +71,4 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 					})
 			),
 		}),
-		/* sitestructuur: MultilanguageYup.object().shape({
-			position: MultilanguageYup.object().when('structurePosition', {
-				is: 'limited', // selected structurePosition radiobutton value
-				then: MultilanguageYup.object().validateMultiLanguage(
-					languages,
-					MultilanguageYup.array().test({
-						name: 'limitedPosition',
-						message: 'Gelieve een startpositie te selecteren',
-						test: function(value) {
-							if (!value) {
-								return false;
-							}
-							return value.length > 0;
-						},
-					})
-				),
-			}),
-		}), */
 	});

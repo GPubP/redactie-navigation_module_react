@@ -7,17 +7,18 @@ import React, { ChangeEvent, FC, useState } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 
-import { SITE_STRUCTURE_OPTIONS } from './SiteStructureTab.const';
-import { SiteStructureTabFormState } from './SiteStructureTab.types';
+import { SITE_NAVIGATION_OPTIONS } from './SiteNavigationTab.const';
+import { SiteNavigationTabFormState } from './SiteNavigationTab.types';
 
-const SiteStructureTab: FC<ExternalTabProps> = ({
+const SiteNavigationTab: FC<ExternalTabProps> = ({
 	value = {} as Record<string, any>,
 	isLoading,
 	onSubmit,
 	onCancel,
 }) => {
-	const initialValues: SiteStructureTabFormState = {
+	const initialValues: SiteNavigationTabFormState = {
 		allowSiteStructure: value?.config?.allowSiteStructure || false,
+		allowMenus: value?.config?.allowMenus || false,
 	};
 	const [t] = translationsConnector.useCoreTranslation();
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
@@ -25,10 +26,7 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 
 	const onFormSubmit = (): void => {
 		onSubmit({
-			config: {
-				...formValue,
-				allowSiteStructure: formValue.allowSiteStructure,
-			},
+			config: formValue,
 			validationSchema: {},
 		});
 		resetChangeDetection();
@@ -46,7 +44,7 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 									as={RadioGroup}
 									id="allowSiteStructure"
 									name="allowSiteStructure"
-									options={SITE_STRUCTURE_OPTIONS}
+									options={SITE_NAVIGATION_OPTIONS}
 									onChange={(event: ChangeEvent<any>) =>
 										setFormValue({
 											...formValue,
@@ -54,6 +52,25 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 										})
 									}
 								/>
+							</div>
+						</div>
+						<div className="u-margin-top">
+							<p>Bepaal of er voor deze site menu&apos;s zijn toegestaan.</p>
+							<div className="col-xs-12 col-sm-6">
+								<div className="row u-margin-top">
+									<Field
+										as={RadioGroup}
+										id="allowMenus"
+										name="allowMenus"
+										options={SITE_NAVIGATION_OPTIONS}
+										onChange={(event: ChangeEvent<any>) =>
+											setFormValue({
+												...formValue,
+												allowMenus: event.target.value === 'true',
+											})
+										}
+									/>
+								</div>
 							</div>
 						</div>
 						<ActionBar className="o-action-bar--fixed" isOpen>
@@ -90,4 +107,4 @@ const SiteStructureTab: FC<ExternalTabProps> = ({
 	);
 };
 
-export default SiteStructureTab;
+export default SiteNavigationTab;
