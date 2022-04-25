@@ -17,7 +17,9 @@
     "lint": "npm run lint:scss && npm run lint:ts",
     "test": "jest ./public",
     "trans:extract": "./node_modules/.bin/i18next-scanner --config i18next-scanner.config.js",
-    "docs": "npx typedoc --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate"
+    "docs": "npm run docs:html && npm run docs:markdown",
+    "docs:html": "typedoc --plugin none --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate --out docs",
+    "docs:markdown": "typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate --theme github-wiki --out docs/markdown"
   },
   "repository": {
     "type": "git",
@@ -98,8 +100,10 @@
     "stylelint-config-standard": "19.0.0",
     "ts-jest": "25.2.1",
     "ts-loader": "6.2.1",
-    "typedoc": "^0.22.13",
-    "typescript": "3.7.5",
+    "typescript": "4.6.3",
+    "typedoc": "^0.22.4",
+    "typedoc-github-wiki-theme": "^1.0.0",
+    "typedoc-plugin-markdown": "^3.11.14",
     "typescript-plugin-css-modules": "2.1.2",
     "webpack": "4.41.5",
     "webpack-bundle-analyzer": "3.6.1",
