@@ -12,13 +12,16 @@ import {
 import classNames from 'classnames';
 import { Field, Formik, FormikBag, FormikValues, useFormikContext } from 'formik';
 import { path, pathOr } from 'ramda';
-import React, { FC, useMemo, useRef } from 'react';
+import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 
 import contentConnector from '../../connectors/content';
 import { getLangSiteUrl, getPositionInputValue, getTreeConfig } from '../../helpers';
 import { useNavigationRights, useSiteStructure } from '../../hooks';
+import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { CONFIG } from '../../navigation.const';
 import { NavItem, NavTree } from '../../navigation.types';
+import { SiteStructure } from '../../services/siteStructures';
+import { siteStructuresFacade } from '../../store/siteStructures';
 
 const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	updateContentMeta,
@@ -32,13 +35,42 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 }) => {
 	const url = getLangSiteUrl(site, activeLanguage);
 	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
+	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
+	const [siteStructureForLang, setSiteStructureForLang] = useState<SiteStructure | null>(null);
 
 	/**
 	 * Hooks
 	 */
 	// Context hooks
 	const { siteId } = useSiteContext();
+
+	useEffect(() => {
+		if (!siteId || !site?.data.name || !activeLanguage) {
+			return;
+		}
+
+		siteStructuresFacade.getSiteStructures(siteId, {});
+	}, [activeLanguage, site, siteId]);
+
+	useEffect(() => {
+		if (!siteStructures || !siteId || !activeLanguage) {
+			return;
+		}
+
+		setSiteStructureForLang(siteStructures.find(i => i.lang === activeLanguage) || null);
+	}, [activeLanguage, siteId, siteStructures]);
+
+	useEffect(() => {
+		if (!siteStructureForLang) {
+			return;
+		}
+
+		siteStructuresFacade.getSiteStructure(
+			siteId,
+			(siteStructureForLang?.id as unknown) as string
+		);
+	}, [siteId, siteStructureForLang]);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -68,6 +100,8 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
 		const cascaderValue = pathOr([], ['sitestructuur', 'position', activeLanguage!])(value);
 
+		console.log({ treeConfig, siteStructure, cascaderValue, value });
+
 		const disabled = false;
 
 		return (
@@ -81,23 +115,30 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 				<label className="a-input__label" htmlFor="text-field">
 					{props.label as string}
 				</label>
-				<small>Bepaal de standaardpositie voor items van dit content type.</small>
-				<Cascader
-					changeOnSelect
-					value={cascaderValue}
-					options={treeConfig.options}
-					disabled={disabled}
-					onChange={(value: number[]) => handlePositionOnChange(value)}
-				>
-					<div className="a-input__wrapper">
-						{/* <input
-							onChange={() => null}
-							disabled={disabled}
-							placeholder={props.placeholder as string}
-							value={getPositionInputValue(treeConfig.options as any, value)}
-						/> */}
+				<small className="u-block u-text-light u-margin-top-xs">
+					Bepaal de positie van dit item.
+				</small>
+				<div className="u-flex u-flex-align-center">
+					<span>test</span>
+					<Cascader
+						changeOnSelect
+						value={cascaderValue}
+						options={treeConfig.options}
+						disabled={disabled}
+						onChange={(value: number[]) => handlePositionOnChange(value)}
+					>
+						<div className="a-input__wrapper u-flex-item">
+							<input
+								onChange={() => null}
+								disabled={disabled}
+								placeholder={props.placeholder as string}
+								value={getPositionInputValue(
+									treeConfig.options as any,
+									cascaderValue
+								)}
+							/>
 
-						{cascaderValue.length > 0 && (
+							{/* {cascaderValue.length > 0 && (
 							<span
 								className="fa"
 								style={{
@@ -120,9 +161,10 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 									}}
 								/>
 							</span>
-						)}
-					</div>
-				</Cascader>
+						)} */}
+						</div>
+					</Cascader>
+				</div>
 			</div>
 		);
 	};
@@ -154,14 +196,10 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 									as={renderCascader}
 									id="position"
 									name="position"
-									label="Pad"
+									label="Positie"
 									required={true}
-									inline
-									placeholder="Vul een pad in"
+									placeholder="Selecteer een positie"
 								/>
-								<small className="u-block u-text-light u-margin-top-xs">
-									Bepaal de positie van dit iten.
-								</small>
 								<div className="a-input has-icon-right">
 									<Field
 										as={TextField}
@@ -172,7 +210,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 										placeholder="Vul naam slug in"
 									/>
 									<small className="u-block u-text-light u-margin-top-xs">
-										Geef een naam op &quot;label&quot; op voor dit item.
+										Geef een naam of &quot;label&quot; op voor dit item.
 									</small>
 								</div>
 								<div className="a-input has-icon-right">
