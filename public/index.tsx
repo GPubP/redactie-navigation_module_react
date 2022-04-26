@@ -436,8 +436,8 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		component: ContentTypeDetailUrl,
 		guardOptions: {
 			guards: [
-				rolesRightsConnector.guards.securityRightsTenantGuard([
-					rolesRightsConnector.securityRights.readUrlPattern,
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.securityRights.create,
 				]),
 			],
 		},
