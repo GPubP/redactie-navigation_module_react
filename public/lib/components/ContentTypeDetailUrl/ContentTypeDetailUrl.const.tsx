@@ -1,10 +1,11 @@
 import { Button } from '@acpaas-ui/react-components';
 import { TranslateFunc } from '@redactie/translations-module';
-import { TableColumn } from '@redactie/utils';
+import { TableColumn, useSiteContext } from '@redactie/utils';
 import classNames from 'classnames/bind';
 import React from 'react';
 
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
 import styles from './ContentTypeDetailUrl.module.scss';
@@ -71,44 +72,56 @@ export const PATTERN_COLUMNS = (
 	t: TranslateFunc,
 	tModule: TranslateFunc,
 	importPlaceholder: (key: string) => void
-): TableColumn<PatternRowData>[] => [
-	{
-		label: tModule(MODULE_TRANSLATIONS.VARIABLE),
-		value: 'key',
-		disableSorting: true,
-		ellipsis: true,
-		width: '20%',
-	},
-	{
-		label: t(CORE_TRANSLATIONS.DESCRIPTION),
-		value: 'description',
-		disableSorting: true,
-		classList: [cx('u-wrap-normal')],
-		width: '40%',
-	},
-	{
-		label: t(CORE_TRANSLATIONS.EXAMPLE),
-		value: 'example',
-		ellipsis: true,
-		disableSorting: true,
-		width: '25%',
-	},
-	{
-		label: '',
-		disableSorting: true,
-		classList: ['is-condensed', 'u-text-right'],
-		width: '5%',
-		component(value, { key }) {
-			return (
-				<Button
-					ariaLabel="Import"
-					icon="plus"
-					onClick={() => importPlaceholder(key)}
-					type="primary"
-					transparent
-					size="small"
-				/>
-			);
+): TableColumn<PatternRowData>[] => {
+	const { siteId } = useSiteContext();
+	const navigationRights = useNavigationRights(siteId);
+
+	const defaultColumns: TableColumn<PatternRowData>[] = [
+		{
+			label: tModule(MODULE_TRANSLATIONS.VARIABLE),
+			value: 'key',
+			disableSorting: true,
+			ellipsis: true,
+			width: '20%',
 		},
-	},
-];
+		{
+			label: t(CORE_TRANSLATIONS.DESCRIPTION),
+			value: 'description',
+			disableSorting: true,
+			classList: [cx('u-wrap-normal')],
+			width: '40%',
+		},
+		{
+			label: t(CORE_TRANSLATIONS.EXAMPLE),
+			value: 'example',
+			ellipsis: true,
+			disableSorting: true,
+			width: '25%',
+		},
+	];
+	if (!navigationRights.updateUrlPattern) {
+		return defaultColumns;
+	}
+
+	return [
+		...defaultColumns,
+		{
+			label: '',
+			disableSorting: true,
+			classList: ['is-condensed', 'u-text-right'],
+			width: '5%',
+			component(value, { key }) {
+				return (
+					<Button
+						ariaLabel="Import"
+						icon="plus"
+						onClick={() => importPlaceholder(key)}
+						type="primary"
+						transparent
+						size="small"
+					/>
+				);
+			},
+		},
+	];
+};
