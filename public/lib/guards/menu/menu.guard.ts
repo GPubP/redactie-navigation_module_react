@@ -7,9 +7,9 @@ import { MODULE_PATHS } from '../../navigation.const';
 const menuGuard: GuardFunction = async (to, from, next): Promise<void> => {
 	try {
 		const siteId = to.match.params.siteId;
-		const allowSiteStructure = await getAllowMenus(siteId);
+		const allowMenus = await getAllowMenus(siteId);
 
-		if (allowSiteStructure) {
+		if (allowMenus) {
 			return next();
 		}
 

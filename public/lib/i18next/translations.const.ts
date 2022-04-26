@@ -6,6 +6,9 @@ const tKey = translationsConnector.core.tKey;
 
 const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	VARIABLE: tKey('VARIABLE', 'Variabele'),
+	TABLE_LABEL: tKey('TABLE_LABEL', 'Label'),
+	TABLE_MENU: tKey('TABLE_MENU', 'Menu'),
+	TABLE_POSITION: tKey('TABLE_POSITION', 'Positie'),
 	PATTERN_ID_DESCRIPTION: tKey('PATTERN_ID_DESCRIPTION', 'Het unieke uuid van dit content item.'),
 	PATTERN_LANG_DESCRIPTION: tKey(
 		'PATTERN_LANG_DESCRIPTION',

@@ -1,5 +1,8 @@
 {
   "VARIABLE": "Variabele",
+  "TABLE_LABEL": "Label",
+  "TABLE_MENU": "Menu",
+  "TABLE_POSITION": "Positie",
   "PATTERN_ID_DESCRIPTION": "Het unieke uuid van dit content item.",
   "PATTERN_LANG_DESCRIPTION": "De taal waarin dit content item is gemaakt.",
   "PATTERN_LABEL_DESCRIPTION": "Het label van het content item bij creatie.",

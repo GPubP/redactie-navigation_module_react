@@ -25,6 +25,9 @@ export class MenuItemsFacade extends BaseEntityFacade<
 	public readonly menuItems$ = this.query.menuItems$;
 	public readonly menuItem$ = this.query.menuItem$;
 	public readonly menuItemDraft$ = this.query.menuItemDraft$;
+	public readonly pendingMenuItems$ = this.query.pendingMenuItems$;
+	public readonly contentMenuItems$ = this.query.contentMenuItems$;
+	public readonly isFetchingContentMenuItems$ = this.query.isFetchingContentMenuItems$;
 
 	public getMenuItems(siteId: string, menuId: string, searchParams: SearchParams): void {
 		const { isFetching } = this.query.getValue();
@@ -55,12 +58,47 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
+	public getContentMenuItems(
+		siteId: string,
+		contentId: string,
+		searchParams: SearchParams
+	): void {
+		const { isFetchingContentMenuItems } = this.query.getValue();
+
+		if (isFetchingContentMenuItems) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingContentMenuItems: true,
+		});
+
+		this.service
+			.getContentMenuItems(siteId, contentId, searchParams)
+			.then((response: MenuItemsResponse) => {
+				if (!response) {
+					throw new Error('Getting menuItems failed!');
+				}
+
+				this.store.update({
+					contentMenuItems: response?._embedded.resourceList,
+					isFetchingContentMenuItems: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingContentMenuItems: false,
+				});
+			});
+	}
+
 	public async getSubset(
 		siteId: string,
 		menuId: string,
 		startitem = 0,
 		depth = 0
-	): Promise<void> {
+	): Promise<MenuItem[] | void> {
 		const { isFetching } = this.query.getValue();
 
 		if (isFetching) {
@@ -95,6 +133,8 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				this.store.update({
 					isFetching: false,
 				});
+
+				return response._embedded.resourceList;
 			})
 			.catch(error => {
 				this.store.update({
@@ -104,14 +144,19 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public getMenuItem(siteId: string, menuId: string, uuid: string): void {
+	public async getMenuItem(
+		siteId: string,
+		menuId: string,
+		uuid: string
+	): Promise<MenuItem | void> {
 		const { isFetchingOne } = this.query.getValue();
 		if (isFetchingOne) {
 			return;
 		}
 
 		this.store.setIsFetchingOne(true);
-		this.service
+
+		return this.service
 			.getMenuItem(siteId, menuId, uuid)
 			.then((response: MenuItem) => {
 				if (!response) {
@@ -122,6 +167,8 @@ export class MenuItemsFacade extends BaseEntityFacade<
 					menuItem: response,
 					isFetchingOne: false,
 				});
+
+				return response;
 			})
 			.catch(error => {
 				this.store.update({
@@ -218,6 +265,34 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
+	public async upsertContentMenuItems(siteId: string, upsertItems: MenuItem[]): Promise<void> {
+		const { isUpdating } = this.query.getValue();
+
+		if (isUpdating) {
+			return Promise.resolve();
+		}
+
+		this.store.setIsUpdating(true);
+
+		return this.service
+			.upsertContentMenuItems(siteId, upsertItems)
+			.then((response: MenuItem[]) => {
+				if (!response) {
+					throw new Error(`Updating menuItems failed!`);
+				}
+
+				this.store.update({
+					isUpdating: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isUpdating: false,
+				});
+			});
+	}
+
 	public async rearrangeItems(
 		siteId: string,
 		menuId: string,
@@ -308,6 +383,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		});
 	}
 
+	public unsetMenuItem(): void {
+		this.store.update({
+			menuItem: undefined,
+		});
+	}
+
 	public setMenuItemDraft(menuItemDraft: MenuItem): void {
 		this.store.update({
 			menuItemDraft,
@@ -320,9 +401,15 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public unsetMenuItem(): void {
+	public setPendingMenuItems(pendingMenuItems: MenuItem[]): void {
 		this.store.update({
-			menuItem: undefined,
+			pendingMenuItems,
+		});
+	}
+
+	public unsetPendingMenuItems(): void {
+		this.store.update({
+			pendingMenuItems: [],
 		});
 	}
 }

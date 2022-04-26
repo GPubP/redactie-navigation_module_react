@@ -1,14 +1,11 @@
 import { Button, Checkbox, Switch, Textarea, TextField } from '@acpaas-ui/react-components';
-import {
-	ActionBar,
-	ActionBarContentSection,
-	Cascader,
-} from '@acpaas-ui/react-editorial-components';
-import { ErrorMessage, FormikOnChangeHandler, LeavePrompt, LoadingState } from '@redactie/utils';
-import { Field, Formik, FormikProps, FormikValues } from 'formik';
+import { Cascader } from '@acpaas-ui/react-editorial-components';
+import { ErrorMessage, FormikOnChangeHandler, LoadingState } from '@redactie/utils';
+import classNames from 'classnames/bind';
+import { Field, Formik, FormikProps, FormikValues, isFunction } from 'formik';
+import { isEmpty } from 'ramda';
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 
-import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
 import { extractSiblings } from '../../helpers/extractSiblings';
 import {
@@ -24,31 +21,27 @@ import { MenuItemTypeField } from '../MenuItemTypeField';
 import { RearrangeModal } from '../RearrangeModal';
 
 import { NAV_ITEM_SETTINGS_VALIDATION_SCHEMA } from './NavItemDetailForm.const';
+import styles from './NavItemDetailForm.module.scss';
 import { NavItemDetailFormProps } from './NavItemDetailForm.types';
+
+classNames.bind(styles);
 
 const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	navItem,
 	navItems,
 	navItemType = NavItemType.internal,
 	navTree,
-	rights,
-	loading,
 	upsertingState,
 	parentChanged,
-	isChanged,
 	copy,
+	canEdit,
+	formikRef,
 	onRearrange,
 	onChange,
-	onSave,
 }) => {
 	const [contentItemPublished, setContentItemPublished] = useState(false);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
-	const [t] = translationsConnector.useCoreTranslation();
-
-	const canEdit = useMemo(() => {
-		return navItem?.id ? rights?.canUpdate : true;
-	}, [navItem, rights]);
 
 	const isUpdate = useMemo(() => {
 		return !!navItem?.id;
@@ -59,14 +52,14 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 		activeItem: NavItem | undefined;
 	}>(() => getTreeConfig<NavTree, NavItem>(navTree, navItem?.id as number), [navItem, navTree]);
 
-	const initialValues: NavItemDetailForm = useMemo(() => {
-		if (!navItem) {
-			return {} as NavItemDetailForm;
+	const initialValues: NavItemDetailForm | undefined = useMemo(() => {
+		if (!navItem || isEmpty(navItem) || !treeConfig.options) {
+			return undefined;
 		}
 
 		setContentItemPublished(navItem.publishStatus === NAV_STATUSES.PUBLISHED);
 		return getInitialNavItemsFormValues(navItem, treeConfig.options);
-	}, [navItem, treeConfig.options]);
+	}, [navItem, treeConfig]);
 
 	const handlePositionOnChange = (
 		value: number[],
@@ -81,26 +74,27 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	};
 
 	const handleRearrange = async (items: RearrangeNavItem[]): Promise<void> => {
+		if (!onRearrange) {
+			return;
+		}
+
 		await onRearrange(items);
 		setShowRearrange(false);
 	};
 
+	if (!initialValues) {
+		return <></>;
+	}
+
 	return (
 		<Formik
+			innerRef={instance => isFunction(formikRef) && formikRef(instance)}
 			enableReinitialize
-			initialValues={initialValues}
-			onSubmit={onSave}
+			onSubmit={() => undefined}
+			initialValues={initialValues as NavItemDetailForm}
 			validationSchema={NAV_ITEM_SETTINGS_VALIDATION_SCHEMA(navItemType)}
 		>
-			{({
-				values,
-				touched,
-				errors,
-				submitForm,
-				resetForm,
-				getFieldHelpers,
-				setFieldValue,
-			}) => {
+			{({ values, touched, errors, getFieldHelpers, setFieldValue }) => {
 				return (
 					<>
 						<FormikOnChangeHandler
@@ -162,11 +156,11 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 													placeholder="Kies een positie in de boom"
 													value={getPositionInputValue(
 														treeConfig.options,
-														values.position
+														values?.position
 													)}
 												/>
 
-												{values.position?.length > 0 && (
+												{values?.position?.length > 0 && (
 													<span
 														className="fa"
 														style={{
@@ -215,6 +209,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 							<div className="col-xs-12">
 								<Field
 									as={Textarea}
+									className="u-flex u-flex-column"
 									disabled={!canEdit}
 									label="Beschrijving"
 									name="description"
@@ -226,12 +221,13 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 								</small>
 							</div>
 						</div>
-						{navItemType === NavItemType.internal && (
+						{(navItemType === NavItemType.internal ||
+							navItemType === NavItemType.internalOnContentUpsert) && (
 							<div className="row u-margin-top">
 								<div className="col-xs-12">
 									<label className="u-block u-margin-bottom-xs">Status</label>
 									<Field
-										key={values.publishStatus}
+										key={values?.publishStatus}
 										as={Switch}
 										checked={values?.publishStatus === NAV_STATUSES.PUBLISHED}
 										labelFalse="Uit"
@@ -278,36 +274,6 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 								</div>
 							</div>
 						)}
-						<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>
-							<ActionBarContentSection>
-								<div className="u-wrapper row end-xs">
-									<Button
-										className="u-margin-right-xs"
-										onClick={resetForm}
-										negative
-									>
-										{navItem?.id
-											? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
-											: t(CORE_TRANSLATIONS.BUTTON_BACK)}
-									</Button>
-									<Button
-										iconLeft={loading ? 'circle-o-notch fa-spin' : null}
-										disabled={loading || !isChanged}
-										onClick={submitForm}
-										type="success"
-									>
-										{navItem?.id
-											? t(CORE_TRANSLATIONS['BUTTON_SAVE'])
-											: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
-									</Button>
-								</div>
-							</ActionBarContentSection>
-						</ActionBar>
-						<LeavePrompt
-							when={isChanged}
-							shouldBlockNavigationOnConfirm
-							onConfirm={submitForm}
-						/>
 						<RearrangeModal
 							items={sortRows}
 							show={showRearrange}

@@ -1,8 +1,9 @@
 import { Button, Card, CardBody, CardDescription, CardTitle } from '@acpaas-ui/react-components';
-import { AlertContainer, DeletePrompt, useDetectValueChanges } from '@redactie/utils';
-import { FormikValues } from 'formik';
-import { omit } from 'ramda';
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
+import { FormikProps, FormikValues } from 'formik';
+import { isEmpty, omit } from 'ramda';
+import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavItemDetailForm } from '../../../components';
@@ -19,6 +20,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	rights,
 	onSubmit,
 	onDelete,
+	onCancel,
 	loading,
 	removing,
 	menu,
@@ -36,10 +38,15 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [parentChanged, setParentChanged] = useState<boolean>(false);
 	const { menuItems, upsertingState } = useMenuItems();
+	const formikRef = useRef<FormikProps<FormikValues>>();
 
 	const canDelete = useMemo(() => {
 		return menuItem?.id ? rights?.canDelete : false;
 	}, [menuItem, rights]);
+
+	const canEdit = useMemo(() => {
+		return menuItemDraft?.id ? !!rights?.canUpdate : true;
+	}, [menuItemDraft, rights]);
 
 	useEffect(() => {
 		if (!menuId || !siteId) {
@@ -63,7 +70,21 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	/**
 	 * Methods
 	 */
-	const onSave = (): void => {
+	const isFormValid = async (): Promise<boolean> => {
+		if (!formikRef || !formikRef.current) {
+			return false;
+		}
+
+		const errors = await formikRef.current.validateForm();
+
+		return isEmpty(errors);
+	};
+
+	const onSave = async (): Promise<void> => {
+		if (!(await isFormValid())) {
+			return;
+		}
+
 		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
@@ -145,18 +166,16 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<NavItemDetailForm
+				formikRef={instance => (formikRef.current = instance || undefined)}
 				navTree={(menu as unknown) as NavTree}
 				navItem={menuItemDraft as MenuItem}
 				navItems={menuItems as MenuItem[]}
 				navItemType={menuItemType}
-				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}
-				loading={loading}
-				isChanged={isChanged}
+				canEdit={canEdit}
 				onRearrange={onRearrange}
 				onChange={onChange}
-				onSave={onSave}
 				copy={{
 					label: tModule(MODULE_TRANSLATIONS.MENU_ITEM_LABEL_DESCRIPTION),
 					statusCheckbox: tModule(
@@ -165,6 +184,28 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 				}}
 			/>
 			{menuItem?.id && canDelete && renderDelete()}
+			<LeavePrompt when={isChanged} shouldBlockNavigationOnConfirm onConfirm={onSave} />
+			<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>
+				<ActionBarContentSection>
+					<div className="u-wrapper row end-xs">
+						<Button className="u-margin-right-xs" onClick={onCancel} negative>
+							{menuItemDraft?.id
+								? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
+								: t(CORE_TRANSLATIONS.BUTTON_BACK)}
+						</Button>
+						<Button
+							iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+							disabled={loading || !isChanged}
+							onClick={onSave}
+							type="success"
+						>
+							{menuItemDraft?.id
+								? t(CORE_TRANSLATIONS['BUTTON_SAVE'])
+								: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
+						</Button>
+					</div>
+				</ActionBarContentSection>
+			</ActionBar>
 		</>
 	);
 };
