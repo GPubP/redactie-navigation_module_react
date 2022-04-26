@@ -446,13 +446,6 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
 		breadcrumb: false,
 		component: ContentTypeDetailMenu,
-		guardOptions: {
-			guards: [
-				rolesRightsConnector.guards.securityRightsTenantGuard([
-					rolesRightsConnector.menuSecurityRights.read,
-				]),
-			],
-		},
 	},
 ];
 
