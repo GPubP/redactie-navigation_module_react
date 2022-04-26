@@ -1,5 +1,6 @@
-import { alertService, BaseEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
+import { alertService, BaseMultiEntityFacade, LoadingState, SearchParams } from '@redactie/utils';
 import { Observable } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 import { ALERT_CONTAINER_IDS, LangKeys } from '../../navigation.const';
 import { NavTree } from '../../navigation.types';
@@ -16,71 +17,58 @@ import { getAlertMessages } from './menus.messages';
 import { MenusQuery, menusQuery } from './menus.query';
 import { menusStore, MenusStore } from './menus.store';
 
-export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, MenusQuery> {
+export class MenusFacade extends BaseMultiEntityFacade<MenusStore, MenusApiService, MenusQuery> {
 	public readonly meta$ = this.query.meta$;
 	public readonly menus$ = this.query.menus$;
 	public readonly menu$ = this.query.menu$;
-	public readonly cachedMenus$ = this.query.cachedMenus$;
 	public readonly menuDraft$ = this.query.menuDraft$;
 	public readonly occurrences$ = this.query.occurrences$;
+	public readonly isFetchingOne$ = this.query.isFetchingOne$;
+	public readonly isRemovingOne$ = this.query.isRemovingOne$;
+	public readonly error$ = this.query.error$;
 
 	public readonly isFetchingOccurrences$ = this.query.isFetchingOccurrences$;
 
-	public getMenus(siteId: string, searchParams: SearchParams): void {
-		const { isFetching } = this.query.getValue();
+	public getMenus(siteId: string, searchParams: SearchParams, reload = false): void {
+		const lang = searchParams.lang || LangKeys.generic;
 
-		if (isFetching) {
-			return;
-		}
+		const oldValue = this.query.getItem(lang);
+		const isFetching = this.query.getItemIsFetching(lang);
 
-		this.store.setIsFetching(true);
-		const requestedLang = searchParams.lang;
-		const cachedMenus = this.store.getValue().cachedMenus;
+		if ((!reload && oldValue) || isFetching) return;
+		if (!oldValue) this.store.addItem(lang);
+		this.store.setItemIsFetching(lang, true);
 
-		if (cachedMenus?.[requestedLang]) {
-			this.store.upsertMany(cachedMenus[requestedLang]);
+		this.service
+			.getMenus(siteId, searchParams)
+			.then((response: MenusResponse | null) => {
+				if (!response) {
+					throw new Error('Getting menus failed!');
+				}
 
-			this.store.update({
-				isFetching: false,
-			});
-		} else {
-			this.service
-				.getMenus(siteId, searchParams)
-				.then((response: MenusResponse | null) => {
-					console.log('searchParams', searchParams);
+				const menus = response._embedded.resourceList.map(menu => {
+					const categoryArray = menu.category.label.split('_');
 
-					if (!response) {
-						throw new Error('Getting menus failed!');
-					}
-
-					this.store.upsertMany(
-						response._embedded.resourceList.map(menu => {
-							const categoryArray = menu.category.label.split('_');
-
-							const menuToAdd = {
-								...menu,
-								category: menu.category.label,
-								lang: categoryArray[categoryArray.length - 1],
-							};
-
-							this.cacheMenu(menuToAdd, requestedLang);
-
-							return menuToAdd;
-						})
-					);
-
-					this.store.update({
-						meta: response._page,
-						isFetching: false,
-					});
-				})
-				.catch(error => {
-					this.store.update({
-						error,
-						isFetching: false,
-					});
+					return {
+						...menu,
+						category: menu.category.label,
+						lang: categoryArray[categoryArray.length - 1],
+					};
 				});
-		}
+
+				this.store.setItemValue(lang, menus);
+
+				this.store.update({
+					meta: response._page,
+					isFetching: false,
+				});
+			})
+			.catch(error => {
+				this.store.setItemError(lang, error);
+			})
+			.finally(() => {
+				this.store.setItemIsFetching(lang, false);
+			});
 	}
 
 	public getMenu(siteId: string, uuid: string): void {
@@ -277,25 +265,6 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 		});
 	}
 
-	public cacheMenu(menu: Menu, lang: string): void {
-		if (!menu.lang) {
-			return;
-		}
-
-		const cachedMenus = this.query.getValue().cachedMenus?.[lang] || [];
-
-		if (cachedMenus.map(({ label }) => label).includes(menu.label)) {
-			return;
-		}
-
-		this.store.update({
-			cachedMenus: {
-				...(this.query.getValue().cachedMenus || {}),
-				[lang]: [...cachedMenus, menu],
-			},
-		});
-	}
-
 	public setMenuDraft(menuDraft: Menu): void {
 		this.store.update({
 			menuDraft,
@@ -315,9 +284,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 	}
 
 	public selectLanguageMenus(lang: string): Observable<Menu[]> {
-		return menusQuery.selectAll({
-			filterBy: menu => menu.lang === lang || menu.lang === LangKeys.generic,
-		});
+		return this.query.selectItemValue(lang).pipe(map(value => value ?? []));
 	}
 }
 
