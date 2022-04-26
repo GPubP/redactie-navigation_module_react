@@ -16,6 +16,7 @@ import { NAV_STATUSES } from '../ContentDetailCompartment';
 
 import styles from './ContentInfoTooltip.module.scss';
 import { Status } from './ContentInfoTooltip.types';
+
 const cx = classnames.bind(styles);
 
 const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
@@ -68,7 +69,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.urlPath?.[item?.meta.lang]?.value && (
-						<div className="u-margin-bottom-xs a-url">
+						<div className={cx('m-tooltip__data', 'a-url')}>
 							<b>URL: </b>
 							{`${getLangSiteUrl(site, item?.meta.lang)}${
 								item?.meta.urlPath?.[item?.meta.lang].value
@@ -76,7 +77,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.created && (
-						<div className="u-margin-bottom-xs">
+						<div className={cx('m-tooltip__data')}>
 							<b>Aangemaakt op: </b>
 							<span>
 								{moment(item?.meta.created).format('DD/MM/YYYY [-] HH[u]mm')}
@@ -84,7 +85,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.lastEditor && (
-						<div className="u-margin-bottom-xs">
+						<div className={cx('m-tooltip__data')}>
 							<b>Door: </b>
 							{`${item?.meta.lastEditor?.firstname} ${item?.meta.lastEditor?.lastname}`}
 						</div>
@@ -94,22 +95,16 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 							<b>Status</b>
 						</p>
 						{item?.meta.status && (
-							<Label type="primary">
+							<Label className="u-margin-right-xs" type="primary">
 								{NAV_STATUSES[item?.meta.status as Status]}
 							</Label>
 						)}
 						{item?.meta.historySummary?.published ? (
-							<Label
-								className="u-margin-left-xs u-margin-top-xs u-margin-bottom-xs"
-								type="success"
-							>
+							<Label className="u-margin-top-xs" type="success">
 								Online
 							</Label>
 						) : (
-							<Label
-								className="u-margin-left-xs u-margin-top-xs u-margin-bottom-xs"
-								type="danger"
-							>
+							<Label className="u-margin-top-xs" type="danger">
 								Offline
 							</Label>
 						)}
@@ -136,6 +131,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 				</div>
 				<div className={cx('m-tooltip')}>
 					<InfoTooltip
+						tooltipClassName={cx('m-tooltip__flyout')}
 						placement="bottom-end"
 						type={TooltipTypeMap.WHITE}
 						icon="file-text-o"
