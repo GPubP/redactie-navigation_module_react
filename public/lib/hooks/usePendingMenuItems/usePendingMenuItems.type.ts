@@ -1,3 +1,3 @@
-import { MenuItem } from '../../services/menuItems';
+import { PendingMenuItems } from '../../store/menuItems';
 
-export type UsePendingMenuItems = [MenuItem[] | undefined];
+export type UsePendingMenuItems = [PendingMenuItems | undefined];

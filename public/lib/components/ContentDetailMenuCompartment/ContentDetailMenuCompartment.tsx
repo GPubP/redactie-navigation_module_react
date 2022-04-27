@@ -174,6 +174,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					menu: menu?.label || '',
 					menuId: menu?.id.toString() || '',
 					position: item?.parents?.length ? buildParentPath(item.parents) : 'Hoofdniveau',
+					newItem: false,
 					editMenuItem: onShowEdit,
 				};
 			})
@@ -225,6 +226,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 							menu: menu?.label || '',
 							menuId: menu?.id.toString() || '',
 							position: formattedPosition,
+							newItem: false,
 							editMenuItem: onShowEdit,
 						};
 					}),
@@ -237,12 +239,17 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 						menu: menu?.label || '',
 						menuId: menu?.id.toString() || '',
 						position: formattedPosition,
+						newItem: true,
 						editMenuItem: onShowEdit,
 					},
 			  ]);
 
-		menuItemsFacade.setPendingMenuItems([...(pendingMenuItems || []), menuItemDraft]);
-		onContentChange([...(pendingMenuItems || []), menuItemDraft]);
+		const pending = {
+			upsertItems: [...(pendingMenuItems?.upsertItems || []), menuItemDraft],
+			deleteItems: pendingMenuItems?.deleteItems || [],
+		};
+		menuItemsFacade.setPendingMenuItems(pending);
+		onContentChange(pending);
 		resetMenuItem();
 		resetIsChanged();
 		setShowModal(false);
@@ -274,6 +281,40 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const onClose = (): void => {
 		setShowModal(false);
 		resetMenuItem();
+	};
+
+	const deleteMenuItem = (rowData: MenuItemRowData): void => {
+		setRows(rows.filter(row => row.id !== rowData.id));
+		const pending = {
+			upsertItems: pendingMenuItems?.upsertItems || [],
+			deleteItems: [
+				...(pendingMenuItems?.deleteItems || []),
+				{
+					id: menuItemDraft?.id as number,
+					treeId: menuItemDraft?.treeId as number,
+				},
+			],
+		};
+		if (!rowData.newItem) {
+			menuItemsFacade.setPendingMenuItems(pending);
+		}
+		onContentChange(pending);
+		resetMenuItem();
+		resetIsChanged();
+	};
+
+	const hasChildren = (items: MenuItem[], id: number): boolean => {
+		return !!items.find(item => {
+			if (item.id === id) {
+				return !!item?.items?.length;
+			}
+
+			if (item?.items?.length) {
+				return hasChildren(item.items, id);
+			}
+
+			return false;
+		});
 	};
 
 	const renderForm = (): ReactElement => {
@@ -312,6 +353,13 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 						),
 					}}
 				/>
+				{hasChildren(menu?.items || [], menuItemDraft?.id || 0) && (
+					<div className="u-margin-top-xs">
+						<small>
+							{tModule(MODULE_TRANSLATIONS.CONTENT_PREVENT_DELETE_DESCRIPTION)}
+						</small>
+					</div>
+				)}
 				<div className="u-margin-top u-margin-bottom-xs">
 					<Button
 						className="u-margin-right-xs"
@@ -332,6 +380,15 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					>
 						{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
 					</Button>
+					{!hasChildren(menu?.items || [], menuItemDraft?.id || 0) && (
+						<Button
+							htmlType="button"
+							icon="trash-o"
+							onClick={() => deleteMenuItem(rowData)}
+							transparent
+							type="danger"
+						/>
+					)}
 				</div>
 			</div>
 		);

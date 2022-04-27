@@ -5,7 +5,10 @@ import { menuItemsFacade } from '../../store/menuItems';
 import { UsePendingMenuItems } from './usePendingMenuItems.type';
 
 const usePendingMenuItems = (): UsePendingMenuItems => {
-	const pendingMenuItems = useObservable(menuItemsFacade.pendingMenuItems$, []);
+	const pendingMenuItems = useObservable(menuItemsFacade.pendingMenuItems$, {
+		upsertItems: [],
+		deleteItems: [],
+	});
 
 	return [pendingMenuItems];
 };

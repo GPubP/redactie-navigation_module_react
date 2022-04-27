@@ -1,5 +1,5 @@
 import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
-import { isEmpty, omit } from 'ramda';
+import { omit } from 'ramda';
 import { take } from 'rxjs/operators';
 
 import { menuItemsFacade } from '../../store/menuItems';
@@ -17,7 +17,7 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 ): Promise<void> => {
 	const pendingMenuItems = await menuItemsFacade.pendingMenuItems$.pipe(take(1)).toPromise();
 
-	const pendingWithContentLink = (pendingMenuItems || [])?.map(pendingItem => {
+	const pendingUpsertWithContentLink = (pendingMenuItems?.upsertItems || [])?.map(pendingItem => {
 		return {
 			...omit(['weight'], pendingItem),
 			slug: contentItem.meta.slug[contentItem.meta.lang],
@@ -27,12 +27,15 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 		};
 	});
 
-	if (!site?.uuid || isEmpty(pendingWithContentLink)) {
+	if (!site?.uuid) {
 		return;
 	}
 
 	await menuItemsFacade
-		.upsertContentMenuItems(site?.uuid || '', pendingWithContentLink)
+		.upsertContentMenuItems(site?.uuid || '', {
+			upsertItems: pendingUpsertWithContentLink,
+			deleteItems: pendingMenuItems?.deleteItems || [],
+		})
 		.then(() =>
 			menuItemsFacade.getContentMenuItems(site?.uuid || '', contentItem?.uuid || '', {
 				pagesize: -1,
@@ -42,7 +45,10 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 			throw new Error();
 		});
 
-	menuItemsFacade.setPendingMenuItems([]);
+	menuItemsFacade.setPendingMenuItems({
+		upsertItems: [],
+		deleteItems: [],
+	});
 	return;
 };
 

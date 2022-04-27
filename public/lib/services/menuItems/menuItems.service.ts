@@ -1,6 +1,7 @@
 import { SearchParams } from '@redactie/utils';
 
 import { RearrangeNavItem } from '../../navigation.types';
+import { PendingMenuItems } from '../../store/menuItems';
 import { api } from '../api';
 
 import { MenuItem, MenuItemsResponse } from './menuItems.service.types';
@@ -76,12 +77,12 @@ export class MenuItemsApiService {
 
 	public async upsertContentMenuItems(
 		siteId: string,
-		upsertItems: MenuItem[]
+		items: PendingMenuItems
 	): Promise<MenuItem[]> {
 		return api
 			.post(`${siteId}/items`, {
 				json: {
-					upsertItems,
+					...items,
 				},
 			})
 			.json();
