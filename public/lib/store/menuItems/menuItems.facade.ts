@@ -416,6 +416,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			},
 		});
 	}
+
+	public resetContentMenuItems(): void {
+		this.store.update({
+			contentMenuItems: [],
+		});
+	}
 }
 
 export const menuItemsFacade = new MenuItemsFacade(

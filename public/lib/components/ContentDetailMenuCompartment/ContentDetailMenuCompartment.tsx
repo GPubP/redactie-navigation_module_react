@@ -149,9 +149,17 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	}, [activeLanguage, site]);
 
 	useEffect(() => {
+		if (!contentItem?.uuid) {
+			return;
+		}
+
 		menuItemsFacade.getContentMenuItems(site?.uuid || '', contentItem?.uuid || '', {
 			pagesize: -1,
 		});
+
+		return () => {
+			menuItemsFacade.resetContentMenuItems();
+		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
 
