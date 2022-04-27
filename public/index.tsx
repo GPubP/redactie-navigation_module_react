@@ -30,7 +30,7 @@ import { menuGuard, siteStructureGuard } from './lib/guards';
 import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
-import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
+import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
 import {
 	MenuCreate,
@@ -423,11 +423,11 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 		const siteNavigationConfig = (contentType.modulesConfig || []).find(
 			config => config.name === 'navigation' && config.site
 		);
-		console.log(siteNavigationConfig);
+		//console.log(siteNavigationConfig);
 
 		if (
 			!siteNavigationConfig ||
-			siteNavigationConfig?.config?.sitestructuur?.structurePosition === 'none'
+			siteNavigationConfig?.config?.sitestructuur?.structurePosition === PositionValues.none
 		) {
 			return false;
 		}

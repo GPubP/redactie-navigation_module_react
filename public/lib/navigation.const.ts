@@ -172,10 +172,16 @@ export const ALERT_CONTAINER_IDS = {
 	siteStructureItemsOverview: 'site-structure-items-overview',
 };
 
+export enum PositionValues {
+	none = 'none',
+	limited = 'limited',
+	unlimited = 'unlimited',
+}
+
 export const SITE_STRUCTURE_POSITION_OPTIONS = [
-	{ key: 'none', label: 'Geen', value: 'none' },
-	{ key: 'limited', label: 'Beperkt', value: 'limited' },
-	{ key: 'unlimited', label: 'Vrij', value: 'unlimited' },
+	{ key: 'none', label: 'Geen', value: PositionValues.none },
+	{ key: 'limited', label: 'Beperkt', value: PositionValues.limited },
+	{ key: 'unlimited', label: 'Vrij', value: PositionValues.unlimited },
 ];
 
 export enum LangKeys {

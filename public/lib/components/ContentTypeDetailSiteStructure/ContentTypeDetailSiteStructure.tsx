@@ -17,7 +17,7 @@ import { getPositionInputValue, getTreeConfig } from '../../helpers';
 import { useSiteStructure } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
-import { SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';
+import { PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { SiteStructure } from '../../services/siteStructures';
 import { siteStructuresFacade } from '../../store/siteStructures';
@@ -166,7 +166,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 				</div>
 			</div>
 			{values.sitestructuur?.structurePosition &&
-				values.sitestructuur?.structurePosition !== 'none' && (
+				values.sitestructuur?.structurePosition !== PositionValues.none && (
 					<div className="row u-margin-top">
 						<div className="col-xs-12">
 							<FormikMultilanguageField
@@ -174,9 +174,12 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 								label="Standaard positie"
 								name="sitestructuur.position"
 								placeholder="Selecteer een positie"
-								required={values.sitestructuur?.structurePosition === 'limited'}
+								required={
+									values.sitestructuur?.structurePosition ===
+									PositionValues.limited
+								}
 							/>
-							{values.sitestructuur?.structurePosition === 'limited' && (
+							{values.sitestructuur?.structurePosition === PositionValues.limited && (
 								<div className="u-margin-top-xs">
 									<Field
 										as={Checkbox}
