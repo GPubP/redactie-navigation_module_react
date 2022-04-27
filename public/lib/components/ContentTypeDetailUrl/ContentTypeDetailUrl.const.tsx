@@ -1,8 +1,9 @@
 import { Button } from '@acpaas-ui/react-components';
 import { TranslateFunc } from '@redactie/translations-module';
-import { TableColumn, useSiteContext } from '@redactie/utils';
+import { TableColumn } from '@redactie/utils';
 import classNames from 'classnames/bind';
 import React from 'react';
+import { useParams } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useNavigationRights } from '../../hooks';
@@ -73,7 +74,7 @@ export const PATTERN_COLUMNS = (
 	tModule: TranslateFunc,
 	importPlaceholder: (key: string) => void
 ): TableColumn<PatternRowData>[] => {
-	const { siteId } = useSiteContext();
+	const { siteId } = useParams<{ siteId: string }>();
 	const navigationRights = useNavigationRights(siteId);
 
 	const defaultColumns: TableColumn<PatternRowData>[] = [
