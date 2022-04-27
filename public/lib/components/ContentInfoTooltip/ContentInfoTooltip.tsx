@@ -1,15 +1,16 @@
 import { CardTitle, Label } from '@acpaas-ui/react-components';
 import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
-import { DataLoader, InfoTooltip } from '@redactie/utils';
+import { DataLoader, InfoTooltip, useNavigate, useTenantContext } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import contentConnector from '../../connectors/content';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
+import { MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 import { NavItem } from '../../navigation.types';
 import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
@@ -28,6 +29,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 	const [item, setItem] = useState<ContentSchema | null>();
 	const [menuItem, setMenuItem] = useState<NavItem | null>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
+	const { generatePath } = useNavigate(SITES_ROOT);
 
 	const [loading, setLoading] = useState(false);
 
@@ -58,9 +60,20 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 		if (!item) {
 			return null;
 		}
+
+		const contentItemPath = generatePath(MODULE_PATHS.site.contentDetail, {
+			siteId,
+			contentTypeId: item?.meta.contentType.uuid,
+			contentId: item?.uuid,
+		});
+
 		return (
 			<>
-				<CardTitle>{item?.meta.label}</CardTitle>
+				<CardTitle>
+					<Link className={cx('m-tooltip__title')} to={contentItemPath}>
+						{item?.meta.label}
+					</Link>
+				</CardTitle>
 
 				<div className="u-margin-top">
 					{item?.meta.description && (

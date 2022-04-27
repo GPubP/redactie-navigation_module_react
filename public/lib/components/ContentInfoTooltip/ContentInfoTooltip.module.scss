@@ -53,8 +53,18 @@
 .m-tooltip__flyout {
 	max-width: 400px;
 	width: 100%;
-}
 
-.m-tooltip__data {
-	line-height: 1.5;
+	.m-tooltip__title {
+		color: $link-color;
+
+		&:hover,
+		&:active,
+		&:focus {
+			color: $link-hover-color;
+		}
+	}
+
+	.m-tooltip__data {
+		line-height: 1.5;
+	}
 }
