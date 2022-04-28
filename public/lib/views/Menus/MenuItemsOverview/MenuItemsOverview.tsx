@@ -7,13 +7,14 @@ import { NAV_STATUSES } from '../../../components';
 import { RearrangeModal } from '../../../components/RearrangeModal';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { getMenuItemPath, getMenuItemTypeByValue } from '../../../helpers';
+import { getMenuItemPath } from '../../../helpers';
 import { extractSiblings } from '../../../helpers/extractSiblings';
 import { useMenuItems } from '../../../hooks';
 import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	MenuDetailRouteProps,
 	NavigationMatchProps,
+	NavItemType,
 	RearrangeNavItem,
 } from '../../../navigation.types';
 import { MenuItem } from '../../../services/menuItems';
@@ -58,17 +59,18 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 
 	const transformItemsToRows = (menuItems: MenuItem[]): MenuItemsTableRow[] => {
 		return (menuItems || []).map(menuItem => {
+			const menuItemType = menuItem.properties?.type ?? NavItemType.internal;
+
 			return {
 				id: menuItem.id as number,
 				label: menuItem.label,
 				url: menuItem.externalUrl,
+				type: menuItemType,
 				active: menuItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(menuItem.items),
 				hasChildren:
 					!!(menuItem.parents || []).length || (menuItem.childItemCount || 0) > 0,
 				navigate: (menuItemId: number) => {
-					// TODO: change this once properties.type is available from items call
-					const menuItemType = getMenuItemTypeByValue(menuItem);
 					const menuItemDetailPath = getMenuItemPath(menuItemType);
 
 					navigate(menuItemDetailPath, {

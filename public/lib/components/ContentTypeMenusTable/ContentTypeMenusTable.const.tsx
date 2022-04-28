@@ -7,7 +7,7 @@ import React from 'react';
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
-import { MenusRowData } from './MenusCheckboxList.types';
+import { MenusRowData } from './ContentTypeMenusTable.types';
 
 export const MENUS_COLUMNS = (
 	t: TranslateFunc,

@@ -48,7 +48,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 					rolesRightsConnector.menuItemSecurityRights.delete,
 			  ])
 			: false;
-	}, [mySecurityrights]);
+	}, [menu, mySecurityrights]);
 
 	const canEdit = useMemo(() => {
 		return menuItemDraft?.id ? !!rights?.canUpdate : true;

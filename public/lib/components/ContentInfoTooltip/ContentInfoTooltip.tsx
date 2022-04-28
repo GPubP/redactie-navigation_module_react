@@ -1,7 +1,7 @@
 import { CardTitle, Label } from '@acpaas-ui/react-components';
 import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
-import { DataLoader, InfoTooltip, useNavigate, useTenantContext } from '@redactie/utils';
+import { DataLoader, InfoTooltip, useNavigate } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
