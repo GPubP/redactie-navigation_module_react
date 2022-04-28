@@ -121,6 +121,7 @@ export interface NavigationItemDetailRouteProps<Params = {}>
 	onSubmit: (data: NavItem) => Promise<void>;
 	onDelete: (data: NavItem) => Promise<void>;
 	rights: NavRights;
+	mySecurityrights: string [];
 	loading: boolean;
 	removing: boolean;
 }

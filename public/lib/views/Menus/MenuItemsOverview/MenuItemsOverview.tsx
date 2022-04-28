@@ -22,7 +22,7 @@ import { menuItemsFacade } from '../../../store/menuItems';
 import { MENU_ITEMS_COLUMNS } from './MenuItemsOverview.const';
 import { MenuItemsTableRow } from './MenuItemsOverview.types';
 
-const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = () => {
+const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({rights}) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 	const { siteId, menuId } = useParams<{ menuId?: string; siteId: string }>();
@@ -147,6 +147,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = () => 
 				columns={MENU_ITEMS_COLUMNS(
 					t,
 					mySecurityrights,
+					rights,
 					onRowExpand,
 					openRearrangeModal,
 					openRows
