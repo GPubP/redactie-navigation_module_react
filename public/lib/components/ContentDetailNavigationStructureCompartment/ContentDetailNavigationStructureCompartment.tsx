@@ -10,7 +10,16 @@ import {
 	useSiteContext,
 } from '@redactie/utils';
 import classNames from 'classnames';
-import { Field, Formik, FormikBag, FormikValues, useFormikContext } from 'formik';
+import {
+	Field,
+	FieldProps,
+	Formik,
+	FormikBag,
+	FormikFormProps,
+	FormikProps,
+	FormikValues,
+	useFormikContext,
+} from 'formik';
 import { path, pathOr } from 'ramda';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 
@@ -28,6 +37,8 @@ import { CONFIG, PositionValues } from '../../navigation.const';
 import { NavItem, NavTree } from '../../navigation.types';
 import { SiteStructure } from '../../services/siteStructures';
 import { siteStructuresFacade } from '../../store/siteStructures';
+
+import StructureCascader from './StructureCascader';
 
 const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	updateContentMeta,
@@ -98,148 +109,8 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
+		console.log(values);
 		updateContentMeta((values as ContentSchema).meta);
-	};
-
-	const handlePositionOnChange = (value: number[]): void => {
-		console.log(value);
-		// setFieldValue(`sitestructuur.position.${activeLanguage}`, value);
-	};
-
-	const renderCTStructure = (positionValue: string): React.ReactElement | null => {
-		if (positionValue === '') {
-			return null;
-		}
-
-		return <span className="u-margin-right-xs">{`${positionValue} >`}</span>;
-	};
-
-	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
-		// selected value in cascader = number[]
-		const cascaderValue = pathOr([], ['sitestructuur', 'position', activeLanguage!])(value);
-		// CT structure config = number[]
-		const ctStructureValue = pathOr([], ['position', activeLanguage!])(CTStructureConfig);
-		// CT structure > string
-		const ctPositionValue = getPositionInputValue(treeConfig.options as any, ctStructureValue);
-		// CT structure position oneof PositionValues
-		const structurePosition = pathOr(PositionValues.none, ['structurePosition'])(
-			CTStructureConfig
-		);
-		// available positions after ctPositionValue = number[]
-		const availablePositions =
-			structurePosition === PositionValues.limited
-				? cascaderValue.slice(ctStructureValue.length)
-				: cascaderValue;
-		// available sitestructure when limited position
-		const availableLimitedSiteStructure = getAvailableSiteStructureOptions(
-			ctStructureValue,
-			siteStructure
-		);
-		// available sitestructure when limited position
-		const availableLimitedTreeConfig = getTreeConfig<NavTree, NavItem>(
-			(availableLimitedSiteStructure as unknown) as NavTree,
-			availableLimitedSiteStructure?.id as number
-		);
-
-		const disabled =
-			(structurePosition === PositionValues.limited &&
-				(!availableLimitedTreeConfig.options.length ||
-					!CTStructureConfig.editablePosition)) ||
-			!treeConfig.options.length;
-
-		return (
-			<div
-				className={classNames('a-input has-icon-right u-margin-bottom', {
-					'is-required': props.required,
-					'has-error': pathOr(false, ['state', 'error'])(props),
-				})}
-				style={{ flexGrow: 1 }}
-			>
-				<label
-					className={classNames('a-input__label', {
-						'u-no-margin':
-							structurePosition === PositionValues.limited &&
-							!CTStructureConfig.editablePosition,
-					})}
-					htmlFor="text-field"
-				>
-					{props.label as string}
-				</label>
-				{structurePosition === PositionValues.limited &&
-					!CTStructureConfig.editablePosition && (
-						<small>Bepaal de positie van dit item.</small>
-					)}
-				<div className="u-flex u-flex-align-center">
-					{structurePosition === PositionValues.limited &&
-						CTStructureConfig.editablePosition &&
-						renderCTStructure(ctPositionValue)}
-					<Cascader
-						changeOnSelect
-						value={
-							structurePosition === PositionValues.limited &&
-							!CTStructureConfig.editablePosition
-								? ctStructureValue
-								: availablePositions
-						}
-						options={
-							structurePosition === PositionValues.limited &&
-							CTStructureConfig.editablePosition
-								? availableLimitedTreeConfig.options
-								: treeConfig.options
-						}
-						disabled={disabled}
-						onChange={(value: number[]) =>
-							handlePositionOnChange(
-								structurePosition === PositionValues.limited &&
-									CTStructureConfig.editablePosition
-									? [...ctStructureValue, ...value]
-									: value
-							)
-						}
-					>
-						<div className="a-input__wrapper u-flex-item">
-							<input
-								onChange={() => null}
-								disabled={disabled}
-								placeholder={props.placeholder as string}
-								value={getPositionInputValue(
-									treeConfig.options as any,
-									structurePosition === PositionValues.limited &&
-										!CTStructureConfig.editablePosition
-										? ctStructureValue
-										: availablePositions
-								)}
-							/>
-
-							{/* {cascaderValue.length > 0 && (
-							<span
-								className="fa"
-								style={{
-									pointerEvents: 'initial',
-									cursor: 'pointer',
-								}}
-							>
-								<Button
-									icon="close"
-									ariaLabel="Close"
-									size="small"
-									transparent
-									style={{
-										top: '-2px',
-									}}
-									onClick={(e: React.SyntheticEvent) => {
-										e.preventDefault();
-										e.stopPropagation();
-										// setFieldValue('sitestructuur.position', []);
-									}}
-								/>
-							</span>
-						)} */}
-						</div>
-					</Cascader>
-				</div>
-			</div>
-		);
 	};
 
 	/**
@@ -266,12 +137,17 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 									Plaats dit content item in de sitestructuur
 								</p>
 								<Field
-									as={renderCascader}
+									as={StructureCascader}
 									id="position"
-									name="position"
+									name={`meta.sitestructuur.position.${activeLanguage}`}
 									label="Positie"
 									required={true}
 									placeholder="Selecteer een positie"
+									activeLanguage={activeLanguage}
+									contentItem={contentItem}
+									CTStructureConfig={CTStructureConfig}
+									treeConfig={treeConfig}
+									siteStructure={siteStructure}
 								/>
 								{(CTStructureConfig.position !== PositionValues.limited ||
 									CTStructureConfig.editablePosition) && (
