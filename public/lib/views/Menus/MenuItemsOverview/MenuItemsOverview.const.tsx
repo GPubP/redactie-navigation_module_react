@@ -30,7 +30,7 @@ export const MENU_ITEMS_COLUMNS = (
 		headerComponent() {
 			return (
 				<div className={cx('m-menu-items-table__header')}>
-					{rights.canUpdate && <p>Sorteren</p>}
+					<p>Sorteren</p>
 					<p>Label en URL</p>
 				</div>
 			);
@@ -79,19 +79,25 @@ export const MENU_ITEMS_COLUMNS = (
 			);
 		},
 		indentingComponent(value: string, rowData: MenuItemsTableRow) {
-			if (!rights.canUpdate) {
-				return <div></div>;
-			}
 			return (
 				<div
-					className={cx('m-menu-items-table__indent-block')}
+					className={cx(
+						rights.canUpdate
+							? 'm-menu-items-table__indent-block'
+							: 'm-menu-items-table__indent-block-disabled'
+					)}
 					onClick={() => {
-						if (rowData.id) {
+						if (rowData.id && rights.canUpdate) {
 							openRearrangeModal(rowData.id);
 						}
 					}}
 				>
-					<Icon name="sort" className={cx('m-menu-items-table__indent-block__icon')} />
+					{rights.canUpdate && (
+						<Icon
+							name="sort"
+							className={cx('m-menu-items-table__indent-block__icon')}
+						/>
+					)}
 				</div>
 			);
 		},
