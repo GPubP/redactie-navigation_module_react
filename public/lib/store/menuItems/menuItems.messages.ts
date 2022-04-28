@@ -41,4 +41,10 @@ export const getAlertMessages = (data?: MenuItem): Record<string, any> => ({
 			message: `Het sorteren van menu-items is mislukt`,
 		},
 	},
+	upsert: {
+		error: {
+			title: 'Bewaren mislukt',
+			message: `Het bewaren van menu-items is mislukt`,
+		},
+	},
 });

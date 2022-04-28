@@ -87,7 +87,16 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'CONTENT_PREVENT_DELETE_DESCRIPTION',
 		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'
 	),
+	DEACTIVATE_MENU_DESCRIPTION: tKey(
+		'DEACTIVATE_MENU_DESCRIPTION',
+		'Je probeert een menu te deactiveren voor een content type dat content items bevat in dit menu. Indien je deactiveert kunnen er geen nieuwe content items aan dit menu worden toegevoegd. Weet je het zeker? Dit kan niet ongedaan gemaakt worden.'
+	),
 	SELECT_MENU: tKey('SELECT_MENU', 'Selecteer een menu'),
+	TABLE_MENU_NO_DATA: tKey(
+		'TABLE_MENU_NO_DATA',
+		"Er zijn geen menu's geconfigureerd voor deze site."
+	),
+	TABLE_MENU_FETCH_MESSAGE: tKey('TABLE_MENU_FETCH_MESSAGE', "Menu's ophalen"),
 });
 
 export { MODULE_TRANSLATIONS };
