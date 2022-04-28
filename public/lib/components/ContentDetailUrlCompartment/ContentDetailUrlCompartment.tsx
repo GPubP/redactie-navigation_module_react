@@ -87,13 +87,11 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 							<FormikOnChangeHandler onChange={onFormChange} />
 							<CardBody>
 								<h2 className="h3 u-margin-bottom">URL</h2>
-								{path(['meta', 'urlPath', activeLanguage!, 'pattern'])(
-									contentItem
-								) &&
-									contentTypeUrlPattern !==
-										(contentItem?.meta?.urlPath &&
-											contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
-									contentItem?._id && (
+								{contentTypeUrlPattern !==
+									(contentItem?.meta?.urlPath &&
+										contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
+									contentItem?._id &&
+									navigationRights.updateUrl && (
 										<Alert
 											className="u-margin-bottom"
 											closable={false}
@@ -140,6 +138,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 											<Field
 												as={TextField}
 												id="slug"
+												disabled={!navigationRights.updateUrl}
 												name={`meta.slug.${activeLanguage}`}
 												label="Slug"
 												required={true}

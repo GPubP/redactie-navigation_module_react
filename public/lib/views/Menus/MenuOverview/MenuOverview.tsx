@@ -73,10 +73,14 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 			return;
 		}
 
-		menusFacade.getMenus(siteId, {
-			...query,
-			includeItemCount: true,
-		} as SearchParams);
+		menusFacade.getMenus(
+			siteId,
+			{
+				...query,
+				includeItemCount: true,
+			} as SearchParams,
+			true
+		);
 	}, [query, site, siteId]);
 
 	/**

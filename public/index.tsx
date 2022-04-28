@@ -7,23 +7,25 @@ import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
 
+import { menuCanShown, siteStructureCanShown } from './lib/canShowns';
 import {
 	ContentDetailCompartment,
 	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
 	ContentTypeDetailTab,
 	ContentTypeDetailUrl,
+	SiteNavigationTab,
 } from './lib/components';
 import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import SiteStructureTab from './lib/components/SiteStructureTab/SiteStructureTab';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
-import { canShowSiteStructure, guardSiteStructure, isEmpty } from './lib/helpers';
+import { menuGuard, siteStructureGuard } from './lib/guards';
+import { isEmpty } from './lib/helpers';
 import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
@@ -76,6 +78,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
 				rolesRightsConnector.menuSecurityRights.read,
 			]),
+			menuGuard,
 		],
 	},
 	navigation: {
@@ -88,6 +91,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.menuSecurityRights.read,
 			]),
+			menuCanShown,
 		],
 	},
 	routes: [
@@ -219,7 +223,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
-			guardSiteStructure,
+			siteStructureGuard,
 		],
 	},
 	navigation: {
@@ -232,7 +236,7 @@ sitesConnector.registerRoutes({
 			rolesRightsConnector.api.canShowns.securityRightsSiteCanShown('siteId', [
 				rolesRightsConnector.siteStructuresSecurityRights.read,
 			]),
-			canShowSiteStructure,
+			siteStructureCanShown,
 		],
 	},
 	routes: [
@@ -394,7 +398,20 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: () => true,
+	show: (context, settings) => {
+		let securityRights: string[] = [];
+
+		rolesRightsConnector.api.store.mySecurityRights.query
+			.siteRights$(settings?.config?.siteUuid)
+			.pipe(take(1))
+			.subscribe((rights: MySecurityRightModel[]) => {
+				securityRights = rights.map(right => right.attributes.key);
+			});
+
+		return rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, [
+			rolesRightsConnector.securityRights.readUrl,
+		]);
+	},
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
@@ -402,6 +419,13 @@ export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.guards.securityRightsTenantGuard([
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 ];
 
@@ -410,6 +434,13 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
@@ -423,13 +454,16 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	show: (context: any) => context.ctType === 'content-types',
-	disabled: false,
+	disabled: context =>
+		!context.isActive ||
+		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+			rolesRightsConnector.securityRights.read,
+		]),
 });
 
-sitesConnector.registerSiteStructureTab(CONFIG.name, {
-	label: 'Sitestructuur',
+sitesConnector.registerSiteUpdateTab(CONFIG.name, {
+	label: 'Navigatie',
 	module: CONFIG.module,
-	component: SiteStructureTab,
+	component: SiteNavigationTab,
 	containerId: 'update' as any,
 });

@@ -1,21 +1,23 @@
 import { CardTitle, Label } from '@acpaas-ui/react-components';
 import { TooltipTypeMap } from '@acpaas-ui/react-editorial-components';
 import { ContentSchema } from '@redactie/content-module';
-import { DataLoader, InfoTooltip } from '@redactie/utils';
+import { DataLoader, InfoTooltip, useNavigate, useTenantContext } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
 import React, { FC, ReactElement, useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import contentConnector from '../../connectors/content';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
+import { MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 import { NavItem } from '../../navigation.types';
 import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
 
 import styles from './ContentInfoTooltip.module.scss';
 import { Status } from './ContentInfoTooltip.types';
+
 const cx = classnames.bind(styles);
 
 const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
@@ -27,6 +29,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 	const [item, setItem] = useState<ContentSchema | null>();
 	const [menuItem, setMenuItem] = useState<NavItem | null>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
+	const { generatePath } = useNavigate(SITES_ROOT);
 
 	const [loading, setLoading] = useState(false);
 
@@ -57,9 +60,20 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 		if (!item) {
 			return null;
 		}
+
+		const contentItemPath = generatePath(MODULE_PATHS.site.contentDetail, {
+			siteId,
+			contentTypeId: item?.meta.contentType.uuid,
+			contentId: item?.uuid,
+		});
+
 		return (
 			<>
-				<CardTitle>{item?.meta.label}</CardTitle>
+				<CardTitle>
+					<Link className={cx('m-tooltip__title')} to={contentItemPath}>
+						{item?.meta.label}
+					</Link>
+				</CardTitle>
 
 				<div className="u-margin-top">
 					{item?.meta.description && (
@@ -68,7 +82,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.urlPath?.[item?.meta.lang]?.value && (
-						<div className="u-margin-bottom-xs a-url">
+						<div className={cx('m-tooltip__data', 'a-url')}>
 							<b>URL: </b>
 							{`${getLangSiteUrl(site, item?.meta.lang)}${
 								item?.meta.urlPath?.[item?.meta.lang].value
@@ -76,7 +90,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.created && (
-						<div className="u-margin-bottom-xs">
+						<div className={cx('m-tooltip__data')}>
 							<b>Aangemaakt op: </b>
 							<span>
 								{moment(item?.meta.created).format('DD/MM/YYYY [-] HH[u]mm')}
@@ -84,7 +98,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 						</div>
 					)}
 					{item?.meta.lastEditor && (
-						<div className="u-margin-bottom-xs">
+						<div className={cx('m-tooltip__data')}>
 							<b>Door: </b>
 							{`${item?.meta.lastEditor?.firstname} ${item?.meta.lastEditor?.lastname}`}
 						</div>
@@ -94,22 +108,16 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 							<b>Status</b>
 						</p>
 						{item?.meta.status && (
-							<Label type="primary">
+							<Label className="u-margin-right-xs" type="primary">
 								{NAV_STATUSES[item?.meta.status as Status]}
 							</Label>
 						)}
 						{item?.meta.historySummary?.published ? (
-							<Label
-								className="u-margin-left-xs u-margin-top-xs u-margin-bottom-xs"
-								type="success"
-							>
+							<Label className="u-margin-top-xs" type="success">
 								Online
 							</Label>
 						) : (
-							<Label
-								className="u-margin-left-xs u-margin-top-xs u-margin-bottom-xs"
-								type="danger"
-							>
+							<Label className="u-margin-top-xs" type="danger">
 								Offline
 							</Label>
 						)}
@@ -136,6 +144,7 @@ const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
 				</div>
 				<div className={cx('m-tooltip')}>
 					<InfoTooltip
+						tooltipClassName={cx('m-tooltip__flyout')}
 						placement="bottom-end"
 						type={TooltipTypeMap.WHITE}
 						icon="file-text-o"
