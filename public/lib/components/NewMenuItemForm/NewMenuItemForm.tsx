@@ -5,12 +5,14 @@ import { Field, Formik } from 'formik';
 import React, { FC } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
 import { NEW_MENU_ITEM_FORM_VALIDATION_SCHEMA } from './NewMenuItemForm.const';
 import { NewMenuItemFormProps } from './NewMenuItemForm.types';
 
 const NewMenuItemForm: FC<NewMenuItemFormProps> = ({ onSubmit, formState, className, options }) => {
 	const [t] = translationsConnector.useCoreTranslation();
+	const [tModule] = translationsConnector.useModuleTranslation();
 
 	return (
 		<Formik
@@ -28,7 +30,7 @@ const NewMenuItemForm: FC<NewMenuItemFormProps> = ({ onSubmit, formState, classN
 							id="menu"
 							label="Menu"
 							name="menu"
-							placeholder="Selecteer een menu"
+							placeholder={tModule(MODULE_TRANSLATIONS.SELECT_MENU)}
 						/>
 						<small className="u-block u-text-light u-margin-top-xs">
 							Zoek en selecteer een menu.

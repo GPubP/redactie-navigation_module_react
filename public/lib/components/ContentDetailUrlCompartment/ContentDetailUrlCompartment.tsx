@@ -90,7 +90,8 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 								{contentTypeUrlPattern !==
 									(contentItem?.meta?.urlPath &&
 										contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
-									contentItem?._id && (
+									contentItem?._id &&
+									navigationRights.updateUrl && (
 										<Alert
 											className="u-margin-bottom"
 											closable={false}
@@ -137,6 +138,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 											<Field
 												as={TextField}
 												id="slug"
+												disabled={!navigationRights.updateUrl}
 												name={`meta.slug.${activeLanguage}`}
 												label="Slug"
 												required={true}

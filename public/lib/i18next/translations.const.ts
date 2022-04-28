@@ -91,6 +91,7 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'DEACTIVATE_MENU_DESCRIPTION',
 		'Je probeert een menu te deactiveren voor een content type dat content items bevat in dit menu. Indien je deactiveert kunnen er geen nieuwe content items aan dit menu worden toegevoegd. Weet je het zeker? Dit kan niet ongedaan gemaakt worden.'
 	),
+	SELECT_MENU: tKey('SELECT_MENU', 'Selecteer een menu'),
 });
 
 export { MODULE_TRANSLATIONS };
