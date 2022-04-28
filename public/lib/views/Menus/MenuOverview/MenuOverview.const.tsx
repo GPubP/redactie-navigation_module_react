@@ -51,7 +51,7 @@ export const DEFAULT_FILTER_FORM: FilterFormState = {
 export const OVERVIEW_COLUMNS = (
 	t: TranslateFunc,
 	mySecurityrights: string[],
-	rights: NavRights,
+	rights: NavRights
 ): TableColumn<OverviewTableRow>[] => [
 	{
 		label: t(CORE_TRANSLATIONS.TABLE_NAME),

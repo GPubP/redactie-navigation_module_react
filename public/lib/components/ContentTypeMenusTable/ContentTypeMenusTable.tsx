@@ -29,7 +29,7 @@ import {
 } from '../../views/Menus/MenuOverview/MenuOverview.const';
 
 import { MENUS_COLUMNS } from './ContentTypeMenusTable.const';
-import { MenusCheckboxListProps } from './MenusCheckboxList.types';
+import { MenusCheckboxListProps } from './ContentTypeMenusTable.types';
 
 const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLanguage }) => {
 	const [t] = translationsConnector.useCoreTranslation();
