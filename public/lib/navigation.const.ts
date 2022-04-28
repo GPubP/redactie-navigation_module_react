@@ -170,6 +170,8 @@ export const ALERT_CONTAINER_IDS = {
 	overview: 'overview',
 	menuItemsOverview: 'menu-items-overview',
 	siteStructureItemsOverview: 'site-structure-items-overview',
+	menuCompartment: 'menu-compartment',
+	contentEdit: 'content-edit',
 };
 
 export enum LangKeys {

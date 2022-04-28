@@ -1,2 +1,3 @@
-export { default as beforeSubmit } from './beforeSubmit';
-export { default as afterSubmit } from './afterSubmit';
+export { default as beforeSubmitNavigation } from './beforeSubmitNavigation';
+export { default as afterSubmitNavigation } from './afterSubmitNavigation';
+export { default as afterSubmitMenu } from './afterSubmitMenu';

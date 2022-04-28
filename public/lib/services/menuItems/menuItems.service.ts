@@ -1,6 +1,7 @@
 import { SearchParams } from '@redactie/utils';
 
 import { RearrangeNavItem } from '../../navigation.types';
+import { PendingMenuItems } from '../../store/menuItems';
 import { api } from '../api';
 
 import { MenuItem, MenuItemsResponse } from './menuItems.service.types';
@@ -13,6 +14,18 @@ export class MenuItemsApiService {
 	): Promise<MenuItemsResponse> {
 		return api
 			.get(`${siteId}/menus/${menuId}/items`, {
+				searchParams,
+			})
+			.json();
+	}
+
+	public async getContentMenuItems(
+		siteId: string,
+		contentId: string,
+		searchParams: SearchParams
+	): Promise<MenuItemsResponse> {
+		return api
+			.get(`${siteId}/content/${contentId}/menu-items`, {
 				searchParams,
 			})
 			.json();
@@ -58,6 +71,19 @@ export class MenuItemsApiService {
 		return api
 			.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
 				json: menuItem,
+			})
+			.json();
+	}
+
+	public async upsertContentMenuItems(
+		siteId: string,
+		items: PendingMenuItems
+	): Promise<MenuItem[]> {
+		return api
+			.post(`${siteId}/items`, {
+				json: {
+					...items,
+				},
 			})
 			.json();
 	}

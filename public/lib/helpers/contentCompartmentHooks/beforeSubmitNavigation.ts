@@ -111,7 +111,7 @@ const deleteTreeItem = async (
 		});
 };
 
-const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
+const beforeSubmitNavigation: ExternalCompartmentBeforeSubmitFn = (
 	contentItem,
 	contentType,
 	prevContentItem,
@@ -160,4 +160,4 @@ const beforeSubmit: ExternalCompartmentBeforeSubmitFn = (
 		  );
 };
 
-export default beforeSubmit;
+export default beforeSubmitNavigation;
