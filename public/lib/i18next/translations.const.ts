@@ -83,6 +83,7 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION',
 		'Zet het menu-item aan wanneer het content item online is.'
 	),
+	SELECT_MENU: tKey('SELECT_MENU', 'Selecteer een menu'),
 });
 
 export { MODULE_TRANSLATIONS };
