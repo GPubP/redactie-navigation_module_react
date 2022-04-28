@@ -7,6 +7,7 @@ import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'r
 import { useParams } from 'react-router-dom';
 
 import { NavItemDetailForm } from '../../../components';
+import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useMenuItems } from '../../../hooks';
 import { MODULE_TRANSLATIONS } from '../../../i18next/translations.const';
@@ -17,6 +18,7 @@ import { menuItemsFacade } from '../../../store/menuItems';
 import { menusFacade } from '../../../store/menus';
 
 const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
+	mySecurityrights,
 	rights,
 	onSubmit,
 	onDelete,
@@ -41,8 +43,12 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const formikRef = useRef<FormikProps<FormikValues>>();
 
 	const canDelete = useMemo(() => {
-		return menuItem?.id ? rights?.canDelete : false;
-	}, [menuItem, rights]);
+		return menu?.id
+			? rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+					rolesRightsConnector.menuItemSecurityRights.delete,
+			  ])
+			: false;
+	}, [mySecurityrights]);
 
 	const canEdit = useMemo(() => {
 		return menuItemDraft?.id ? !!rights?.canUpdate : true;

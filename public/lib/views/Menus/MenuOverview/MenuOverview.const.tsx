@@ -6,7 +6,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 
 import { FilterFormState } from '../../../components';
+import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { NavRights } from '../../../navigation.types';
 
 import { OverviewTableRow } from './MenuOverview.types';
 
@@ -46,7 +48,11 @@ export const DEFAULT_FILTER_FORM: FilterFormState = {
 	label: '',
 };
 
-export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow>[] => [
+export const OVERVIEW_COLUMNS = (
+	t: TranslateFunc,
+	mySecurityrights: string[],
+	rights: NavRights,
+): TableColumn<OverviewTableRow>[] => [
 	{
 		label: t(CORE_TRANSLATIONS.TABLE_NAME),
 		value: 'label',
@@ -54,9 +60,13 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 		component(value: string, { description, id }) {
 			return (
 				<>
-					<Link to={`${id}/instellingen`}>
+					{rights.canUpdate ? (
+						<Link to={`${id}/instellingen`}>
+							<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
+						</Link>
+					) : (
 						<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
-					</Link>
+					)}
 					<p className="small">
 						{description ? (
 							<EllipsisWithTooltip>{description}</EllipsisWithTooltip>
@@ -88,7 +98,14 @@ export const OVERVIEW_COLUMNS = (t: TranslateFunc): TableColumn<OverviewTableRow
 		disableSorting: true,
 		width: '20%',
 		component(value, { navigate, id }) {
-			return <Button ariaLabel="Edit" icon="edit" onClick={() => navigate(id)} transparent />;
+			return (
+				<rolesRightsConnector.api.components.SecurableRender
+					userSecurityRights={mySecurityrights}
+					requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.update]}
+				>
+					<Button ariaLabel="Edit" icon="edit" onClick={() => navigate(id)} transparent />
+				</rolesRightsConnector.api.components.SecurableRender>
+			);
 		},
 	},
 ];

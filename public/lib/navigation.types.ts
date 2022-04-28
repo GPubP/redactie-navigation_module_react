@@ -126,6 +126,7 @@ export interface NavigationItemDetailRouteProps<Params = {}>
 	onDelete: (data: NavItem) => Promise<void>;
 	onCancel: () => void;
 	rights: NavRights;
+	mySecurityrights: string [];
 	loading: boolean;
 	removing: boolean;
 }
