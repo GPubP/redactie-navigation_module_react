@@ -23,5 +23,6 @@
   "SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION": "Zet het sitestructuur-item aan wanneer het content item online is.",
   "MENU_ITEM_LABEL_DESCRIPTION": "Bepaal het label voor dit menu-item. Dit is het woord dat de eindgebruiker ziet in het menu.",
   "MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION": "Zet het menu-item aan wanneer het content item online is.",
+  "CONTENT_PREVENT_DELETE_DESCRIPTION": "Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn",
   "SELECT_MENU": "Selecteer een menu"
 }

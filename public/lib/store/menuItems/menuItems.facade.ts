@@ -14,6 +14,7 @@ import {
 } from '../../services/menuItems';
 
 import { getAlertMessages } from './menuItems.messages';
+import { PendingMenuItems } from './menuItems.model';
 import { menuItemsQuery, MenuItemsQuery } from './menuItems.query';
 import { menuItemsStore, MenuItemsStore } from './menuItems.store';
 
@@ -265,7 +266,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public async upsertContentMenuItems(siteId: string, upsertItems: MenuItem[]): Promise<void> {
+	public async upsertContentMenuItems(siteId: string, items: PendingMenuItems): Promise<void> {
 		const { isUpdating } = this.query.getValue();
 
 		if (isUpdating) {
@@ -275,7 +276,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		this.store.setIsUpdating(true);
 
 		return this.service
-			.upsertContentMenuItems(siteId, upsertItems)
+			.upsertContentMenuItems(siteId, items)
 			.then((response: MenuItem[]) => {
 				if (!response) {
 					throw new Error(`Updating menuItems failed!`);
@@ -401,7 +402,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public setPendingMenuItems(pendingMenuItems: MenuItem[]): void {
+	public setPendingMenuItems(pendingMenuItems: PendingMenuItems): void {
 		this.store.update({
 			pendingMenuItems,
 		});
@@ -409,7 +410,16 @@ export class MenuItemsFacade extends BaseEntityFacade<
 
 	public unsetPendingMenuItems(): void {
 		this.store.update({
-			pendingMenuItems: [],
+			pendingMenuItems: {
+				upsertItems: [],
+				deleteItems: [],
+			},
+		});
+	}
+
+	public resetContentMenuItems(): void {
+		this.store.update({
+			contentMenuItems: [],
 		});
 	}
 }

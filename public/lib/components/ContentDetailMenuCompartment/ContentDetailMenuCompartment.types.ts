@@ -4,5 +4,6 @@ export interface MenuItemRowData {
 	menu: string;
 	menuId: string;
 	position: string;
+	newItem: boolean;
 	editMenuItem: (id: string, menuId: string) => void;
 }
