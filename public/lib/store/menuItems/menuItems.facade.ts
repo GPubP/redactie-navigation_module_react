@@ -266,7 +266,11 @@ export class MenuItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public async upsertContentMenuItems(siteId: string, items: PendingMenuItems): Promise<void> {
+	public async upsertContentMenuItems(
+		siteId: string,
+		items: PendingMenuItems,
+		alertId: string = ALERT_CONTAINER_IDS.contentEdit
+	): Promise<void> {
 		const { isUpdating } = this.query.getValue();
 
 		if (isUpdating) {
@@ -290,6 +294,12 @@ export class MenuItemsFacade extends BaseEntityFacade<
 				this.store.update({
 					error,
 					isUpdating: false,
+				});
+
+				console.log(error);
+
+				alertService.danger(getAlertMessages().upsert.error, {
+					containerId: alertId,
 				});
 			});
 	}
