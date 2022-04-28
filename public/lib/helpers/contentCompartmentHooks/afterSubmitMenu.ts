@@ -40,16 +40,12 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 			menuItemsFacade.getContentMenuItems(site?.uuid || '', contentItem?.uuid || '', {
 				pagesize: -1,
 			})
-		)
-		.catch(() => {
-			throw new Error();
-		});
+		);
 
 	menuItemsFacade.setPendingMenuItems({
 		upsertItems: [],
 		deleteItems: [],
 	});
-	return;
 };
 
 export default afterSubmitMenu;
