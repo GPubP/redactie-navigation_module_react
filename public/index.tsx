@@ -404,7 +404,20 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: () => true,
+	show: (context, settings) => {
+		let securityRights: string[] = [];
+
+		rolesRightsConnector.api.store.mySecurityRights.query
+			.siteRights$(settings?.config?.siteUuid)
+			.pipe(take(1))
+			.subscribe((rights: MySecurityRightModel[]) => {
+				securityRights = rights.map(right => right.attributes.key);
+			});
+
+		return rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, [
+			rolesRightsConnector.securityRights.readUrl,
+		]);
+	},
 });
 
 contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
@@ -429,6 +442,13 @@ export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.guards.securityRightsTenantGuard([
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 ];
 
@@ -437,6 +457,13 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
@@ -450,7 +477,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	disabled: context => !context?.isActive,
+	disabled: context =>
+		!context.isActive ||
+		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+			rolesRightsConnector.securityRights.read,
+		]),
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {
