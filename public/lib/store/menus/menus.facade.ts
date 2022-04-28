@@ -40,7 +40,7 @@ export class MenusFacade extends BaseEntityFacade<MenusStore, MenusApiService, M
 					throw new Error('Getting menus failed!');
 				}
 
-				this.store.upsertMany(
+				this.store.set(
 					response._embedded.resourceList.map(menu => {
 						const categoryArray = menu.category.label.split('_');
 

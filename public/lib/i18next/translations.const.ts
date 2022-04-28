@@ -87,6 +87,10 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'CONTENT_PREVENT_DELETE_DESCRIPTION',
 		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'
 	),
+	DEACTIVATE_MENU_DESCRIPTION: tKey(
+		'DEACTIVATE_MENU_DESCRIPTION',
+		'Je probeert een menu te deactiveren voor een content type dat content items bevat in dit menu. Indien je deactiveert kunnen er geen nieuwe content items aan dit menu worden toegevoegd. Weet je het zeker? Dit kan niet ongedaan gemaakt worden.'
+	),
 });
 
 export { MODULE_TRANSLATIONS };
