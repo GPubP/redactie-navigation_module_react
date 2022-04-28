@@ -5,12 +5,16 @@ import { TableColumn } from '@redactie/utils';
 import React from 'react';
 
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 
 import { MenusRowData } from './MenusCheckboxList.types';
 
-export const MENUS_COLUMNS = (t: TranslateFunc): TableColumn<MenusRowData>[] => [
+export const MENUS_COLUMNS = (
+	t: TranslateFunc,
+	tModule: TranslateFunc
+): TableColumn<MenusRowData>[] => [
 	{
-		label: 'Menu',
+		label: tModule(MODULE_TRANSLATIONS.TABLE_MENU),
 		value: 'label',
 		component(name: string, { description }) {
 			return (

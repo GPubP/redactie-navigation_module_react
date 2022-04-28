@@ -96,7 +96,7 @@ const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLan
 			<PaginatedTable
 				fixed
 				className="u-margin-top"
-				columns={MENUS_COLUMNS(t)}
+				columns={MENUS_COLUMNS(t, tModule)}
 				rows={menuRows}
 				currentPage={query.page}
 				itemsPerPage={DEFAULT_QUERY_PARAMS.pagesize}
@@ -105,8 +105,8 @@ const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLan
 				activeSorting={activeSorting}
 				totalValues={menuPaging?.totalElements || 0}
 				loading={menusLoadingState === LoadingState.Loading}
-				noDataMessage="Er zijn geen menu's geconfigureerd voor deze site."
-				loadDataMessage="Menu's ophalen"
+				noDataMessage={tModule(MODULE_TRANSLATIONS.TABLE_MENU_NO_DATA)}
+				loadDataMessage={tModule(MODULE_TRANSLATIONS.TABLE_MENU_FETCH_MESSAGE)}
 				hideResultsMessage
 			/>
 		);
