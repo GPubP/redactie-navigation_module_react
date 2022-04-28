@@ -1,21 +1,20 @@
 import { LoadingState, Page, useObservable } from '@redactie/utils';
 import { useEffect, useState } from 'react';
 
+import { LangKeys } from '../../navigation.const';
 import { Menu } from '../../services/menus';
 import { menusFacade } from '../../store/menus';
 
 const useMenus = (
-	lang?: string
+	lang: string = LangKeys.generic
 ): [LoadingState, Menu[] | null | undefined, Page | null | undefined] => {
-	const loading = useObservable(menusFacade.isFetching$, LoadingState.Loading);
+	const loading = useObservable(menusFacade.selectItemIsFetching(lang), LoadingState.Loading);
 	const menuPaging = useObservable(menusFacade.meta$, null);
-	const error = useObservable(menusFacade.error$, null);
+	const error = useObservable(menusFacade.selectItemError(lang), null);
 	const [menus, setMenus] = useState<Menu[]>();
 
 	useEffect(() => {
-		const menusSubscription = lang
-			? menusFacade.selectLanguageMenus(lang).subscribe(setMenus)
-			: menusFacade.menus$.subscribe(setMenus);
+		const menusSubscription = menusFacade.selectLanguageMenus(lang).subscribe(setMenus);
 
 		return () => {
 			menusSubscription.unsubscribe();
