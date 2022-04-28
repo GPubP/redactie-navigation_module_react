@@ -8,7 +8,7 @@ const useMenu = (): UseMenu => {
 	const isFetching = useObservable(menusFacade.isFetchingOne$, LoadingState.Loading);
 	const isUpdating = useObservable(menusFacade.isUpdating$, LoadingState.Loaded);
 	const isCreating = useObservable(menusFacade.isCreating$, LoadingState.Loaded);
-	const isRemoving = useObservable(menusFacade.isRemoving$, LoadingState.Loaded);
+	const isRemovingOne = useObservable(menusFacade.isRemovingOne$, LoadingState.Loaded);
 	const menu = useObservable(menusFacade.menu$);
 	const occurrences = useObservable(menusFacade.occurrences$);
 	const isFetchingOccurrences = useObservable(
@@ -28,7 +28,7 @@ const useMenu = (): UseMenu => {
 		: LoadingState.Loaded;
 
 	const removingState =
-		isRemoving === LoadingState.Loading ? LoadingState.Loading : LoadingState.Loaded;
+		isRemovingOne === LoadingState.Loading ? LoadingState.Loading : LoadingState.Loaded;
 
 	return {
 		fetchingState,

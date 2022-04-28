@@ -127,7 +127,7 @@ const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLan
 
 	return (
 		<>
-			<FormikMultilanguageField asComponent={renderTable} name={name} />;
+			<FormikMultilanguageField asComponent={renderTable} name={name} />
 			<ControlledModal show={showConfirmModal} onClose={onCancel} size="large">
 				<ControlledModalHeader>
 					<h4>{t(CORE_TRANSLATIONS.CONFIRM)}</h4>
