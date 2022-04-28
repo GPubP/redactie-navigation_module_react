@@ -3,7 +3,7 @@ import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr, propOr } from 'ramda';
-import React, { useState } from 'react';
+import React from 'react';
 
 import {
 	getAvailableSiteStructureOptions,
@@ -40,7 +40,6 @@ const StructureCascader = ({
 	placeholder: string;
 }): React.ReactElement => {
 	const { setFieldValue } = useFormikContext<FormikValues>();
-	const [currentValue, setCurrentValue] = useState<number[]>();
 	// CT structure config = number[]
 	const ctStructureValue = pathOr([], ['position', activeLanguage])(CTStructureConfig);
 	// CT structure > string
@@ -74,16 +73,16 @@ const StructureCascader = ({
 	const isLimitedAndNotEditable =
 		structurePosition === PositionValues.limited && !CTStructureConfig.editablePosition;
 
+	// displayed value
 	const fieldValue =
 		(isLimitedAndNotEditable
 			? ctStructureValue
-			: value !== undefined && value.length > 0 && value === currentValue
+			: value !== undefined && value.length > 0
 			? availablePositions
 			: value) || ctStructureValue;
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue(`meta.sitestructuur.position.${activeLanguage}`, value);
-		setCurrentValue(value);
 	};
 
 	const renderCTStructure = (positionValue: string): React.ReactElement | null => {
@@ -93,8 +92,6 @@ const StructureCascader = ({
 
 		return <span className="u-margin-right-xs">{`${positionValue} >`}</span>;
 	};
-
-	console.log({ value, ctStructureValue, fieldValue, availablePositions });
 
 	return (
 		<div
