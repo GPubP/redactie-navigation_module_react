@@ -87,6 +87,7 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'CONTENT_PREVENT_DELETE_DESCRIPTION',
 		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'
 	),
+	SELECT_MENU: tKey('SELECT_MENU', 'Selecteer een menu'),
 });
 
 export { MODULE_TRANSLATIONS };
