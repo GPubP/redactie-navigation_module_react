@@ -296,8 +296,6 @@ export class MenuItemsFacade extends BaseEntityFacade<
 					isUpdating: false,
 				});
 
-				console.log(error);
-
 				alertService.danger(getAlertMessages().upsert.error, {
 					containerId: alertId,
 				});
