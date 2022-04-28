@@ -1,6 +1,6 @@
 import { Language } from '@redactie/utils';
 
-export interface MenusCheckboxListProps {
+export interface ContentTypeMenusTableProps {
 	name: string;
 	activeLanguage: Language;
 	siteId: string;

@@ -29,9 +29,9 @@ import {
 } from '../../views/Menus/MenuOverview/MenuOverview.const';
 
 import { MENUS_COLUMNS } from './ContentTypeMenusTable.const';
-import { MenusCheckboxListProps } from './ContentTypeMenusTable.types';
+import { ContentTypeMenusTableProps } from './ContentTypeMenusTable.types';
 
-const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLanguage }) => {
+const MenusCheckboxList: FC<ContentTypeMenusTableProps> = ({ siteId, name, activeLanguage }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [menusLoadingState, menus, menuPaging] = useMenus(activeLanguage.key);
