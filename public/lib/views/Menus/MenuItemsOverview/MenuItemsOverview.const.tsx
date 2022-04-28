@@ -8,6 +8,7 @@ import React from 'react';
 import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { NavRights } from '../../../navigation.types';
 
 import styles from './MenuItemsOverview.module.scss';
 import { MenuItemsTableRow } from './MenuItemsOverview.types';
@@ -16,6 +17,7 @@ const cx = classnames.bind(styles);
 export const MENU_ITEMS_COLUMNS = (
 	t: TranslateFunc,
 	mySecurityrights: string[],
+	rights: NavRights,
 	expandRow: (id: number) => void,
 	openRearrangeModal: (id: number) => void,
 	openRows: string[]
@@ -28,7 +30,7 @@ export const MENU_ITEMS_COLUMNS = (
 		headerComponent() {
 			return (
 				<div className={cx('m-menu-items-table__header')}>
-					<p>Sorteren</p>
+					{rights.canUpdate && <p>Sorteren</p>}
 					<p>Label en URL</p>
 				</div>
 			);
@@ -77,6 +79,9 @@ export const MENU_ITEMS_COLUMNS = (
 			);
 		},
 		indentingComponent(value: string, rowData: MenuItemsTableRow) {
+			if (!rights.canUpdate) {
+				return <div></div>;
+			}
 			return (
 				<div
 					className={cx('m-menu-items-table__indent-block')}
