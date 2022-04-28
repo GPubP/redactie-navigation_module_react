@@ -1,5 +1,8 @@
 {
   "VARIABLE": "Variabele",
+  "TABLE_LABEL": "Label",
+  "TABLE_MENU": "Menu",
+  "TABLE_POSITION": "Positie",
   "PATTERN_ID_DESCRIPTION": "Het unieke uuid van dit content item.",
   "PATTERN_LANG_DESCRIPTION": "De taal waarin dit content item is gemaakt.",
   "PATTERN_LABEL_DESCRIPTION": "Het label van het content item bij creatie.",
@@ -19,5 +22,6 @@
   "SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION": "Bepaal het label voor dit sitestructuur-item. Dit is het woord dat de eindgebruiker ziet in de sitestructuur.",
   "SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION": "Zet het sitestructuur-item aan wanneer het content item online is.",
   "MENU_ITEM_LABEL_DESCRIPTION": "Bepaal het label voor dit menu-item. Dit is het woord dat de eindgebruiker ziet in het menu.",
-  "MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION": "Zet het menu-item aan wanneer het content item online is."
+  "MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION": "Zet het menu-item aan wanneer het content item online is.",
+  "SELECT_MENU": "Selecteer een menu"
 }

@@ -18,6 +18,18 @@ export class MenuItemsApiService {
 			.json();
 	}
 
+	public async getContentMenuItems(
+		siteId: string,
+		contentId: string,
+		searchParams: SearchParams
+	): Promise<MenuItemsResponse> {
+		return api
+			.get(`${siteId}/content/${contentId}/menu-items`, {
+				searchParams,
+			})
+			.json();
+	}
+
 	public async getSubset(
 		siteId: string,
 		menuId: string,
@@ -58,6 +70,19 @@ export class MenuItemsApiService {
 		return api
 			.put(`${siteId}/menus/${menuId}/items/${menuItem.id}`, {
 				json: menuItem,
+			})
+			.json();
+	}
+
+	public async upsertContentMenuItems(
+		siteId: string,
+		upsertItems: MenuItem[]
+	): Promise<MenuItem[]> {
+		return api
+			.post(`${siteId}/items`, {
+				json: {
+					upsertItems,
+				},
 			})
 			.json();
 	}

@@ -124,6 +124,7 @@ export interface NavigationItemDetailRouteProps<Params = {}>
 	extends RouteConfigComponentProps<Params> {
 	onSubmit: (data: NavItem) => Promise<void>;
 	onDelete: (data: NavItem) => Promise<void>;
+	onCancel: () => void;
 	rights: NavRights;
 	loading: boolean;
 	removing: boolean;
@@ -166,10 +167,12 @@ export interface NavItem {
 	properties?: {
 		type: NavItemType;
 	};
+	treeId?: number;
 }
 
 export enum NavItemType {
 	internal = 'internal',
+	internalOnContentUpsert = 'internalOnContentUpsert',
 	external = 'external',
 	section = 'section',
 }

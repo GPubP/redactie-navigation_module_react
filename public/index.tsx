@@ -3,6 +3,7 @@ import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { ChildModuleRouteConfig } from '@redactie/redactie-core';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
+import { ModuleSettings } from '@redactie/sites-module';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { take } from 'rxjs/operators';
 import { menuCanShown, siteStructureCanShown } from './lib/canShowns';
 import {
 	ContentDetailCompartment,
+	ContentDetailMenuCompartment,
 	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
 	ContentTypeDetailTab,
@@ -26,7 +28,11 @@ import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
 import { menuGuard, siteStructureGuard } from './lib/guards';
 import { isEmpty } from './lib/helpers';
-import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
+import {
+	afterSubmitMenu,
+	afterSubmitNavigation,
+	beforeSubmitNavigation,
+} from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
@@ -350,8 +356,8 @@ contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentDetailCompartment,
 	isValid: false,
-	beforeSubmit,
-	afterSubmit,
+	beforeSubmit: beforeSubmitNavigation,
+	afterSubmit: afterSubmitNavigation,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
@@ -387,8 +393,8 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 	module: CONFIG.module,
 	component: ContentDetailUrlCompartment,
 	isValid: false,
-	beforeSubmit,
-	afterSubmit,
+	beforeSubmit: beforeSubmitNavigation,
+	afterSubmit: afterSubmitNavigation,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
@@ -412,6 +418,23 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 			rolesRightsConnector.securityRights.readUrl,
 		]);
 	},
+});
+
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
+	label: "Menu's",
+	module: CONFIG.module,
+	component: ContentDetailMenuCompartment,
+	isValid: true,
+	afterSubmit: afterSubmitMenu,
+	show: (context, settings, value, content, contentType, site) => {
+		return (
+			(site?.data?.modulesConfig || []).find(
+				(siteNavigationConfig: ModuleSettings) =>
+					siteNavigationConfig?.name === 'navigation'
+			)?.config?.allowMenus ?? false
+		);
+	},
+	validate: () => true,
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [

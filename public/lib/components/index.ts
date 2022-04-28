@@ -6,3 +6,6 @@ export * from './ContentTypeDetailMenu';
 export * from './Forms';
 export * from './NavItemDetailForm';
 export * from './SiteNavigationTab';
+export * from './ContentDetailMenuCompartment';
+export * from './NewMenuItemForm';
+export * from './MenuItemModal';
