@@ -54,7 +54,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const [showModal, setShowModal] = useState(false);
 	const [rows, setRows] = useState<MenuItemRowData[]>([]);
 	const [selectedMenuId, setSelectedMenuId] = useState<string | undefined>();
-	const [menusLoading, menus] = useMenus();
+	const [menusLoading, menus] = useMenus(activeLanguage);
 	const { menu } = useMenu();
 	const formikRef = useRef<FormikProps<FormikValues>>();
 	const { menuItem } = useMenuItem();
@@ -142,10 +142,14 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 			return;
 		}
 
-		menusFacade.getMenus(site.uuid, {
-			lang: activeLanguage,
-			pagesize: -1,
-		} as SearchParams);
+		menusFacade.getMenus(
+			site.uuid,
+			{
+				lang: activeLanguage,
+				pagesize: -1,
+			} as SearchParams,
+			true
+		);
 	}, [activeLanguage, site]);
 
 	useEffect(() => {
