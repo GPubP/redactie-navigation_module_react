@@ -50,7 +50,7 @@ const StructureCascader = ({
 	// available positions after ctPositionValue = number[]
 	const availablePositions =
 		structurePosition === PositionValues.limited
-			? value && value.length && value.slice(ctStructureValue.length)
+			? value && value.slice(ctStructureValue.length)
 			: value;
 	// available sitestructure when limited position
 	const availableLimitedSiteStructure = getAvailableSiteStructureOptions(
@@ -77,8 +77,9 @@ const StructureCascader = ({
 	const fieldValue =
 		(isLimitedAndNotEditable
 			? ctStructureValue
-			: value !== undefined && value === currentValue && availablePositions) ||
-		ctStructureValue;
+			: value !== undefined && value.length > 0 && value === currentValue
+			? availablePositions
+			: value) || ctStructureValue;
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue(`meta.sitestructuur.position.${activeLanguage}`, value);
@@ -92,6 +93,8 @@ const StructureCascader = ({
 
 		return <span className="u-margin-right-xs">{`${positionValue} >`}</span>;
 	};
+
+	console.log({ value, ctStructureValue, fieldValue, availablePositions });
 
 	return (
 		<div
@@ -139,33 +142,35 @@ const StructureCascader = ({
 								fieldValue
 							)}
 						/>
-						{value && value.length > 0 && (
-							<span
-								className="fa"
-								style={{
-									pointerEvents: 'initial',
-									cursor: 'pointer',
-								}}
-							>
-								<Button
-									icon="close"
-									ariaLabel="Close"
-									size="small"
-									transparent
+						{((isLimitedAndEditable && value && value.length > 0) ||
+							(!isLimitedAndEditable && fieldValue && fieldValue.length > 0)) &&
+							!disabled && (
+								<span
+									className="fa"
 									style={{
-										top: '-2px',
+										pointerEvents: 'initial',
+										cursor: 'pointer',
 									}}
-									onClick={(e: React.SyntheticEvent) => {
-										e.preventDefault();
-										e.stopPropagation();
-										setFieldValue(
-											`meta.sitestructuur.position.${activeLanguage}`,
-											[]
-										);
-									}}
-								/>
-							</span>
-						)}
+								>
+									<Button
+										icon="close"
+										ariaLabel="Close"
+										size="small"
+										transparent
+										style={{
+											top: '-2px',
+										}}
+										onClick={(e: React.SyntheticEvent) => {
+											e.preventDefault();
+											e.stopPropagation();
+											setFieldValue(
+												`meta.sitestructuur.position.${activeLanguage}`,
+												[]
+											);
+										}}
+									/>
+								</span>
+							)}
 					</div>
 				</Cascader>
 			</div>
