@@ -10,6 +10,7 @@ import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
 import SitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { placeholderToKeyValue } from '../../helpers/placeholderToKeyValue';
+import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 
@@ -29,6 +30,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	const [site] = SitesConnector.hooks.useSite(siteId);
 
 	const urlResolver = placeholderToKeyValue(placeholders);
+	const navigationRights = useNavigationRights(siteId);
 
 	let preUrl = 'https://www.antwerpen.be';
 
@@ -79,6 +81,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 			</div>
 			<FormikMultilanguageField
 				asComponent={TextField}
+				disabled={!navigationRights.updateUrlPattern}
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"

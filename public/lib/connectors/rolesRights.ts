@@ -10,6 +10,10 @@ class RolesRightsConnector {
 		delete: 'navigation-navigation_delete',
 		replace: 'navigation-navigation_parent-replace',
 		contentPathUpdate: 'navigation-content_path_update',
+		readUrl: 'navigation-url_read',
+		updateUrl: 'navigation-url_update',
+		readUrlPattern: 'navigation-url-pattern_read',
+		updateUrlPattern: 'navigation-url-pattern_update',
 	};
 	public menuSecurityRights = {
 		create: 'navigation-menus_create',
@@ -36,6 +40,10 @@ class RolesRightsConnector {
 		delete: 'navigation-site-structure-items_delete',
 	};
 	public api: RolesRightsModuleAPI;
+
+	public get guards(): RolesRightsModuleAPI['guards'] {
+		return this.api.guards;
+	}
 
 	constructor(api?: RolesRightsModuleAPI) {
 		if (!api) {
