@@ -49,6 +49,10 @@ export interface NavigationSecurityRights {
 	delete: boolean;
 	contentPathUpdate: boolean;
 	replace: boolean;
+	readUrl: boolean;
+	updateUrl: boolean;
+	readUrlPattern: boolean;
+	updateUrlPattern: boolean;
 }
 
 export interface NavigationModuleProps<Params extends { [K in keyof Params]?: string } = {}>
