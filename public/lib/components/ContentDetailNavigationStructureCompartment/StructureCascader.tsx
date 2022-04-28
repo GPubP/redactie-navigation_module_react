@@ -1,6 +1,5 @@
-import { Button, Cascader, LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
-import { ContentSchema } from '@redactie/content-module';
-import { FormikMultilanguageFieldProps } from '@redactie/utils';
+import { Button } from '@acpaas-ui/react-components';
+import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr, propOr } from 'ramda';
@@ -21,7 +20,6 @@ const StructureCascader = ({
 	required,
 	activeLanguage,
 	value,
-	contentItem,
 	CTStructureConfig,
 	treeConfig,
 	siteStructure,
@@ -32,7 +30,6 @@ const StructureCascader = ({
 	required: boolean;
 	activeLanguage: string;
 	value: number[];
-	contentItem: ContentSchema;
 	CTStructureConfig: { [key: string]: unknown };
 	treeConfig: {
 		options: CascaderOption[];
@@ -96,16 +93,6 @@ const StructureCascader = ({
 		return <span className="u-margin-right-xs">{`${positionValue} >`}</span>;
 	};
 
-	console.log({ value });
-	console.log({ fieldValue });
-	console.log({ availablePositions });
-	console.log(
-		getPositionInputValue(
-			isLimitedAndEditable ? availableLimitedTreeConfig.options : treeConfig.options,
-			fieldValue
-		)
-	);
-
 	return (
 		<div
 			className={classNames('a-input has-icon-right u-margin-bottom', {
@@ -152,7 +139,7 @@ const StructureCascader = ({
 								fieldValue
 							)}
 						/>
-						{/* {value.length > 0 && (
+						{value && value.length > 0 && (
 							<span
 								className="fa"
 								style={{
@@ -171,11 +158,14 @@ const StructureCascader = ({
 									onClick={(e: React.SyntheticEvent) => {
 										e.preventDefault();
 										e.stopPropagation();
-										// setFieldValue('sitestructuur.position', []);
+										setFieldValue(
+											`meta.sitestructuur.position.${activeLanguage}`,
+											[]
+										);
 									}}
 								/>
 							</span>
-						)} */}
+						)}
 					</div>
 				</Cascader>
 			</div>

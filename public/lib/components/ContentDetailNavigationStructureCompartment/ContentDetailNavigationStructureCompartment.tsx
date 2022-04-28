@@ -1,37 +1,12 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CardBody, Textarea, TextField } from '@acpaas-ui/react-components';
-import { Button, Cascader, LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
 import { CompartmentProps, ContentSchema } from '@redactie/content-module';
-import { ContentMeta } from '@redactie/content-module/dist/lib/services/content';
-import {
-	CascaderOption,
-	FormikMultilanguageFieldProps,
-	FormikOnChangeHandler,
-	useSiteContext,
-} from '@redactie/utils';
-import classNames from 'classnames';
-import {
-	Field,
-	FieldProps,
-	Formik,
-	FormikBag,
-	FormikFormProps,
-	FormikProps,
-	FormikValues,
-	useFormikContext,
-} from 'formik';
-import { path, pathOr } from 'ramda';
+import { CascaderOption, FormikOnChangeHandler, useSiteContext } from '@redactie/utils';
+import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 
-import contentConnector from '../../connectors/content';
-import {
-	getAvailableSiteStructureOptions,
-	getCTStructureConfig,
-	getLangSiteUrl,
-	getPositionInputValue,
-	getTreeConfig,
-} from '../../helpers';
-import { useNavigationRights, useSiteStructure } from '../../hooks';
+import { getCTStructureConfig, getTreeConfig } from '../../helpers';
+import { useSiteStructure } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { CONFIG, PositionValues } from '../../navigation.const';
 import { NavItem, NavTree } from '../../navigation.types';
@@ -45,17 +20,14 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	contentValue,
 	contentItem,
 	activeLanguage,
-	value,
 	onChange,
 	site,
 	formikRef,
 	contentType,
 }) => {
-	const url = getLangSiteUrl(site, activeLanguage);
 	const CTStructureConfig = getCTStructureConfig(contentType, activeLanguage!, CONFIG.name, site);
-	const newSite = url?.slice(-1) === '/' ? url.slice(0, url.length - 1) : url;
-	const [loadingState, siteStructures] = useSiteStructures();
-	const { fetchingState, siteStructure } = useSiteStructure();
+	const [, siteStructures] = useSiteStructures();
+	const { siteStructure } = useSiteStructure();
 	const [siteStructureForLang, setSiteStructureForLang] = useState<SiteStructure | null>(null);
 
 	/**
@@ -109,7 +81,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
-		console.log(values);
 		updateContentMeta((values as ContentSchema).meta);
 	};
 

@@ -423,7 +423,6 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 		const siteNavigationConfig = (contentType.modulesConfig || []).find(
 			config => config.name === 'navigation' && config.site
 		);
-		//console.log(siteNavigationConfig);
 
 		if (
 			!siteNavigationConfig ||
