@@ -1,10 +1,11 @@
 import { LoadingState } from '@redactie/utils';
+import { FormikProps, FormikValues } from 'formik';
+import { Ref } from 'react';
 
 import {
 	NavItem,
 	NavItemDetailForm,
 	NavItemType,
-	NavRights,
 	NavTree,
 	RearrangeNavItem,
 } from '../../navigation.types';
@@ -14,17 +15,15 @@ export interface NavItemDetailFormProps {
 	navItem: NavItem;
 	navItems: NavItem[];
 	navItemType?: NavItemType;
-	rights: NavRights;
-	upsertingState: LoadingState;
-	loading: boolean;
-	isChanged: boolean;
-	parentChanged: boolean;
+	upsertingState?: LoadingState;
+	parentChanged?: boolean;
+	canEdit: boolean;
 	copy: {
 		description?: string;
 		label: string;
 		statusCheckbox: string;
 	};
-	onRearrange: (items: RearrangeNavItem[]) => Promise<void>;
+	formikRef: Ref<FormikProps<FormikValues>>;
+	onRearrange?: (items: RearrangeNavItem[]) => Promise<void>;
 	onChange: (values: NavItemDetailForm) => void;
-	onSave: () => void;
 }

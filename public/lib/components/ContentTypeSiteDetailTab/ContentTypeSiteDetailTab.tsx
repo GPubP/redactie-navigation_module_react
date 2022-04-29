@@ -21,7 +21,9 @@ import { NavLink, useHistory, useParams } from 'react-router-dom';
 
 import contentTypeConnector from '../../connectors/contentTypes';
 import languagesConnector from '../../connectors/languages';
+import rolesRightsConnector from '../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
 
@@ -67,8 +69,28 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
 		[child]
 	);
+	const navigationRights = useNavigationRights(siteId);
 
 	const history = useHistory();
+
+	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
+	const canReadMenu = useMemo(() => {
+		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+			rolesRightsConnector.menuSecurityRights.read,
+		]);
+	}, [mySecurityrights]);
+
+	const navListChecked =
+		!navigationRights.readUrlPattern && !canReadMenu
+			? []
+			: !navigationRights.readUrlPattern
+			? navList.filter(c => c.label !== 'URL')
+			: !canReadMenu
+			? navList.filter(c => c.label !== "Menu's")
+			: navList;
 
 	useEffect(() => {
 		setNavlist(
@@ -211,7 +233,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	return (
 		<div className="row top-xs u-margin-bottom-lg">
 			<div className="col-xs-12 col-md-3 u-margin-bottom">
-				<NavList items={navList} linkComponent={NavLink} />
+				<NavList items={navListChecked} linkComponent={NavLink} />
 			</div>
 			<div className="col-xs-12 col-md-9">
 				<div className="m-card u-padding">

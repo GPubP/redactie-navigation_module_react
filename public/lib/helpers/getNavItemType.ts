@@ -1,3 +1,4 @@
+import { NAV_STATUSES } from '../components';
 import { CONTENT_REF_BASE_PATH, HYPERLINK_BASE_PATH, MODULE_PATHS } from '../navigation.const';
 import { NavItem, NavItemType } from '../navigation.types';
 import { MenuItem } from '../services/menuItems';
@@ -17,6 +18,7 @@ export const getMenuItemTypeByValue = (menuItem: NavItem | undefined): NavItemTy
 	if (!menuItem) {
 		return NavItemType.internal;
 	}
+
 	const { externalUrl, slug } = menuItem;
 	const isExternal = externalUrl;
 	const isInternal = slug && !externalUrl;
@@ -59,12 +61,19 @@ export const createDraftNavItem = (menuItem: NavItem): NavItem => {
 };
 
 export const createNavItemPayload = (menuItem: MenuItem): MenuItem => {
+	const menuItemType = menuItem.properties?.type as NavItemType;
+
 	return {
 		...menuItem,
-		...(menuItem.properties?.type !== NavItemType.section || menuItem.externalUrl
+		// Set publishStatus for external and section items always as published
+		publishStatus: [NavItemType.external, NavItemType.section].includes(menuItemType)
+			? NAV_STATUSES.PUBLISHED
+			: menuItem.publishStatus,
+		// Prefix externalUrl for external items only
+		...(menuItemType !== NavItemType.section || menuItem.externalUrl
 			? {
 					externalUrl:
-						menuItem.properties?.type === NavItemType.external
+						menuItemType === NavItemType.external
 							? `https://${menuItem.externalUrl}`
 							: menuItem.externalUrl,
 			  }

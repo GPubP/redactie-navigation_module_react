@@ -6,6 +6,7 @@ import { UseMenuItems } from './useMenuItems.type';
 
 const useMenuItems = (): UseMenuItems => {
 	const isFetching = useObservable(menuItemsFacade.isFetching$, LoadingState.Loading);
+	const isFetchingOne = useObservable(menuItemsFacade.isFetchingOne$, LoadingState.Loading);
 	const isUpdating = useObservable(menuItemsFacade.isUpdating$, LoadingState.Loaded);
 	const isCreating = useObservable(menuItemsFacade.isCreating$, LoadingState.Loaded);
 	const isRemoving = useObservable(menuItemsFacade.isRemoving$, LoadingState.Loaded);
@@ -22,11 +23,18 @@ const useMenuItems = (): UseMenuItems => {
 		? LoadingState.Loading
 		: LoadingState.Loaded;
 
+	const fetchingOneState = error
+		? LoadingState.Error
+		: isFetchingOne === LoadingState.Loading
+		? LoadingState.Loading
+		: LoadingState.Loaded;
+
 	const removingState =
 		isRemoving === LoadingState.Loading ? LoadingState.Loading : LoadingState.Loaded;
 
 	return {
 		fetchingState,
+		fetchingOneState,
 		upsertingState,
 		removingState,
 		menuItems,

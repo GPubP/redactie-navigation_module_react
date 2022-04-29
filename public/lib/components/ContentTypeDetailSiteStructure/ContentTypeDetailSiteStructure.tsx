@@ -90,10 +90,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 				<label className="a-input__label" htmlFor="text-field">
 					{props.label as string}
 				</label>
-				<small>
-					Bepaal de standaardpositie voor items van dit content type. Indien je geen
-					positie selecteerd zullen items in de root van het menu geplaatst worden.
-				</small>
+				<small>{tModule(MODULE_TRANSLATIONS.CT_SITE_STRUCTURE_POSITION_DESCRIPTION)}</small>
 				<Cascader
 					changeOnSelect
 					value={value}
@@ -107,8 +104,8 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 							disabled={disabled}
 							placeholder={
 								!treeConfig.options.length
-									? 'Geen opties beschikbaar'
-									: 'Selecteer een positie'
+									? tModule(MODULE_TRANSLATIONS.NO_OPTIONS_AVAILABLE)
+									: tModule(MODULE_TRANSLATIONS.SELECT_TREE_POSITION)
 							}
 							value={getPositionInputValue(treeConfig.options, value)}
 						/>
@@ -171,9 +168,9 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 						<div className="col-xs-12">
 							<FormikMultilanguageField
 								asComponent={renderCascader}
-								label="Standaard positie"
+								label={tModule(MODULE_TRANSLATIONS.DEFAULT_POSITION)}
 								name="sitestructuur.position"
-								placeholder="Selecteer een positie"
+								placeholder={tModule(MODULE_TRANSLATIONS.SELECT_POSITION)}
 								required={
 									values.sitestructuur?.structurePosition ===
 									PositionValues.limited
@@ -186,7 +183,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 										checked={values.sitestructuur?.editablePosition}
 										id="editable"
 										name="sitestructuur.editablePosition"
-										label="Aanpasbaar"
+										label={tModule(MODULE_TRANSLATIONS.EDITABLE)}
 										onChange={(e: ChangeEvent<HTMLInputElement>) => {
 											setFieldValue(
 												'sitestructuur.editablePosition',

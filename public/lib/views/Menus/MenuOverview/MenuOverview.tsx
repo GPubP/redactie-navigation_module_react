@@ -23,6 +23,7 @@ import {
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
 import { FilterForm, FilterFormState } from '../../../components';
+import rolesRightsConnector from '../../../connectors/rolesRights';
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useMenus } from '../../../hooks/useMenus';
@@ -57,6 +58,21 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
 	const [loadingsState, menus, menuPaging] = useMenus();
+	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
+	const rights = useMemo(
+		() => ({
+			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.menuSecurityRights.update,
+			]),
+			canDelete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.menuSecurityRights.delete,
+			]),
+		}),
+		[mySecurityrights]
+	);
 
 	const isLoading = useMemo(() => {
 		return loadingsState === LoadingState.Loading;
@@ -73,10 +89,14 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 			return;
 		}
 
-		menusFacade.getMenus(siteId, {
-			...query,
-			includeItemCount: true,
-		} as SearchParams);
+		menusFacade.getMenus(
+			siteId,
+			{
+				...query,
+				includeItemCount: true,
+			} as SearchParams,
+			true
+		);
 	}, [query, site, siteId]);
 
 	/**
@@ -158,7 +178,7 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 					fixed
 					className="u-margin-top"
 					tableClassName="a-table--fixed--xs"
-					columns={OVERVIEW_COLUMNS(t)}
+					columns={OVERVIEW_COLUMNS(t, mySecurityrights, rights)}
 					rows={customMenuRows}
 					currentPage={query.page}
 					itemsPerPage={DEFAULT_QUERY_PARAMS.pagesize}
@@ -179,12 +199,17 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 			<ContextHeader title="Menu's">
 				<ContextHeaderTopSection>{breadcrumbs}</ContextHeaderTopSection>
 				<ContextHeaderActionsSection>
-					<Button
-						iconLeft="plus"
-						onClick={() => navigate(MODULE_PATHS.site.createMenu, { siteId })}
+					<rolesRightsConnector.api.components.SecurableRender
+						userSecurityRights={mySecurityrights}
+						requiredSecurityRights={[rolesRightsConnector.menuSecurityRights.create]}
 					>
-						{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
-					</Button>
+						<Button
+							iconLeft="plus"
+							onClick={() => navigate(MODULE_PATHS.site.createMenu, { siteId })}
+						>
+							{t(CORE_TRANSLATIONS['BUTTON_CREATE-NEW'])}
+						</Button>
+					</rolesRightsConnector.api.components.SecurableRender>
 				</ContextHeaderActionsSection>
 			</ContextHeader>
 			<Container>

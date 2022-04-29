@@ -8,6 +8,7 @@ import React from 'react';
 import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { NavItemType, NavRights } from '../../../navigation.types';
 
 import styles from './MenuItemsOverview.module.scss';
 import { MenuItemsTableRow } from './MenuItemsOverview.types';
@@ -16,6 +17,7 @@ const cx = classnames.bind(styles);
 export const MENU_ITEMS_COLUMNS = (
 	t: TranslateFunc,
 	mySecurityrights: string[],
+	rights: NavRights,
 	expandRow: (id: number) => void,
 	openRearrangeModal: (id: number) => void,
 	openRows: string[]
@@ -79,14 +81,23 @@ export const MENU_ITEMS_COLUMNS = (
 		indentingComponent(value: string, rowData: MenuItemsTableRow) {
 			return (
 				<div
-					className={cx('m-menu-items-table__indent-block')}
+					className={cx(
+						rights.canUpdate
+							? 'm-menu-items-table__indent-block'
+							: 'm-menu-items-table__indent-block-disabled'
+					)}
 					onClick={() => {
-						if (rowData.id) {
+						if (rowData.id && rights.canUpdate) {
 							openRearrangeModal(rowData.id);
 						}
 					}}
 				>
-					<Icon name="sort" className={cx('m-menu-items-table__indent-block__icon')} />
+					{rights.canUpdate && (
+						<Icon
+							name="sort"
+							className={cx('m-menu-items-table__indent-block__icon')}
+						/>
+					)}
 				</div>
 			);
 		},
@@ -95,8 +106,8 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id, url }: MenuItemsTableRow) {
-			return id && !url ? (
+		component(value: string, { id, type }: MenuItemsTableRow) {
+			return id && type === NavItemType.internal ? (
 				<div>
 					<ContentInfoTooltip id={id} />
 				</div>
