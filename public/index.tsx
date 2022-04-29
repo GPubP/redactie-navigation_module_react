@@ -521,8 +521,8 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
+	show: context => context.isActive,
 	disabled: context =>
-		!context.isActive ||
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
 			rolesRightsConnector.securityRights.read,
 		]) ||
