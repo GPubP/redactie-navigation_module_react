@@ -414,6 +414,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const renderTable = (): ReactElement => {
 		return (
 			<Table
+				fixed
 				dataKey="id"
 				className="u-margin-top"
 				columns={MENU_COLUMNS(tModule)}
