@@ -69,6 +69,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 				id: menuItem.id as number,
 				label: menuItem.label,
 				url: `${url}/${menuItem.slug}`,
+				siteUrl: url,
 				type: menuItemType,
 				active: menuItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(menuItem.items),
