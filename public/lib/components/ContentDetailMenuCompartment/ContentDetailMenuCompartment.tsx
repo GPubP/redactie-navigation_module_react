@@ -15,7 +15,6 @@ import { v4 as uuid } from 'uuid';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import {
-	createDraftNavItem,
 	findPosition,
 	generateEmptyNavItem,
 	getPositionInputValue,
@@ -101,30 +100,26 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		}, '');
 	}, []);
 
-	const onShowEdit = useCallback(
-		async (id: string, menuId: string): Promise<void> => {
-			if (!site) {
-				return;
-			}
+	const onShowEdit = async (
+		menuItem: Omit<MenuItem, 'id'> & { id?: string | number },
+		menuId: string
+	): Promise<void> => {
+		if (!site) {
+			return;
+		}
 
-			setSelectedMenuId(menuId);
+		setSelectedMenuId(menuId);
 
-			const selectedMenuItem = contentMenuItems?.find(item => item.id?.toString() === id);
+		menuItemsFacade.getSubset(site?.uuid, menuId, menuItem?.parentId, 1);
+		menuItemsFacade.setMenuItem(menuItem as MenuItem);
+		menuItemsFacade.setMenuItemDraft(menuItem as MenuItem);
 
-			if (!selectedMenuItem) {
-				return;
-			}
+		const id = menuItem.id?.toString() || '';
 
-			menuItemsFacade.getSubset(site?.uuid, menuId, menuItem?.parentId, 1);
-			menuItemsFacade.setMenuItem(selectedMenuItem);
-			menuItemsFacade.setMenuItemDraft(createDraftNavItem(selectedMenuItem));
-
-			setExpandedRows({
-				[id]: true,
-			});
-		},
-		[contentMenuItems, menuItem, site]
-	);
+		setExpandedRows({
+			[id]: true,
+		});
+	};
 
 	/**
 	 * Hooks
@@ -187,7 +182,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					menuId: menu?.id.toString() || '',
 					position: item?.parents?.length ? buildParentPath(item.parents) : 'Hoofdniveau',
 					newItem: false,
-					editMenuItem: onShowEdit,
+					editMenuItem: () => onShowEdit(item, menu?.id.toString() || ''),
 				};
 			})
 		);
@@ -225,6 +220,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		const formattedPosition =
 			getPositionInputValue(treeConfig.options, position) || 'Hoofdniveau';
 
+		const itemUuid = uuid();
+
 		menuItemId
 			? setRows([
 					...rows.map(row => {
@@ -239,20 +236,28 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 							menuId: menu?.id.toString() || '',
 							position: formattedPosition,
 							newItem: false,
-							editMenuItem: onShowEdit,
+							editMenuItem: () =>
+								onShowEdit(menuItemDraft, menu?.id.toString() || ''),
 						};
 					}),
 			  ])
 			: setRows([
 					...rows,
 					{
-						id: uuid(),
+						id: itemUuid,
 						label: menuItemDraft?.label || '',
 						menu: menu?.label || '',
 						menuId: menu?.id.toString() || '',
 						position: formattedPosition,
 						newItem: true,
-						editMenuItem: onShowEdit,
+						editMenuItem: () =>
+							onShowEdit(
+								{
+									id: itemUuid as string,
+									...menuItemDraft,
+								},
+								menu?.id.toString() || ''
+							),
 					},
 			  ]);
 
