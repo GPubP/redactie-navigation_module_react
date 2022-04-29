@@ -22,8 +22,8 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 	site,
 	formikRef,
 }) => {
-	const url = activeLanguage && getLangSiteUrl(site, activeLanguage);
-	const activeUrl = url && url[activeLanguage!];
+	const url = getLangSiteUrl(site, activeLanguage);
+
 	const contentTypeUrlPattern = useMemo(
 		() =>
 			contentConnector.api.getCTUrlPattern(
@@ -161,14 +161,13 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 												<a
 													target="_blank"
 													rel="noopener noreferrer"
-													href={`${activeUrl &&
-														activeUrl[activeLanguage!]}${
+													href={`${url}${
 														contentValue?.meta?.urlPath[activeLanguage!]
 															.value
 													}`}
 													className="u-margin-left-xs"
 												>
-													{`${activeUrl && activeUrl[activeLanguage!]}${
+													{`${url}${
 														contentValue?.meta?.urlPath[activeLanguage!]
 															.value
 													}`}

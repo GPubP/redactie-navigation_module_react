@@ -61,7 +61,7 @@ const MenusCheckboxList: FC<MenusCheckboxListProps> = ({ siteId, name, activeLan
 		return menus.map(menu => ({
 			id: menu.id,
 			label: menu.label,
-			active: currentMenus.find(currentMenu => currentMenu === menu.id),
+			active: (Array.isArray(currentMenus) ? currentMenus : []).find(currentMenu => currentMenu === menu.id),
 			activateMenu,
 			deactivateMenu,
 		}));
