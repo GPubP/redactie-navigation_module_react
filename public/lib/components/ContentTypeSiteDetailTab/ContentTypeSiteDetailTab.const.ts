@@ -6,11 +6,13 @@ import { PATTERN_PLACEHOLDERS } from '../ContentTypeDetailUrl/ContentTypeDetailU
 export enum NavSiteCompartments {
 	menu = 'menu',
 	url = 'url',
+	siteStructure = 'sitestructuur',
 }
 
 export const NAV_SITE_COMPARTMENTS = [
 	{ label: "Menu's", to: NavSiteCompartments.menu },
 	{ label: 'URL', to: NavSiteCompartments.url },
+	{ label: 'Sitestructuur', to: NavSiteCompartments.siteStructure },
 ];
 
 export const SITE_DETAIL_TAB_ALLOWED_PATHS = [

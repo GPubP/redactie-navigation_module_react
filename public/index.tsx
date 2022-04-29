@@ -14,6 +14,7 @@ import {
 	ContentDetailMenuCompartment,
 	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
+	ContentTypeDetailSiteStructure,
 	ContentTypeDetailTab,
 	ContentTypeDetailUrl,
 	SiteNavigationTab,
@@ -476,6 +477,11 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 				]),
 			],
 		},
+	},
+	{
+		path: MODULE_PATHS.site.contentTypeDetailExternalSiteStructure,
+		breadcrumb: false,
+		component: ContentTypeDetailSiteStructure,
 	},
 ];
 

@@ -13,8 +13,10 @@ import { DataLoader, ErrorMessage, FormikOnChangeHandler, useSiteContext } from 
 import { Field, FieldProps, Formik, FormikBag, FormikProps, FormikValues } from 'formik';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
+import translationsConnector from '../../connectors/translations';
 import { getPositionInputValue, getTreeConfig } from '../../helpers';
 import { useNavigationRights, useTree, useTreeItem, useTreeOptions } from '../../hooks';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CascaderOption } from '../../navigation.types';
 import { TreeDetailItem } from '../../services/trees';
 import { ReplaceConfirmModal } from '../ReplaceConfirmModal';
@@ -46,6 +48,7 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 	const [loadingTree, tree] = useTree(value.navigationTree);
 	const [loadingTreeItem, treeItem, treeItemError] = useTreeItem(value.navigationTree, value.id);
 	const navigationRights = useNavigationRights(siteId);
+	const [tModule] = translationsConnector.useModuleTranslation();
 
 	// Local state hooks
 	const [initialLoading, setInitialLoading] = useState(true);
@@ -198,8 +201,19 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 													<div className="a-input__wrapper">
 														<input
 															onChange={() => null}
-															disabled={readonly}
-															placeholder="Kies een positie in de boom"
+															disabled={
+																readonly ||
+																!treeConfig.options.length
+															}
+															placeholder={
+																!treeConfig.options.length
+																	? tModule(
+																			MODULE_TRANSLATIONS.NO_OPTIONS_AVAILABLE
+																	  )
+																	: tModule(
+																			MODULE_TRANSLATIONS.SELECT_TREE_POSITION
+																	  )
+															}
 															value={getPositionInputValue(
 																treeConfig.options,
 																values.position
@@ -238,8 +252,9 @@ const ContentDetailCompartment: FC<CompartmentProps> = ({
 													</div>
 												</Cascader>
 												<small>
-													Selecteer op welke plek je de pagina in de
-													navigatieboom wilt hangen.
+													{tModule(
+														MODULE_TRANSLATIONS.SITE_STRUCTURE_POSITION_DESCRIPTION
+													)}
 												</small>
 											</div>
 										)}

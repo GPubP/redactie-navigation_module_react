@@ -6,8 +6,10 @@ import { Field, Formik, FormikProps, FormikValues, isFunction } from 'formik';
 import { isEmpty } from 'ramda';
 import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 
+import translationsConnector from '../../connectors/translations';
 import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
 import { extractSiblings } from '../../helpers/extractSiblings';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import {
 	CascaderOption,
 	NavItem,
@@ -42,6 +44,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	const [contentItemPublished, setContentItemPublished] = useState(false);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
+	const [tModule] = translationsConnector.useModuleTranslation();
 
 	const isUpdate = useMemo(() => {
 		return !!navItem?.id;
@@ -153,7 +156,15 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 													disabled={
 														!canEdit || !treeConfig.options.length
 													}
-													placeholder="Kies een positie in de boom"
+													placeholder={
+														!treeConfig.options.length
+															? tModule(
+																	MODULE_TRANSLATIONS.NO_OPTIONS_AVAILABLE
+															  )
+															: tModule(
+																	MODULE_TRANSLATIONS.SELECT_TREE_POSITION
+															  )
+													}
 													value={getPositionInputValue(
 														treeConfig.options,
 														values?.position
@@ -202,6 +213,8 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 								<ErrorMessage name="position" />
 								<small className="u-block u-margin-top-xs">
 									Selecteer op welke plek in de boom je dit item wilt hangen.
+									Indien je geen positie selecteerd zal de pagina in de root van
+									de navigatieboom geplaatst worden.
 								</small>
 							</div>
 						</div>

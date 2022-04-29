@@ -45,11 +45,16 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	),
 	SITE_NAVIGATION_CONFIRM_DESCRIPTION: tKey(
 		'SITE_NAVIGATION_CONFIRM_DESCRIPTION',
-		'Je probeert het URL patroon voor dit content type te wijzigen. Dit heeft enkel impact op nieuwe content items, de bestaande content items zullen niet bijgewerkt worden. Je kan dit niet ongedaan maken.'
+		'Je probeert het URL patroon en/of de sitestructuur voor dit content type te wijzigen. Dit heeft enkel impact op nieuwe content items, de bestaande content items zullen niet bijgewerkt worden. Je kan dit niet ongedaan maken.'
 	),
 	NAVIGATION_MENU_DESCRIPTION: tKey(
 		'NAVIGATION_MENU_DESCRIPTION',
 		"Bepaal of het werken met menu's is toegestaan voor dit content type en of dit standaard geactiveerd moet worden."
+	),
+	NAVIGATION_SITE_STRUCTURE_TITLE: tKey('NAVIGATION_SITE_STRUCTURE_TITLE', 'Sitestructuur'),
+	NAVIGATION_SITE_STRUCTURE_DESCRIPTION: tKey(
+		'NAVIGATION_SITE_STRUCTURE_DESCRIPTION',
+		'Bepaal of content items van dit content type een plaats in de sitestructuur kunnen krijgen.'
 	),
 	NAVIGATION_URL_DESCRIPTION: tKey(
 		'NAVIGATION_URL_DESCRIPTION',
@@ -83,6 +88,19 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'MENU_ITEM_STATUS_CHECKBOX_DESCRIPTION',
 		'Zet het menu-item aan wanneer het content item online is.'
 	),
+	NO_OPTIONS_AVAILABLE: tKey('NO_OPTIONS_AVAILABLE', 'Geen opties beschikbaar'),
+	SELECT_TREE_POSITION: tKey('SELECT_TREE_POSITION', 'Kies een positie in de boom'),
+	SELECT_POSITION: tKey('SELECT_POSITION', 'Selecteer een positie'),
+	DEFAULT_POSITION: tKey('DEFAULT_POSITION', 'Standaard positie'),
+	CT_SITE_STRUCTURE_POSITION_DESCRIPTION: tKey(
+		'CT_SITE_STRUCTURE_POSITION_DESCRIPTION',
+		'Bepaal de standaardpositie voor items van dit content type. Indien je geen positie selecteerd zullen items in de root van het menu geplaatst worden.'
+	),
+	SITE_STRUCTURE_POSITION_DESCRIPTION: tKey(
+		'SITE_STRUCTURE_POSITION_DESCRIPTION',
+		'Selecteer op welke plek je de pagina in de navigatieboom wilt hangen. Indien je geen positie selecteerd zal de pagina in de root van de navigatieboom geplaatst worden.'
+	),
+	EDITABLE: tKey('EDITABLE', 'Aanpasbaar'),
 	CONTENT_PREVENT_DELETE_DESCRIPTION: tKey(
 		'CONTENT_PREVENT_DELETE_DESCRIPTION',
 		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'
