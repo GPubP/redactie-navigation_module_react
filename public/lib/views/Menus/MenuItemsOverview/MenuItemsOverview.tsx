@@ -60,11 +60,16 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 	const transformItemsToRows = (menuItems: MenuItem[]): MenuItemsTableRow[] => {
 		return (menuItems || []).map(menuItem => {
 			const menuItemType = menuItem.properties?.type ?? NavItemType.internal;
+			const url =
+				menuItem.externalUrl?.slice(-1) === '/'
+					? menuItem.externalUrl.slice(0, menuItem.externalUrl.length - 1)
+					: menuItem.externalUrl;
 
 			return {
 				id: menuItem.id as number,
 				label: menuItem.label,
-				url: menuItem.externalUrl,
+				url: `${url}/${menuItem.slug}`,
+				siteUrl: url,
 				type: menuItemType,
 				active: menuItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(menuItem.items),

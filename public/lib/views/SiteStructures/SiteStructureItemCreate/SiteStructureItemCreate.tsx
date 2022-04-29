@@ -27,7 +27,11 @@ import {
 	MODULE_PATHS,
 	SITES_ROOT,
 } from '../../../navigation.const';
-import { NavigationModuleProps, SiteStructureItemMatchProps } from '../../../navigation.types';
+import {
+	NavigationModuleProps,
+	NavItemType,
+	SiteStructureItemMatchProps,
+} from '../../../navigation.types';
 import {
 	SiteStructureItemModel,
 	siteStructureItemsFacade,
@@ -113,7 +117,13 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	/**
 	 * Render
 	 */
-	const pageTitle = `Sitestructuur item ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
+	const pageTitle = `${
+		siteStructureItemType === NavItemType.external
+			? 'Hyperlink'
+			: siteStructureItemType === NavItemType.internal
+			? 'Sitestructuur item'
+			: 'Tussentitel'
+	} ${t(CORE_TRANSLATIONS.ROUTING_CREATE)}`;
 
 	const renderChildRoutes = (): ReactElement => (
 		<RenderChildRoutes
