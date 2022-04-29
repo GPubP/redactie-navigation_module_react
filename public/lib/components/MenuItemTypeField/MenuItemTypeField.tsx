@@ -46,7 +46,7 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 			return (
 				<>
 					<Field name="slug">
-						{(fieldProps: FieldProps<any, {}>) => {
+						{(fieldProps: FieldProps<any, Record<string, unknown>>) => {
 							return (
 								<ContentSelect
 									key={values.slug}

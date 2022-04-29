@@ -31,7 +31,11 @@ import {
 import { MENUS_COLUMNS } from './ContentTypeMenusTable.const';
 import { ContentTypeMenusTableProps } from './ContentTypeMenusTable.types';
 
-const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({ siteId, name, activeLanguage }) => {
+const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
+	siteId,
+	name,
+	activeLanguage,
+}) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [menusLoadingState, menus, menuPaging] = useMenus(activeLanguage.key);

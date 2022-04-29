@@ -55,8 +55,9 @@ export interface NavigationSecurityRights {
 	updateUrlPattern: boolean;
 }
 
-export interface NavigationModuleProps<Params extends { [K in keyof Params]?: string } = {}>
-	extends RouteConfigComponentProps<Params> {
+export interface NavigationModuleProps<
+	Params extends { [K in keyof Params]?: string } = Record<string, string | undefined>
+> extends RouteConfigComponentProps<Params> {
 	routes: ModuleRouteConfig[];
 	tenantId: string;
 }
@@ -86,14 +87,15 @@ export interface SiteStructureItemMatchProps extends SiteStructureMatchProps {
 export interface NavigationRouteProps<
 	Params extends {
 		[K in keyof Params]?: string;
-	} = {}
+	} = Record<string, string | undefined>
 > extends RouteConfigComponentProps<Params> {
 	basePath: string;
 	routes: ModuleRouteConfig[];
 	tenantId: string;
 }
 
-export interface NavigationDetailRouteProps<Params = {}> extends RouteConfigComponentProps<Params> {
+export interface NavigationDetailRouteProps<Params = Record<string, unknown>>
+	extends RouteConfigComponentProps<Params> {
 	isCreating?: boolean;
 	isRemoving?: boolean;
 	loading: boolean;
@@ -104,13 +106,14 @@ export interface NavigationDetailRouteProps<Params = {}> extends RouteConfigComp
 	onCancel: () => void;
 }
 
-export interface MenuDetailRouteProps<Params = {}> extends NavigationDetailRouteProps<Params> {
+export interface MenuDetailRouteProps<Params = Record<string, unknown>>
+	extends NavigationDetailRouteProps<Params> {
 	menu: Menu;
 	onSubmit: (data: Menu | Partial<Menu>, tab: ContextHeaderTab) => Promise<void>;
 	onDelete: (data: Menu | Partial<Menu>) => Promise<void>;
 }
 
-export interface SiteStructureDetailRouteProps<Params = {}>
+export interface SiteStructureDetailRouteProps<Params = Record<string, unknown>>
 	extends NavigationDetailRouteProps<Params> {
 	siteStructure: SiteStructure;
 	onSubmit: (
@@ -120,7 +123,7 @@ export interface SiteStructureDetailRouteProps<Params = {}>
 	onDelete: (data: SiteStructure | Partial<SiteStructure>) => Promise<void>;
 }
 
-export interface NavigationItemDetailRouteProps<Params = {}>
+export interface NavigationItemDetailRouteProps<Params = Record<string, unknown>>
 	extends RouteConfigComponentProps<Params> {
 	onSubmit: (data: NavItem) => Promise<void>;
 	onDelete: (data: NavItem) => Promise<void>;
