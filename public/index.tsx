@@ -444,8 +444,6 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 	module: CONFIG.module,
 	component: ContentDetailNavigationStructureCompartment,
 	isValid: false,
-	beforeSubmit,
-	afterSubmit,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
