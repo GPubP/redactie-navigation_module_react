@@ -91,8 +91,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			return;
 		}
 
-		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
-		resetIsChanged();
+		return console.log(menuItemDraft);
 	};
 
 	const onChange = (formValue: FormikValues): void => {
