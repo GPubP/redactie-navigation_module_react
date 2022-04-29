@@ -52,7 +52,11 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		!isLoading,
 		formValue.url
 	);
-	const [hasChanges] = useDetectValueChanges(!isLoading, formValue);
+	const [hasSiteStructureChanges, resetSiteStructureChangeDetection] = useDetectValueChanges(
+		!isLoading,
+		formValue.sitestructuur
+	);
+	const [hasChanges, resetHasChanges] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);
 	const { contentTypeUuid, child } = useParams<{
 		contentTypeUuid: string;
@@ -73,6 +77,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
+
 	const canReadMenu = useMemo(() => {
 		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 			rolesRightsConnector.menuSecurityRights.read,
@@ -175,10 +180,12 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		setMetadataExists(true);
 		setShowConfirmModal(false);
 		resetUrlChangeDetection();
+		resetSiteStructureChangeDetection();
+		resetHasChanges();
 	};
 
 	const onFormSubmit = (): void => {
-		if (hasUrlChanges) {
+		if (hasUrlChanges || hasSiteStructureChanges) {
 			return setShowConfirmModal(true);
 		}
 

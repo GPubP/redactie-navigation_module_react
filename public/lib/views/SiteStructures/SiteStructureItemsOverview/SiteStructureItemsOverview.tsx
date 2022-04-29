@@ -63,11 +63,19 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 		return (siteStructureItems || []).map(siteStructureItem => {
 			const siteStructureItemType =
 				siteStructureItem.properties?.type ?? NavItemType.internal;
+			const url =
+				siteStructureItem.externalUrl?.slice(-1) === '/'
+					? siteStructureItem.externalUrl.slice(
+							0,
+							siteStructureItem.externalUrl.length - 1
+					  )
+					: siteStructureItem.externalUrl;
 
 			return {
 				id: siteStructureItem.id as number,
 				label: siteStructureItem.label,
-				url: siteStructureItem.externalUrl,
+				url: `${url}/${siteStructureItem.slug}`,
+				siteUrl: url,
 				type: siteStructureItemType,
 				active: siteStructureItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(siteStructureItem.items),

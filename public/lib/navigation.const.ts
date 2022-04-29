@@ -60,6 +60,7 @@ export const MODULE_PATHS = {
 		contentTypeDetailExternalChild: `${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/:child`,
 		contentTypeDetailExternalUrl: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/url`,
 		contentTypeDetailExternalMenu: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/menu`,
+		contentTypeDetailExternalSiteStructure: `${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab/sitestructuur`,
 		siteStrucureRoot: `${SITE_ROOT}/sitestructuren`,
 		siteStructuresOverview: `${SITE_ROOT}/sitestructuren/overzicht`,
 		createSiteStructure: `${SITE_ROOT}/sitestructuren/aanmaken`,
@@ -101,6 +102,7 @@ export const BREADCRUMB_OPTIONS = (
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${CONTENT_REF_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${HYPERLINK_BASE_PATH}`,
+		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${SITE_STRUCTURES_DETAIL_BASE_PATH}/sitestructuur-items${SUBTITLE_BASE_PATH}`,
 		`${TENANT_ROOT}/${SITES_ROOT}${SITE_ROOT}${uuidRegex}${CONTENT_TYPE_DETAIL_BASE_PATH}${uuidRegex}/:tab/:child`,
 	],
 	extraBreadcrumbs: [
@@ -173,6 +175,18 @@ export const ALERT_CONTAINER_IDS = {
 	menuCompartment: 'menu-compartment',
 	contentEdit: 'content-edit',
 };
+
+export enum PositionValues {
+	none = 'none',
+	limited = 'limited',
+	unlimited = 'unlimited',
+}
+
+export const SITE_STRUCTURE_POSITION_OPTIONS = [
+	{ key: 'none', label: 'Geen', value: PositionValues.none },
+	{ key: 'limited', label: 'Beperkt', value: PositionValues.limited },
+	{ key: 'unlimited', label: 'Vrij', value: PositionValues.unlimited },
+];
 
 export enum LangKeys {
 	generic = 'generic',

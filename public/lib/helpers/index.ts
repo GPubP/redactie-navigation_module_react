@@ -12,3 +12,5 @@ export * from './getAllowMenus';
 export * from './getSiteUrl';
 export * from './getCompartmentErrors';
 export * from './getNavItemType';
+export * from './getCTStructureConfig';
+export * from './getAvailableSiteStructureOptions';

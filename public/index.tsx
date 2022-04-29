@@ -14,6 +14,7 @@ import {
 	ContentDetailMenuCompartment,
 	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
+	ContentTypeDetailSiteStructure,
 	ContentTypeDetailTab,
 	ContentTypeDetailUrl,
 	SiteNavigationTab,
@@ -22,6 +23,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
+import { ContentDetailNavigationStructureCompartment } from './lib/components/ContentDetailNavigationStructureCompartment';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
@@ -34,7 +36,7 @@ import {
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
-import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
+import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
 import {
 	MenuCreate,
@@ -437,6 +439,36 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 	validate: () => true,
 });
 
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
+	label: 'Navigatiestructuur',
+	module: CONFIG.module,
+	component: ContentDetailNavigationStructureCompartment,
+	isValid: false,
+	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
+		const navModuleValue = values.modulesData?.navigation || {};
+
+		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
+			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		}
+
+		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+	},
+	show: (_, __, ___, ____, contentType) => {
+		const siteNavigationConfig = (contentType.modulesConfig || []).find(
+			config => config.name === 'navigation' && config.site
+		);
+
+		if (
+			!siteNavigationConfig ||
+			siteNavigationConfig?.config?.sitestructuur?.structurePosition === PositionValues.none
+		) {
+			return false;
+		}
+
+		return true;
+	},
+});
+
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 	{
 		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
@@ -477,6 +509,11 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 			],
 		},
 	},
+	{
+		path: MODULE_PATHS.site.contentTypeDetailExternalSiteStructure,
+		breadcrumb: false,
+		component: ContentTypeDetailSiteStructure,
+	},
 ];
 
 contentTypeConnector.registerCTDetailTab(CONFIG.name, {
@@ -484,11 +521,12 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
+	show: context => context.isActive,
 	disabled: context =>
-		!context.isActive ||
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
 			rolesRightsConnector.securityRights.read,
-		]),
+		]) ||
+		context.contentType?.meta?.canBeFiltered === false,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {

@@ -35,7 +35,10 @@ export const MENU_ITEMS_COLUMNS = (
 				</div>
 			);
 		},
-		component(value: string, { id, url, label, rows, hasChildren }: MenuItemsTableRow) {
+		component(
+			value: string,
+			{ id, url, label, rows, hasChildren, siteUrl }: MenuItemsTableRow
+		) {
 			return (
 				<div className={cx('m-menu-items-table__item')}>
 					<div className={cx('m-menu-items-table__collapse')}>
@@ -58,7 +61,7 @@ export const MENU_ITEMS_COLUMNS = (
 					</div>
 					<div className={cx('m-menu-items-table__label')}>
 						<p>{label}</p>
-						{url && (
+						{url && siteUrl && (
 							<EllipsisWithTooltip>
 								<a
 									href={url}

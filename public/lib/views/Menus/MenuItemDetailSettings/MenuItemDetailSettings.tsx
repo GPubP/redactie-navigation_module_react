@@ -43,7 +43,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 	const formikRef = useRef<FormikProps<FormikValues>>();
 
 	const canDelete = useMemo(() => {
-		return menu?.id
+		return menu?.id && mySecurityrights
 			? rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 					rolesRightsConnector.menuItemSecurityRights.delete,
 			  ])

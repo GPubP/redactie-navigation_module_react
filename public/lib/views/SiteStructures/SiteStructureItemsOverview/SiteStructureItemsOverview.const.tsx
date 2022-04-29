@@ -8,6 +8,7 @@ import React from 'react';
 import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
+import { NavItemType } from '../../../navigation.types';
 
 import styles from './SiteStructureItemsOverview.module.scss';
 import { SiteStructureItemsTableRow } from './SiteStructureItemsOverview.types';
@@ -35,7 +36,7 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		},
 		component(
 			value: string,
-			{ id, url, label, rows, hasChildren }: SiteStructureItemsTableRow
+			{ id, url, label, rows, hasChildren, siteUrl }: SiteStructureItemsTableRow
 		) {
 			return (
 				<div className={cx('m-site-structure-items-table__item')}>
@@ -59,7 +60,7 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 					</div>
 					<div className={cx('m-site-structure-items-table__label')}>
 						<p>{label}</p>
-						{url && (
+						{siteUrl && (
 							<EllipsisWithTooltip>
 								<a
 									href={url}
@@ -101,8 +102,8 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id, url }: SiteStructureItemsTableRow) {
-			return id && !url ? (
+		component(value: string, { id, type }: SiteStructureItemsTableRow) {
+			return id && type === NavItemType.internal ? (
 				<div>
 					<ContentInfoTooltip id={id} />
 				</div>
