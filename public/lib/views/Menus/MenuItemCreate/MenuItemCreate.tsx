@@ -13,6 +13,7 @@ import {
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
+import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { createNavItemPayload, generateEmptyNavItem, getNavItemType } from '../../../helpers';
 import { useMenu, useMenuItem, useMenuItemDraft, useMenuItems } from '../../../hooks';
@@ -59,6 +60,12 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 				: []),
 		])
 	);
+
+	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
+
 	const isLoading = useMemo(() => {
 		return upsertingState === LoadingState.Loading || fetchingState === LoadingState.Loading;
 	}, [fetchingState, upsertingState]);
@@ -111,6 +118,7 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 				menuItem,
 				menuItemDraft,
 				menuItemType,
+				mySecurityrights,
 			}}
 		/>
 	);
