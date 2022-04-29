@@ -12,6 +12,7 @@ import { useSiteStructureItems } from '../../../hooks';
 import { MODULE_TRANSLATIONS } from '../../../i18next/translations.const';
 import { ALERT_CONTAINER_IDS } from '../../../navigation.const';
 import {
+	NavItemType,
 	NavTree,
 	RearrangeNavItem,
 	SiteStructureItemDetailRouteProps,
@@ -186,9 +187,12 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 				onChange={onChange}
 				canEdit={canEdit}
 				copy={{
-					description: tModule(
-						MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION
-					),
+					description:
+						siteStructureItemType === NavItemType.internal
+							? tModule(
+									MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION
+							  )
+							: undefined,
 					label: tModule(MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_LABEL_DESCRIPTION),
 					statusCheckbox: tModule(
 						MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_STATUS_CHECKBOX_DESCRIPTION
