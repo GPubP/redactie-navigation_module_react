@@ -11,6 +11,7 @@ import React, { ChangeEvent, FC, useMemo, useState } from 'react';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
 import { extractSiblings } from '../../helpers/extractSiblings';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import {
 	CascaderOption,
 	NavItem,
@@ -45,6 +46,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
 	const [t] = translationsConnector.useCoreTranslation();
+	const [tModule] = translationsConnector.useModuleTranslation();
 
 	const canEdit = useMemo(() => {
 		return navItem?.id ? rights?.canUpdate : true;
@@ -161,8 +163,12 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 													}
 													placeholder={
 														!treeConfig.options.length
-															? 'Geen opties beschikbaar'
-															: 'Kies een positie in de boom'
+															? tModule(
+																	MODULE_TRANSLATIONS.NO_OPTIONS_AVAILABLE
+															  )
+															: tModule(
+																	MODULE_TRANSLATIONS.SELECT_TREE_POSITION
+															  )
 													}
 													value={getPositionInputValue(
 														treeConfig.options,
