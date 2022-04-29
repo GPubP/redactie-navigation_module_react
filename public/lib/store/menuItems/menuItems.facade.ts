@@ -98,7 +98,7 @@ export class MenuItemsFacade extends BaseEntityFacade<
 		siteId: string,
 		menuId: string,
 		startitem = 0,
-		depth = 0
+		depth = 1
 	): Promise<MenuItem[] | void> {
 		const { isFetching } = this.query.getValue();
 
