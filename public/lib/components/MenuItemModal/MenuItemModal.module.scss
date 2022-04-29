@@ -1,0 +1,18 @@
+@import '~@a-ui/core/dist/assets/styles/_quarks';
+
+.o-menu-item-modal {
+	max-width: $screen-lg;
+	max-height: 95vh;
+	margin: $spacer;
+
+	&__body {
+		padding: $spacer;
+	}
+
+	&__actions {
+		:global(.u-container) {
+			max-width: none;
+			padding: 0 $spacer;
+		}
+	}
+}

@@ -1,8 +1,9 @@
 import { Button, Card, CardBody, CardDescription, CardTitle } from '@acpaas-ui/react-components';
-import { AlertContainer, DeletePrompt, useDetectValueChanges } from '@redactie/utils';
-import { FormikValues } from 'formik';
-import { omit } from 'ramda';
-import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
+import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
+import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
+import { FormikProps, FormikValues } from 'formik';
+import { isEmpty, omit } from 'ramda';
+import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import { NavItemDetailForm } from '../../../components';
@@ -23,6 +24,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	rights,
 	onSubmit,
 	onDelete,
+	onCancel,
 	loading,
 	removing,
 	siteStructure,
@@ -40,10 +42,15 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 		!loading && !!siteStructureItemDraft,
 		siteStructureItemDraft
 	);
+	const formikRef = useRef<FormikProps<FormikValues>>();
 
 	const canDelete = useMemo(() => {
 		return siteStructureItem?.id ? rights?.canDelete : false;
 	}, [rights, siteStructureItem]);
+
+	const canEdit = useMemo(() => {
+		return siteStructureItemDraft?.id ? !!rights?.canUpdate : true;
+	}, [rights, siteStructureItemDraft]);
 
 	useEffect(() => {
 		if (!siteStructureId || !siteId) {
@@ -72,7 +79,21 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	/**
 	 * Methods
 	 */
-	const onSave = (): void => {
+	const isFormValid = async (): Promise<boolean> => {
+		if (!formikRef || !formikRef.current) {
+			return false;
+		}
+
+		const errors = await formikRef.current.validateForm();
+
+		return isEmpty(errors);
+	};
+
+	const onSave = async (): Promise<void> => {
+		if (!(await isFormValid())) {
+			return;
+		}
+
 		onSubmit(omit(['weight'], siteStructureItemDraft) as SiteStructureItem);
 		resetIsChanged();
 	};
@@ -154,18 +175,16 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 				<AlertContainer containerId={ALERT_CONTAINER_IDS.settings} />
 			</div>
 			<NavItemDetailForm
+				formikRef={instance => (formikRef.current = instance || undefined)}
 				navTree={(siteStructure as unknown) as NavTree}
 				navItem={siteStructureItemDraft as SiteStructureItem}
 				navItems={siteStructureItems as SiteStructureItem[]}
 				navItemType={siteStructureItemType}
-				rights={rights}
 				upsertingState={upsertingState}
 				parentChanged={parentChanged}
-				loading={loading}
-				isChanged={isChanged}
 				onRearrange={onRearrange}
 				onChange={onChange}
-				onSave={onSave}
+				canEdit={canEdit}
 				copy={{
 					description: tModule(
 						MODULE_TRANSLATIONS.SITE_STRUCTURE_ITEM_CONTENT_REF_DESCRIPTION
@@ -177,6 +196,28 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 				}}
 			/>
 			{siteStructureItem?.id && canDelete && renderDelete()}
+			<LeavePrompt when={isChanged} shouldBlockNavigationOnConfirm onConfirm={onSave} />
+			<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>
+				<ActionBarContentSection>
+					<div className="u-wrapper row end-xs">
+						<Button className="u-margin-right-xs" onClick={onCancel} negative>
+							{siteStructureItemDraft?.id
+								? t(CORE_TRANSLATIONS.BUTTON_CANCEL)
+								: t(CORE_TRANSLATIONS.BUTTON_BACK)}
+						</Button>
+						<Button
+							iconLeft={loading ? 'circle-o-notch fa-spin' : null}
+							disabled={loading || !isChanged}
+							onClick={onSave}
+							type="success"
+						>
+							{siteStructureItemDraft?.id
+								? t(CORE_TRANSLATIONS['BUTTON_SAVE'])
+								: t(CORE_TRANSLATIONS['BUTTON_SAVE-NEXT'])}
+						</Button>
+					</div>
+				</ActionBarContentSection>
+			</ActionBar>
 		</>
 	);
 };

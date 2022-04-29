@@ -6,9 +6,8 @@ import React, { FC, useEffect } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
-import { menusFacade } from '../../store/menus';
+import { ContentTypeMenusTable } from '../ContentTypeMenusTable';
 import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
-import { MenusCheckboxList } from '../MenusCheckboxList';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
@@ -23,16 +22,6 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 		setActiveCompartment(NavSiteCompartments.menu);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, []);
-
-	useEffect(() => {
-		if (!siteId) {
-			return;
-		}
-
-		menusFacade.getMenus(siteId, {
-			lang: activeLanguage.key,
-		});
-	}, [activeLanguage, siteId]);
 
 	return (
 		<div>
@@ -63,7 +52,8 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 						</small>
 					</div>
 					<div className="u-margin-top">
-						<MenusCheckboxList
+						<ContentTypeMenusTable
+							siteId={siteId}
 							name="menu.allowedMenus"
 							activeLanguage={activeLanguage}
 						/>

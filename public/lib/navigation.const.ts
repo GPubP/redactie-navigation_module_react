@@ -32,6 +32,7 @@ export const MODULE_PATHS = {
 	// SITE
 	site: {
 		contentTypes: `${SITE_ROOT}/:ctType(content-types|content-blokken)`,
+		contentDetail: `${SITE_ROOT}/content/content-types/:contentTypeId/content/:contentId`,
 		explicitContentTypes: `${SITE_ROOT}/content-types`,
 		admin: `${SITE_ROOT}/content/overzicht`,
 		dashboard: `${SITE_ROOT}/content`,
@@ -170,6 +171,8 @@ export const ALERT_CONTAINER_IDS = {
 	overview: 'overview',
 	menuItemsOverview: 'menu-items-overview',
 	siteStructureItemsOverview: 'site-structure-items-overview',
+	menuCompartment: 'menu-compartment',
+	contentEdit: 'content-edit',
 };
 
 export const SITE_STRUCTURE_POSITION_OPTIONS = [

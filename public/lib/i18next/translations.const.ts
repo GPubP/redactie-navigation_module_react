@@ -6,6 +6,9 @@ const tKey = translationsConnector.core.tKey;
 
 const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	VARIABLE: tKey('VARIABLE', 'Variabele'),
+	TABLE_LABEL: tKey('TABLE_LABEL', 'Label'),
+	TABLE_MENU: tKey('TABLE_MENU', 'Menu'),
+	TABLE_POSITION: tKey('TABLE_POSITION', 'Positie'),
 	PATTERN_ID_DESCRIPTION: tKey('PATTERN_ID_DESCRIPTION', 'Het unieke uuid van dit content item.'),
 	PATTERN_LANG_DESCRIPTION: tKey(
 		'PATTERN_LANG_DESCRIPTION',
@@ -89,7 +92,6 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	SELECT_TREE_POSITION: tKey('SELECT_TREE_POSITION', 'Kies een positie in de boom'),
 	SELECT_POSITION: tKey('SELECT_POSITION', 'Selecteer een positie'),
 	DEFAULT_POSITION: tKey('DEFAULT_POSITION', 'Standaard positie'),
-
 	CT_SITE_STRUCTURE_POSITION_DESCRIPTION: tKey(
 		'CT_SITE_STRUCTURE_POSITION_DESCRIPTION',
 		'Bepaal de standaardpositie voor items van dit content type. Indien je geen positie selecteerd zullen items in de root van het menu geplaatst worden.'
@@ -99,6 +101,20 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'Selecteer op welke plek je de pagina in de navigatieboom wilt hangen. Indien je geen positie selecteerd zal de pagina in de root van de navigatieboom geplaatst worden.'
 	),
 	EDITABLE: tKey('EDITABLE', 'Aanpasbaar'),
+	CONTENT_PREVENT_DELETE_DESCRIPTION: tKey(
+		'CONTENT_PREVENT_DELETE_DESCRIPTION',
+		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'
+	),
+	DEACTIVATE_MENU_DESCRIPTION: tKey(
+		'DEACTIVATE_MENU_DESCRIPTION',
+		'Je probeert een menu te deactiveren voor een content type dat content items bevat in dit menu. Indien je deactiveert kunnen er geen nieuwe content items aan dit menu worden toegevoegd. Weet je het zeker? Dit kan niet ongedaan gemaakt worden.'
+	),
+	SELECT_MENU: tKey('SELECT_MENU', 'Selecteer een menu'),
+	TABLE_MENU_NO_DATA: tKey(
+		'TABLE_MENU_NO_DATA',
+		"Er zijn geen menu's geconfigureerd voor deze site."
+	),
+	TABLE_MENU_FETCH_MESSAGE: tKey('TABLE_MENU_FETCH_MESSAGE', "Menu's ophalen"),
 });
 
 export { MODULE_TRANSLATIONS };

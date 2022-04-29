@@ -49,6 +49,10 @@ export interface NavigationSecurityRights {
 	delete: boolean;
 	contentPathUpdate: boolean;
 	replace: boolean;
+	readUrl: boolean;
+	updateUrl: boolean;
+	readUrlPattern: boolean;
+	updateUrlPattern: boolean;
 }
 
 export interface NavigationModuleProps<Params extends { [K in keyof Params]?: string } = {}>
@@ -120,7 +124,9 @@ export interface NavigationItemDetailRouteProps<Params = {}>
 	extends RouteConfigComponentProps<Params> {
 	onSubmit: (data: NavItem) => Promise<void>;
 	onDelete: (data: NavItem) => Promise<void>;
+	onCancel: () => void;
 	rights: NavRights;
+	mySecurityrights: string[];
 	loading: boolean;
 	removing: boolean;
 }
@@ -162,10 +168,12 @@ export interface NavItem {
 	properties?: {
 		type: NavItemType;
 	};
+	treeId?: number;
 }
 
 export enum NavItemType {
 	internal = 'internal',
+	internalOnContentUpsert = 'internalOnContentUpsert',
 	external = 'external',
 	section = 'section',
 }

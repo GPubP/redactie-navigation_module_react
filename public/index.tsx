@@ -3,6 +3,7 @@ import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { ChildModuleRouteConfig } from '@redactie/redactie-core';
 import { MySecurityRightModel } from '@redactie/roles-rights-module';
+import { ModuleSettings } from '@redactie/sites-module';
 import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
@@ -10,6 +11,7 @@ import { take } from 'rxjs/operators';
 import { menuCanShown, siteStructureCanShown } from './lib/canShowns';
 import {
 	ContentDetailCompartment,
+	ContentDetailMenuCompartment,
 	ContentDetailUrlCompartment,
 	ContentTypeDetailMenu,
 	ContentTypeDetailSiteStructure,
@@ -27,7 +29,11 @@ import rolesRightsConnector from './lib/connectors/rolesRights';
 import sitesConnector from './lib/connectors/sites';
 import { menuGuard, siteStructureGuard } from './lib/guards';
 import { isEmpty } from './lib/helpers';
-import { afterSubmit, beforeSubmit } from './lib/helpers/contentCompartmentHooks';
+import {
+	afterSubmitMenu,
+	afterSubmitNavigation,
+	beforeSubmitNavigation,
+} from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
@@ -351,8 +357,8 @@ contentConnector.registerContentDetailCompartment(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentDetailCompartment,
 	isValid: false,
-	beforeSubmit,
-	afterSubmit,
+	beforeSubmit: beforeSubmitNavigation,
+	afterSubmit: afterSubmitNavigation,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
@@ -388,8 +394,8 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 	module: CONFIG.module,
 	component: ContentDetailUrlCompartment,
 	isValid: false,
-	beforeSubmit,
-	afterSubmit,
+	beforeSubmit: beforeSubmitNavigation,
+	afterSubmit: afterSubmitNavigation,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 
@@ -399,7 +405,37 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: () => true,
+	show: (context, settings) => {
+		let securityRights: string[] = [];
+
+		rolesRightsConnector.api.store.mySecurityRights.query
+			.siteRights$(settings?.config?.siteUuid)
+			.pipe(take(1))
+			.subscribe((rights: MySecurityRightModel[]) => {
+				securityRights = rights.map(right => right.attributes.key);
+			});
+
+		return rolesRightsConnector.api.helpers.checkSecurityRights(securityRights, [
+			rolesRightsConnector.securityRights.readUrl,
+		]);
+	},
+});
+
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
+	label: "Menu's",
+	module: CONFIG.module,
+	component: ContentDetailMenuCompartment,
+	isValid: true,
+	afterSubmit: afterSubmitMenu,
+	show: (context, settings, value, content, contentType, site) => {
+		return (
+			(site?.data?.modulesConfig || []).find(
+				(siteNavigationConfig: ModuleSettings) =>
+					siteNavigationConfig?.name === 'navigation'
+			)?.config?.allowMenus ?? false
+		);
+	},
+	validate: () => true,
 });
 
 export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
@@ -407,6 +443,13 @@ export const tenantContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.tenantContentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.guards.securityRightsTenantGuard([
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 ];
 
@@ -415,11 +458,25 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalUrl,
 		breadcrumb: false,
 		component: ContentTypeDetailUrl,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.securityRights.readUrlPattern,
+				]),
+			],
+		},
 	},
 	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalMenu,
 		breadcrumb: false,
 		component: ContentTypeDetailMenu,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.menuSecurityRights.read,
+				]),
+			],
+		},
 	},
 	{
 		path: MODULE_PATHS.site.contentTypeDetailExternalSiteStructure,
@@ -433,7 +490,11 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	disabled: context => !context?.isActive,
+	disabled: context =>
+		!context.isActive ||
+		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+			rolesRightsConnector.securityRights.read,
+		]),
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {

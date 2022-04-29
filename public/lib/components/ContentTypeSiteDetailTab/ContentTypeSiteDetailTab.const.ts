@@ -4,14 +4,14 @@ import { MODULE_PATHS, SITES_ROOT, TENANT_ROOT } from '../../navigation.const';
 import { PATTERN_PLACEHOLDERS } from '../ContentTypeDetailUrl/ContentTypeDetailUrl.const';
 
 export enum NavSiteCompartments {
-	url = 'url',
 	menu = 'menu',
+	url = 'url',
 	siteStructure = 'sitestructuur',
 }
 
 export const NAV_SITE_COMPARTMENTS = [
-	{ label: 'URL', to: NavSiteCompartments.url },
 	{ label: "Menu's", to: NavSiteCompartments.menu },
+	{ label: 'URL', to: NavSiteCompartments.url },
 	{ label: 'Sitestructuur', to: NavSiteCompartments.siteStructure },
 ];
 
