@@ -73,6 +73,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
+
 	const canReadMenu = useMemo(() => {
 		return rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 			rolesRightsConnector.menuSecurityRights.read,

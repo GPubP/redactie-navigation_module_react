@@ -74,6 +74,7 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
+
 	const rights = useMemo(
 		() => ({
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
