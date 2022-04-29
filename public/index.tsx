@@ -488,7 +488,8 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 		!context.isActive ||
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
 			rolesRightsConnector.securityRights.read,
-		]),
+		]) ||
+		context.contentType?.meta?.canBeFiltered === false,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {
