@@ -101,6 +101,31 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		'Selecteer op welke plek je de pagina in de navigatieboom wilt hangen. Indien je geen positie selecteerd zal de pagina in de root van de navigatieboom geplaatst worden.'
 	),
 	EDITABLE: tKey('EDITABLE', 'Aanpasbaar'),
+	CONTENT_SITE_STRUCTURE_TITLE: tKey('CONTENT_SITE_STRUCTURE_TITLE', 'Sitestructuur'),
+	CONTENT_SITE_STRUCTURE_DESCRIPTION: tKey(
+		'CONTENT_SITE_STRUCTURE_DESCRIPTION',
+		'Plaats dit content item in de sitestructuur'
+	),
+	CONTENT_SITE_STRUCTURE_POSITION_LABEL_PLACEHOLDER: tKey(
+		'CONTENT_SITE_STRUCTURE_POSITION_LABEL_PLACEHOLDER',
+		'Vul een label in'
+	),
+	CONTENT_SITE_STRUCTURE_POSITION_LABEL_HINT: tKey(
+		'CONTENT_SITE_STRUCTURE_POSITION_LABEL_HINT',
+		"Geef een naam of 'label' op voor dit item."
+	),
+	CONTENT_SITE_STRUCTURE_POSITION_DESCRIPTION_PLACEHOLDER: tKey(
+		'CONTENT_SITE_STRUCTURE_POSITION_DESCRIPTION_PLACEHOLDER',
+		'Vul een beschrijving in'
+	),
+	CONTENT_SITE_STRUCTURE_POSITION_DESCRIPTION_HINT: tKey(
+		'CONTENT_SITE_STRUCTURE_POSITION_DESCRIPTION_HINT',
+		'Geef dit item een korte beschrijving'
+	),
+	CONTENT_SITE_STRUCTURE_POSITION_HINT: tKey(
+		'CONTENT_SITE_STRUCTURE_POSITION_HINT',
+		'Bepaal de positie van dit item.'
+	),
 	CONTENT_PREVENT_DELETE_DESCRIPTION: tKey(
 		'CONTENT_PREVENT_DELETE_DESCRIPTION',
 		'Dit content item kan niet uit het menu gehaald worden omdat er nog onderliggende menu items zijn'

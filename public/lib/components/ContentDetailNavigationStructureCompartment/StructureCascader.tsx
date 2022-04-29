@@ -5,11 +5,13 @@ import { FormikValues, useFormikContext } from 'formik';
 import { pathOr, propOr } from 'ramda';
 import React from 'react';
 
+import translationsConnector from '../../connectors/translations';
 import {
 	getAvailableSiteStructureOptions,
 	getPositionInputValue,
 	getTreeConfig,
 } from '../../helpers';
+import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PositionValues } from '../../navigation.const';
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { SiteStructure } from '../../services/siteStructures';
@@ -39,6 +41,7 @@ const StructureCascader = ({
 	siteStructure: SiteStructure;
 	placeholder: string;
 }): React.ReactElement => {
+	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
 	// CT structure config = number[]
 	const ctStructureValue = pathOr([], ['position', activeLanguage])(CTStructureConfig);
@@ -82,7 +85,7 @@ const StructureCascader = ({
 			: value) || ctStructureValue;
 
 	const handlePositionOnChange = (value: number[]): void => {
-		setFieldValue(`meta.sitestructuur.position.${activeLanguage}`, value);
+		setFieldValue('meta.sitestructuur.position', value);
 	};
 
 	const renderCTStructure = (positionValue: string): React.ReactElement | null => {
@@ -109,7 +112,9 @@ const StructureCascader = ({
 			>
 				{label as string}
 			</label>
-			{isLimitedAndNotEditable && <small>Bepaal de positie van dit item.</small>}
+			{isLimitedAndNotEditable && (
+				<small>{tModule(MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_HINT)}</small>
+			)}
 			<div className="u-flex u-flex-align-center">
 				{isLimitedAndEditable && renderCTStructure(ctPositionValue)}
 				<Cascader
@@ -160,10 +165,7 @@ const StructureCascader = ({
 										onClick={(e: React.SyntheticEvent) => {
 											e.preventDefault();
 											e.stopPropagation();
-											setFieldValue(
-												`meta.sitestructuur.position.${activeLanguage}`,
-												[]
-											);
+											setFieldValue('meta.sitestructuur.position', []);
 										}}
 									/>
 								</span>
