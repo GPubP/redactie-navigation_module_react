@@ -36,7 +36,7 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		},
 		component(
 			value: string,
-			{ id, url, label, rows, hasChildren }: SiteStructureItemsTableRow
+			{ id, url, label, rows, hasChildren, siteUrl }: SiteStructureItemsTableRow
 		) {
 			return (
 				<div className={cx('m-site-structure-items-table__item')}>
@@ -60,7 +60,7 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 					</div>
 					<div className={cx('m-site-structure-items-table__label')}>
 						<p>{label}</p>
-						{url && (
+						{siteUrl && (
 							<EllipsisWithTooltip>
 								<a
 									href={url}
