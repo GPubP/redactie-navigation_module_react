@@ -104,7 +104,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 			return;
 		}
 
-		menuItemsFacade.getSubset(siteId, menuId, 0, 0);
+		menuItemsFacade.getSubset(siteId, menuId, 0, 1);
 	}, [menuId, siteId]);
 
 	const openRows = useMemo(() => {

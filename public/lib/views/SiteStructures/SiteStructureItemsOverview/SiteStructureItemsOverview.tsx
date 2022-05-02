@@ -113,7 +113,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 			return;
 		}
 
-		siteStructureItemsFacade.getSubset(siteId, siteStructureId, 0, 0);
+		siteStructureItemsFacade.getSubset(siteId, siteStructureId, 0, 1);
 	}, [siteId, siteStructureId]);
 
 	const openRows = useMemo(() => {
