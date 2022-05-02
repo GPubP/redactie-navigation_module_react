@@ -143,9 +143,6 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 	return (
 		<div>
 			<div className="u-margin-bottom">
-				<h2 className="h3 u-margin-bottom">
-					{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_TITLE)}
-				</h2>
 				<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_DESCRIPTION)}</p>
 			</div>
 			<div className="row">
