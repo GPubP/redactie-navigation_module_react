@@ -71,6 +71,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 				url: `${url}/${menuItem.slug}`,
 				siteUrl: url,
 				type: menuItemType,
+				slug: menuItem.slug,
 				active: menuItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(menuItem.items),
 				hasChildren:

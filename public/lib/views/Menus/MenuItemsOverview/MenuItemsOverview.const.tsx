@@ -109,10 +109,10 @@ export const MENU_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id, type }: MenuItemsTableRow) {
-			return id && type === NavItemType.internal ? (
+		component(value: string, { type, slug }: MenuItemsTableRow) {
+			return type === NavItemType.internal ? (
 				<div>
-					<ContentInfoTooltip id={id} />
+					<ContentInfoTooltip slug={slug} />
 				</div>
 			) : null;
 		},

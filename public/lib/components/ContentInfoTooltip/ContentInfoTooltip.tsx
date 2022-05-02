@@ -4,15 +4,13 @@ import { ContentSchema } from '@redactie/content-module';
 import { DataLoader, InfoTooltip, useNavigate } from '@redactie/utils';
 import classnames from 'classnames/bind';
 import moment from 'moment';
-import React, { FC, ReactElement, useEffect, useState } from 'react';
+import React, { FC, ReactElement, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
 import contentConnector from '../../connectors/content';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
 import { MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
-import { NavItem } from '../../navigation.types';
-import { menuItemsApiService } from '../../services/menuItems';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
 
 import styles from './ContentInfoTooltip.module.scss';
@@ -20,37 +18,26 @@ import { Status } from './ContentInfoTooltip.types';
 
 const cx = classnames.bind(styles);
 
-const ContentInfoTooltip: FC<{ id: number | undefined }> = ({ id }) => {
+const ContentInfoTooltip: FC<{ slug: string }> = ({ slug }) => {
 	const { siteId, menuId, siteStructureId } = useParams<{
 		menuId?: string;
 		siteStructureId?: string;
 		siteId: string;
 	}>();
 	const [item, setItem] = useState<ContentSchema | null>();
-	const [menuItem, setMenuItem] = useState<NavItem | null>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
 	const { generatePath } = useNavigate(SITES_ROOT);
 
 	const [loading, setLoading] = useState(false);
 
-	useEffect(() => {
-		if (!siteId || !id || !(menuId || siteStructureId)) {
-			return;
-		}
-
-		menuItemsApiService
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-			.getMenuItem(siteId, (menuId || siteStructureId)!, id.toString())
-			.then(async item => setMenuItem(item));
-	}, [siteId, menuId, id, siteStructureId]);
-
 	const handleVisibilityChange = (isVisible: boolean): void => {
-		if (!isVisible || !!item || !menuItem) {
+		if (!isVisible || !!item || !(menuId || siteStructureId) || loading) {
 			return;
 		}
 
 		setLoading(true);
-		contentConnector?.contentService.getContentItemBySlug(siteId, menuItem?.slug).then(data => {
+
+		contentConnector?.contentService.getContentItemBySlug(siteId, slug).then(data => {
 			setItem(data);
 			setLoading(false);
 		});

@@ -77,6 +77,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 				url: `${url}/${siteStructureItem.slug}`,
 				siteUrl: url,
 				type: siteStructureItemType,
+				slug: siteStructureItem.slug,
 				active: siteStructureItem.publishStatus === NAV_STATUSES.PUBLISHED,
 				rows: transformItemsToRows(siteStructureItem.items),
 				hasChildren:
