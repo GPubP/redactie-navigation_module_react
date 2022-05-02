@@ -5,6 +5,7 @@ export interface SiteStructureItemsTableRow {
 	label: string;
 	url: string;
 	siteUrl: string;
+	slug: string;
 	type: NavItemType;
 	active: boolean;
 	hasChildren: boolean;

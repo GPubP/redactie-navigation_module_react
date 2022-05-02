@@ -102,10 +102,10 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { id, type }: SiteStructureItemsTableRow) {
-			return id && type === NavItemType.internal ? (
+		component(value: string, { type, slug }: SiteStructureItemsTableRow) {
+			return type === NavItemType.internal ? (
 				<div>
-					<ContentInfoTooltip id={id} />
+					<ContentInfoTooltip slug={slug} />
 				</div>
 			) : null;
 		},
