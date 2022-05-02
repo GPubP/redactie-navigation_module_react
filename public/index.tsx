@@ -440,7 +440,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 });
 
 contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
-	label: 'Navigatiestructuur',
+	label: 'Sitestructuur',
 	module: CONFIG.module,
 	component: ContentDetailNavigationStructureCompartment,
 	isValid: false,
@@ -525,8 +525,7 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	disabled: context =>
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
 			rolesRightsConnector.securityRights.read,
-		]) ||
-		context.contentType?.meta?.canBeFiltered === false,
+		]) || context.contentType?.meta?.canBeFiltered === false,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {
