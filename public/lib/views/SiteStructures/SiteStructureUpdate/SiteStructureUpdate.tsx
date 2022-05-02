@@ -200,11 +200,9 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 					<ContextHeaderActionsSection>
 						<rolesRightsConnector.api.components.SecurableRender
 							userSecurityRights={mySecurityrights}
-							requiredSecurityRights={
-								[
-									// rolesRightsConnector.siteStructureItemSecurityRights.create,
-								]
-							}
+							requiredSecurityRights={[
+								rolesRightsConnector.siteStructureItemSecurityRights.create,
+							]}
 						>
 							<FlyoutButton
 								label="Nieuw maken"
