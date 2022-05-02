@@ -154,7 +154,11 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		tdClassList: ['has-no-padding'],
 		disableSorting: true,
 		width: '20%',
-		component(value: string, { id, navigate }: SiteStructureItemsTableRow) {
+		component(value: string, { id, navigate, type }: SiteStructureItemsTableRow) {
+			if (type === NavItemType.contentType) {
+				return null;
+			}
+
 			return (
 				<rolesRightsConnector.api.components.SecurableRender
 					userSecurityRights={mySecurityrights}
