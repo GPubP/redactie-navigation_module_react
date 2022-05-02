@@ -25,6 +25,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 	public readonly siteStructureItems$ = this.query.siteStructureItems$;
 	public readonly siteStructureItem$ = this.query.siteStructureItem$;
 	public readonly siteStructureItemDraft$ = this.query.siteStructureItemDraft$;
+	public readonly contentTypeSiteStructureItems$ = this.query.contentTypeSiteStructureItems$;
 
 	public getSiteStructureItems(siteId: string, menuId: string, searchParams: SearchParams): void {
 		const { isFetching } = this.query.getValue();
@@ -51,6 +52,41 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				this.store.update({
 					error,
 					isFetching: false,
+				});
+			});
+	}
+
+	public getContentTypeSiteStructureItems(
+		siteId: string,
+		contentId: string,
+		searchParams: SearchParams
+	): void {
+		const { isFetchingContentTypeSiteStructureItems } = this.query.getValue();
+
+		if (isFetchingContentTypeSiteStructureItems) {
+			return;
+		}
+
+		this.store.update({
+			isFetchingContentTypeSiteStructureItems: true,
+		});
+
+		this.service
+			.getContentTypeSiteStructureItems(siteId, contentId, searchParams)
+			.then((response: SiteStructureItemsResponse) => {
+				if (!response) {
+					throw new Error('Getting contentTypeSiteStructureItems failed!');
+				}
+
+				this.store.update({
+					contentTypeSiteStructureItems: response?._embedded.resourceList,
+					isFetchingContentTypeSiteStructureItems: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingContentTypeSiteStructureItems: false,
 				});
 			});
 	}

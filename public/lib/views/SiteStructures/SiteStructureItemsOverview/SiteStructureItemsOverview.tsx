@@ -76,6 +76,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 				label: siteStructureItem.label,
 				url: `${url}/${siteStructureItem.slug}`,
 				siteUrl: url,
+				externalReference: siteStructureItem.externalReference,
 				type: siteStructureItemType,
 				slug: siteStructureItem.slug,
 				active: siteStructureItem.publishStatus === NAV_STATUSES.PUBLISHED,

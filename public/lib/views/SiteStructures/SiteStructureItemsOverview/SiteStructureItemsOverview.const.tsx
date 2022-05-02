@@ -1,4 +1,4 @@
-import { Button, Icon } from '@acpaas-ui/react-components';
+import { Button, Icon, Label } from '@acpaas-ui/react-components';
 import { EllipsisWithTooltip, Status } from '@acpaas-ui/react-editorial-components';
 import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
@@ -6,6 +6,7 @@ import classnames from 'classnames/bind';
 import React from 'react';
 
 import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
+import { ContentTypeInfoTooltip } from '../../../components/ContentTypeInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { NavItemType } from '../../../navigation.types';
@@ -36,8 +37,21 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		},
 		component(
 			value: string,
-			{ id, url, label, rows, hasChildren, siteUrl }: SiteStructureItemsTableRow
+			{ id, url, label, rows, hasChildren, siteUrl, type }: SiteStructureItemsTableRow
 		) {
+			if (type === NavItemType.contentType) {
+				return (
+					<div className={cx('m-site-structure-items-table__item')}>
+						<div className={cx('m-site-structure-items-table__collapse')} />
+						<div className={cx('m-site-structure-items-table__label')}>
+							<Label className="u-margin-right-xs" type="primary">
+								{label} (items)
+							</Label>
+						</div>
+					</div>
+				);
+			}
+
 			return (
 				<div className={cx('m-site-structure-items-table__item')}>
 					<div className={cx('m-site-structure-items-table__collapse')}>
@@ -102,12 +116,24 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		label: 'Content item',
 		width: '15%',
 		disableSorting: true,
-		component(value: string, { type, slug }: SiteStructureItemsTableRow) {
-			return type === NavItemType.internal ? (
-				<div>
-					<ContentInfoTooltip slug={slug} />
-				</div>
-			) : null;
+		component(_: string, { type, slug, externalReference }: SiteStructureItemsTableRow) {
+			if (type === NavItemType.internal) {
+				return (
+					<div>
+						<ContentInfoTooltip slug={slug} />
+					</div>
+				);
+			}
+
+			if (type === NavItemType.contentType && !!externalReference) {
+				return (
+					<div>
+						<ContentTypeInfoTooltip contentTypeId={externalReference} />
+					</div>
+				);
+			}
+
+			return null;
 		},
 	},
 	{

@@ -28,6 +28,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	isLoading,
 	hasChanges,
 	onFormSubmit,
+	contentType,
 	onCancel,
 	setFormValue,
 	onValidateCompartments,
@@ -80,6 +81,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 								siteId,
 								activeLanguage,
 								setActiveCompartment,
+								contentType,
 							}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>

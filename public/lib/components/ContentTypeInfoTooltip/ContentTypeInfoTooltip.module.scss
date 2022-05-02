@@ -1,0 +1,70 @@
+@import '~@a-ui/core/dist/assets/styles/quarks';
+
+.m-dataloader-container {
+	height: 1rem;
+	margin-top: -2.2rem;
+	width: 1rem;
+}
+
+.m-tooltip-container {
+	position: relative;
+	height: 2.5rem;
+
+	.a-dot {
+		font-size: 35px;
+		position: absolute;
+		bottom: -19px;
+		left: 10px;
+		pointer-events: none;
+		z-index: 3;
+
+		&__unknown {
+			color: $state-disabled;
+		}
+
+		&__published {
+			color: $state-success;
+		}
+
+		&__unpublished {
+			color: $state-danger;
+		}
+	}
+
+	.m-tooltip {
+		position: absolute;
+		left: -14px;
+		top: 8px;
+
+		.a-description {
+			word-break: break-all;
+		}
+
+		.a-url {
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-width: auto;
+		}
+	}
+}
+
+.m-tooltip__flyout {
+	max-width: 400px;
+	width: 100%;
+
+	.m-tooltip__title {
+		color: $link-color;
+
+		&:hover,
+		&:active,
+		&:focus {
+			color: $link-hover-color;
+		}
+	}
+
+	.m-tooltip__data {
+		line-height: 1.5;
+	}
+}
