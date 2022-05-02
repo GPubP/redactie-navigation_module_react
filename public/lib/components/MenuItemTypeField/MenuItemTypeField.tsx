@@ -51,46 +51,54 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 								<ContentSelect
 									key={values.slug}
 									fieldProps={fieldProps}
-									fieldHelperProps={{
-										...getFieldHelpers('slug'),
-										setValue: (value: ContentModel) => {
-											setFieldValue('slug', value?.meta.slug?.nl);
-											setFieldValue(
-												'publishStatus',
-												value?.meta.published
-													? NAV_STATUSES.PUBLISHED
-													: NAV_STATUSES.DRAFT
-											);
-											setFieldValue('externalReference', value?.uuid);
-											setContentItemPublished(!!value?.meta.published);
-
-											if (value?.meta.urlPath?.[value?.meta.lang]?.value) {
+									fieldHelperProps={
+										{
+											...getFieldHelpers('slug'),
+											setInitialValue: (value: ContentModel) => {
+												setContentItemPublished(!!value?.meta.published);
+											},
+											setValue: (value: ContentModel) => {
+												setFieldValue('slug', value?.meta.slug?.nl);
 												setFieldValue(
-													'externalUrl',
-													`${getLangSiteUrl(site, value?.meta.lang)}${
-														value?.meta.urlPath?.[value?.meta.lang]
-															?.value
-													}`
+													'publishStatus',
+													value?.meta.published
+														? NAV_STATUSES.PUBLISHED
+														: NAV_STATUSES.DRAFT
 												);
-											}
+												setFieldValue('externalReference', value?.uuid);
+												setContentItemPublished(!!value?.meta.published);
 
-											if (!values?.label) {
-												setFieldValue('label', value?.meta.label);
-											}
+												if (
+													value?.meta.urlPath?.[value?.meta.lang]?.value
+												) {
+													setFieldValue(
+														'externalUrl',
+														`${getLangSiteUrl(site, value?.meta.lang)}${
+															value?.meta.urlPath?.[value?.meta.lang]
+																?.value
+														}`
+													);
+												}
 
-											// This will not work until fields are returned by the content select
-											// TODO: see if we should return fields because of this
-											if (
-												!values?.description &&
-												value?.fields?.teaser?.text
-											) {
-												setFieldValue(
-													'description',
-													value.fields.teaser.text
-												);
-											}
-										},
-									}}
+												if (!values?.label) {
+													setFieldValue('label', value?.meta.label);
+												}
+
+												// This will not work until fields are returned by the content select
+												// TODO: see if we should return fields because of this
+												if (
+													!values?.description &&
+													value?.fields?.teaser?.text
+												) {
+													setFieldValue(
+														'description',
+														value.fields.teaser.text
+													);
+												}
+											},
+											// TODO: bump content module and fix type
+										} as any
+									}
 									fieldSchema={
 										{
 											label: 'Link',
