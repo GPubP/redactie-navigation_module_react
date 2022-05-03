@@ -2,7 +2,7 @@ import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
 import { pathOr } from 'ramda';
 import { take } from 'rxjs/operators';
 
-import { ALERT_CONTAINER_IDS, PositionValues } from '../../navigation.const';
+import { ALERT_CONTAINER_IDS, CONFIG, PositionValues } from '../../navigation.const';
 import { NavItemType } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
@@ -12,24 +12,26 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
  * This function is called before submitting a content item.
  */
 const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
-	contentItem,
+	error,
+	contentItemDraft,
 	contentType,
+	contentItem,
 	site
 ): Promise<void> => {
-	const editablePosition = pathOr(false, ['meta', 'sitestructuur', 'editablePosition'])(
-		contentType
+	const modulesConfig = contentType.modulesConfig?.find(
+		config => config.site === site?.uuid && config.name === CONFIG.name
+	);
+	const editablePosition = pathOr(false, ['config', 'siteStructure', 'editablePosition'])(
+		modulesConfig
 	);
 	const structurePosition = pathOr(PositionValues.none, [
-		'meta',
-		'sitestructuur',
+		'config',
+		'siteStructure',
 		'structurePosition',
-	])(contentType);
+	])(modulesConfig);
 	const isEditable =
 		(structurePosition === PositionValues.limited && editablePosition) ||
 		structurePosition === PositionValues.unlimited;
-
-	console.log(structurePosition);
-	console.log(contentType);
 
 	if (!isEditable) {
 		return;
@@ -39,6 +41,9 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		.pipe(take(1))
 		.toPromise();
 
+	console.log(contentItem);
+
+	// TODO: sync status met CI
 	console.log({
 		description: pendingSiteStructureItem?.description!,
 		label: pendingSiteStructureItem?.label!,
@@ -46,7 +51,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		publishStatus: 'published',
 		slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
 		externalUrl: '',
-		externalReference: contentType.uuid,
+		externalReference: contentItem?.uuid,
 		logicalId: '',
 		items: [],
 		properties: {

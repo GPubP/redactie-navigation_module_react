@@ -56,7 +56,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	);
 	const [hasSiteStructureChanges, resetSiteStructureChangeDetection] = useDetectValueChanges(
 		!isLoading,
-		formValue.sitestructuur
+		formValue.siteStructure
 	);
 	const [hasChanges, resetHasChanges] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);

@@ -196,40 +196,40 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 					<Field
 						as={RadioGroup}
 						id="structurePosition"
-						name="sitestructuur.structurePosition"
+						name="siteStructure.structurePosition"
 						options={SITE_STRUCTURE_POSITION_OPTIONS}
 						value={
-							values.sitestructuur?.structurePosition ||
+							values.siteStructure?.structurePosition ||
 							SITE_STRUCTURE_POSITION_OPTIONS[0].value
 						}
 					/>
 				</div>
 			</div>
-			{values.sitestructuur?.structurePosition &&
-				values.sitestructuur?.structurePosition !== PositionValues.none && (
+			{values.siteStructure?.structurePosition &&
+				values.siteStructure?.structurePosition !== PositionValues.none && (
 					<div className="row u-margin-top">
 						<div className="col-xs-12">
 							<FormikMultilanguageField
 								asComponent={renderCascader}
 								label={tModule(MODULE_TRANSLATIONS.DEFAULT_POSITION)}
-								name="sitestructuur.position"
+								name="siteStructure.position"
 								placeholder={tModule(MODULE_TRANSLATIONS.SELECT_POSITION)}
 								required={
-									values.sitestructuur?.structurePosition ===
+									values.siteStructure?.structurePosition ===
 									PositionValues.limited
 								}
 							/>
-							{values.sitestructuur?.structurePosition === PositionValues.limited && (
+							{values.siteStructure?.structurePosition === PositionValues.limited && (
 								<div className="u-margin-top-xs">
 									<Field
 										as={Checkbox}
-										checked={values.sitestructuur?.editablePosition}
+										checked={values.siteStructure?.editablePosition}
 										id="editable"
-										name="sitestructuur.editablePosition"
+										name="siteStructure.editablePosition"
 										label={tModule(MODULE_TRANSLATIONS.EDITABLE)}
 										onChange={(e: ChangeEvent<HTMLInputElement>) => {
 											setFieldValue(
-												'sitestructuur.editablePosition',
+												'siteStructure.editablePosition',
 												e.target.checked
 											);
 										}}

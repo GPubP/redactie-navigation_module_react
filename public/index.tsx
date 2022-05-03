@@ -457,7 +457,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 
 		if (
 			!siteNavigationConfig ||
-			siteNavigationConfig?.config?.sitestructuur?.structurePosition === PositionValues.none
+			siteNavigationConfig?.config?.siteStructure?.structurePosition === PositionValues.none
 		) {
 			return false;
 		}
