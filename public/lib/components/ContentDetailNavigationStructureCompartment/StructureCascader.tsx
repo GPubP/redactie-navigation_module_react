@@ -3,7 +3,7 @@ import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr, propOr } from 'ramda';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import {
@@ -23,6 +23,7 @@ const StructureCascader = ({
 	activeLanguage,
 	value,
 	CTStructureConfig,
+	contentTypeSiteStructureItems,
 	treeConfig,
 	siteStructure,
 	placeholder,
@@ -33,6 +34,7 @@ const StructureCascader = ({
 	activeLanguage: string;
 	value: number[];
 	CTStructureConfig: { [key: string]: unknown };
+	contentTypeSiteStructureItems: NavItem[];
 	treeConfig: {
 		options: CascaderOption[];
 		activeItem: NavItem | undefined;
@@ -43,22 +45,26 @@ const StructureCascader = ({
 }): React.ReactElement => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
+	const [ initialValue, setInitialValue ] = useState<number[]>([])
 	// CT structure config = number[]
 	const ctStructureValue = pathOr([], ['position', activeLanguage])(CTStructureConfig);
 	// CT structure > string
-	const ctPositionValue = getPositionInputValue(treeConfig.options as any, ctStructureValue);
+	const ctPositionValue = getPositionInputValue(treeConfig.options as any, initialValue);
 	// CT structure position oneof PositionValues
 	const structurePosition = pathOr(PositionValues.none, ['structurePosition'])(CTStructureConfig);
 	// available positions after ctPositionValue = number[]
 	const availablePositions =
 		structurePosition === PositionValues.limited
-			? value && value.slice(ctStructureValue.length)
+			? value && value.slice(initialValue.length)
 			: value;
 	// available sitestructure when limited position
 	const availableLimitedSiteStructure = getAvailableSiteStructureOptions(
-		ctStructureValue,
+		initialValue,
 		siteStructure
 	);
+
+	console.log({availableLimitedSiteStructure, treeConfig});
+
 	// available sitestructure when limited position
 	const availableLimitedTreeConfig = getTreeConfig<NavTree, NavItem>(
 		(availableLimitedSiteStructure as unknown) as NavTree,
@@ -79,10 +85,34 @@ const StructureCascader = ({
 	// displayed value
 	const fieldValue =
 		(isLimitedAndNotEditable
-			? ctStructureValue
+			? initialValue
 			: value !== undefined && value.length > 0
 			? availablePositions
-			: value) || ctStructureValue;
+			: value) || initialValue;
+
+	useEffect(() => {
+		if (!contentTypeSiteStructureItems?.length || !siteStructure) {
+			return;
+		}
+
+		const itemForLang = contentTypeSiteStructureItems.find(
+			item => item.treeId === siteStructure.id
+		);
+
+		if (!itemForLang) {
+			return;
+		}
+
+		const val = (itemForLang.parents || []).map(parent => parent.id!);
+
+		setInitialValue(val);
+		setFieldValue(
+			'meta.sitestructuur.position',
+			initialValue
+		);
+		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
+
+	}, [activeLanguage, contentTypeSiteStructureItems, setFieldValue, siteStructure]);
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue('meta.sitestructuur.position', value);
@@ -129,7 +159,7 @@ const StructureCascader = ({
 					disabled={disabled}
 					onChange={(value: number[]) =>
 						handlePositionOnChange(
-							isLimitedAndEditable ? [...ctStructureValue, ...value] : value
+							isLimitedAndEditable ? [...initialValue, ...value] : value
 						)
 					}
 				>

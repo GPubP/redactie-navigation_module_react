@@ -23,7 +23,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	contentValue,
 	contentItem,
 	activeLanguage,
-	onChange,
 	site,
 	formikRef,
 	contentType,
@@ -99,8 +98,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		updateContentMeta((values as ContentSchema).meta);
 	};
 
-	console.log({contentTypeSiteStructureItems})
-
 	/**
 	 * Render
 	 */
@@ -138,6 +135,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 									activeLanguage={activeLanguage}
 									contentItem={contentItem}
 									CTStructureConfig={CTStructureConfig}
+									contentTypeSiteStructureItems={contentTypeSiteStructureItems}
 									treeConfig={treeConfig}
 									siteStructure={siteStructure}
 								/>
