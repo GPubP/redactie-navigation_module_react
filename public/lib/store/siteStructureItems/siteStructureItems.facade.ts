@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { buildSubset } from '../../helpers';
 import { rearrangeItems } from '../../helpers/rearrangeItems';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { NavItemDetailForm, RearrangeNavItem } from '../../navigation.types';
+import { RearrangeNavItem } from '../../navigation.types';
 import {
 	SiteStructureItem,
 	SiteStructureItemsApiService,
@@ -14,6 +14,7 @@ import {
 } from '../../services/siteStructureItems';
 
 import { getAlertMessages } from './siteStructureItems.messages';
+import { PendingSiteStructureItem } from './siteStructureItems.model';
 import { siteStructureItemsQuery, SiteStructureItemsQuery } from './siteStructureItems.query';
 import { siteStructureItemsStore, SiteStructureItemsStore } from './siteStructureItems.store';
 
@@ -88,6 +89,35 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				this.store.update({
 					error,
 					isFetchingContentTypeSiteStructureItems: false,
+				});
+			});
+	}
+
+	public getContentSiteStructurePrimaryItem(siteId: string, contentId: string): void {
+		const { isFetchingOne } = this.query.getValue();
+
+		if (isFetchingOne) {
+			return;
+		}
+
+		this.store.setIsFetchingOne(true);
+
+		this.service
+			.getContentSiteStructurePrimaryItem(siteId, contentId)
+			.then((response: SiteStructureItem) => {
+				if (!response) {
+					throw new Error('Getting siteStructureItem failed!');
+				}
+
+				this.store.update({
+					siteStructureItem: response,
+					isFetchingOne: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetchingOne: false,
 				});
 			});
 	}
@@ -351,7 +381,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public setPendingSiteStructureItem(pendingSiteStructureItem: NavItemDetailForm): void {
+	public setPendingSiteStructureItem(pendingSiteStructureItem: PendingSiteStructureItem): void {
 		this.store.update({
 			pendingSiteStructureItem,
 		});

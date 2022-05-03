@@ -28,6 +28,9 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		(structurePosition === PositionValues.limited && editablePosition) ||
 		structurePosition === PositionValues.unlimited;
 
+	console.log(structurePosition);
+	console.log(contentType);
+
 	if (!isEditable) {
 		return;
 	}
@@ -36,28 +39,43 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		.pipe(take(1))
 		.toPromise();
 
-	await siteStructureItemsFacade
-		.createSiteStructureItem(
-			site?.uuid!,
-			`${pendingSiteStructureItem?.treeId}`,
-			{
-				description: pendingSiteStructureItem?.description!,
-				label: pendingSiteStructureItem?.label!,
-				parentId: pendingSiteStructureItem?.position.slice(-1)[0],
-				publishStatus: 'published',
-				slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
-				externalUrl: '',
-				externalReference: contentType.uuid,
-				logicalId: '',
-				items: [],
-				properties: {
-					type: NavItemType.primary,
-				},
-			},
-			ALERT_CONTAINER_IDS.siteStructureItemsOverview
-		)
-		// eslint-disable-next-line @typescript-eslint/no-empty-function
-		.then(() => {});
+	console.log({
+		description: pendingSiteStructureItem?.description!,
+		label: pendingSiteStructureItem?.label!,
+		parentId: pendingSiteStructureItem?.position.slice(-1)[0],
+		publishStatus: 'published',
+		slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
+		externalUrl: '',
+		externalReference: contentType.uuid,
+		logicalId: '',
+		items: [],
+		properties: {
+			type: NavItemType.primary,
+		},
+	});
+
+	// await siteStructureItemsFacade
+	// 	.createSiteStructureItem(
+	// 		site?.uuid!,
+	// 		`${pendingSiteStructureItem?.treeId}`,
+	// 		{
+	// 			description: pendingSiteStructureItem?.description!,
+	// 			label: pendingSiteStructureItem?.label!,
+	// 			parentId: pendingSiteStructureItem?.position.slice(-1)[0],
+	// 			publishStatus: 'published',
+	// 			slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
+	// 			externalUrl: '',
+	// 			externalReference: contentType.uuid,
+	// 			logicalId: '',
+	// 			items: [],
+	// 			properties: {
+	// 				type: NavItemType.primary,
+	// 			},
+	// 		},
+	// 		ALERT_CONTAINER_IDS.siteStructureItemsOverview
+	// 	)
+	// 	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	// 	.then(() => {});
 };
 
 export default afterSubmitSiteStructure;

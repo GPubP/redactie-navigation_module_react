@@ -35,7 +35,6 @@ import {
 	afterSubmitNavigation,
 	afterSubmitSiteStructure,
 	beforeSubmitNavigation,
-	beforeSubmitSiteStructure,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
@@ -446,16 +445,10 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 	module: CONFIG.module,
 	component: ContentDetailSiteStructureCompartment,
 	isValid: false,
-	beforeSubmit: beforeSubmitSiteStructure,
 	afterSubmit: afterSubmitSiteStructure,
+	// TODO: fix validation
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
-		const navModuleValue = values.modulesData?.navigation || {};
-
-		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
-			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
-		}
-
-		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		return true;
 	},
 	show: (_, __, ___, ____, contentType) => {
 		const siteNavigationConfig = (contentType.modulesConfig || []).find(

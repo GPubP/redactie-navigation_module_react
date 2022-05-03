@@ -108,8 +108,7 @@ const StructureCascader = ({
 			return;
 		}
 
-		setFieldValue('meta.sitestructuur.position', val);
-		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
+		setFieldValue('position', val);
 	}, [
 		activeLanguage,
 		contentTypeSiteStructureItems,
@@ -119,8 +118,7 @@ const StructureCascader = ({
 	]);
 
 	const handlePositionOnChange = (value: number[]): void => {
-		setFieldValue('meta.sitestructuur.position', value);
-		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
+		setFieldValue('position', value);
 	};
 
 	const renderCTStructure = (positionValue: string): React.ReactElement | null => {
@@ -201,7 +199,7 @@ const StructureCascader = ({
 										onClick={(e: React.SyntheticEvent) => {
 											e.preventDefault();
 											e.stopPropagation();
-											setFieldValue('meta.sitestructuur.position', []);
+											setFieldValue('position', []);
 										}}
 									/>
 								</span>
