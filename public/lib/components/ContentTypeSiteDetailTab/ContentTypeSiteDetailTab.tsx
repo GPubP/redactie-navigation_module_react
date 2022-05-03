@@ -157,25 +157,27 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		await Promise.all(
 			Object.keys(formValue.updatedSiteStructurePosition).map((languageKey: string) => {
 				const itemInfo = formValue.updatedSiteStructurePosition[languageKey];
+				const siteStructureItemPayload = {
+					...(itemInfo.itemId && { id: itemInfo.itemId }),
+					description: contentType.meta.description,
+					label: contentType.meta.label,
+					slug: contentType.meta.safeLabel,
+					publishStatus: 'published',
+					externalUrl: '',
+					externalReference: contentType.uuid,
+					logicalId: '',
+					items: [],
+					parentId: itemInfo.position.slice(-1)[0],
+					properties: {
+						type: NavItemType.contentType,
+					},
+				};
 
 				if (!itemInfo.itemId) {
 					return siteStructureItemsFacade.createSiteStructureItem(
 						siteId,
 						itemInfo.treeId,
-						{
-							description: contentType.meta.description,
-							label: contentType.meta.label,
-							slug: contentType.meta.safeLabel,
-							publishStatus: 'published',
-							externalUrl: '',
-							externalReference: contentType.uuid,
-							logicalId: '',
-							items: [],
-							parentId: itemInfo.position.slice(-1)[0],
-							properties: {
-								type: NavItemType.contentType,
-							},
-						},
+						siteStructureItemPayload,
 						ALERT_CONTAINER_IDS.siteStructureItemsOverview
 					);
 				}
@@ -183,21 +185,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				return siteStructureItemsFacade.updateSiteStructureItem(
 					siteId,
 					itemInfo.treeId,
-					{
-						id: itemInfo.itemId,
-						description: contentType.meta.description,
-						label: contentType.meta.label,
-						slug: contentType.meta.safeLabel,
-						publishStatus: 'published',
-						externalUrl: '',
-						externalReference: contentType.uuid,
-						logicalId: '',
-						items: [],
-						parentId: itemInfo.position.slice(-1)[0],
-						properties: {
-							type: NavItemType.contentType,
-						},
-					},
+					siteStructureItemPayload,
 					ALERT_CONTAINER_IDS.siteStructureItemsOverview
 				);
 			})
