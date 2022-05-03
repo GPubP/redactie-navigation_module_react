@@ -14,19 +14,22 @@ import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { getPositionInputValue, getTreeConfig } from '../../helpers';
-import { useSiteStructure } from '../../hooks';
+import { useSiteStructure, useContentTypeSiteStructureItems } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { SiteStructure } from '../../services/siteStructures';
+import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
-const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
+
+const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentType }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
+	const [, contentTypeSiteStructureItems] = useContentTypeSiteStructureItems();
 	const [site] = sitesConnector.hooks.useSite(siteId);
 	const [siteStructureForLang, setSiteStructureForLang] = useState<SiteStructure | null>(null);
 
@@ -57,6 +60,33 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 		);
 	}, [siteId, siteStructureForLang]);
 
+	useEffect(() => {
+		if (!contentType) {
+			return;
+		}
+
+		siteStructureItemsFacade.getContentTypeSiteStructureItems(siteId, contentType?.uuid, {});
+	}, [siteId, contentType]);
+
+	useEffect(() => {
+		if (!contentTypeSiteStructureItems?.length || !siteStructure) {
+			return;
+		}
+
+		const itemForLang = contentTypeSiteStructureItems.find(
+			item => item.treeId === siteStructure.id
+		);
+
+		if (!itemForLang) {
+			return;
+		}
+
+		setFieldValue(
+			`tempSiteStructurePosition.${activeLanguage.key}`,
+			(itemForLang.parents || []).map(parent => parent.id)
+		);
+	}, [activeLanguage.key, contentTypeSiteStructureItems, setFieldValue, siteStructure]);
+
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
 	}>(
@@ -69,11 +99,27 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 	);
 
 	const handlePositionOnChange = (value: number[]): void => {
-		setFieldValue(`sitestructuur.position.${activeLanguage.key}`, value);
+		setFieldValue(`tempSiteStructurePosition.${activeLanguage.key}`, value);
+		setFieldValue(`updatedSiteStructurePosition.${activeLanguage.key}.position`, value);
+		setFieldValue(
+			`updatedSiteStructurePosition.${activeLanguage.key}.treeId`,
+			siteStructure?.id
+		);
+
+		const existingItem = contentTypeSiteStructureItems?.find(
+			item => item.treeId === siteStructure?.id
+		);
+
+		if (existingItem) {
+			setFieldValue(
+				`updatedSiteStructurePosition.${activeLanguage.key}.itemId`,
+				existingItem.id
+			);
+		}
 	};
 
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
-		const value = pathOr([], ['sitestructuur', 'position', activeLanguage.key])(values);
+		const value = pathOr([], ['tempSiteStructurePosition', activeLanguage.key])(values);
 		const disabled =
 			!treeConfig.options.length ||
 			loadingState === LoadingState.Loading ||
@@ -129,7 +175,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 									onClick={(e: React.SyntheticEvent) => {
 										e.preventDefault();
 										e.stopPropagation();
-										setFieldValue('sitestructuur.position', []);
+										setFieldValue('tempSiteStructurePosition', []);
 									}}
 								/>
 							</span>
@@ -143,9 +189,6 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId }) => {
 	return (
 		<div>
 			<div className="u-margin-bottom">
-				<h2 className="h3 u-margin-bottom">
-					{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_TITLE)}
-				</h2>
 				<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_DESCRIPTION)}</p>
 			</div>
 			<div className="row">

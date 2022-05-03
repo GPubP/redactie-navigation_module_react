@@ -18,7 +18,7 @@ export class SiteStructureItemsApiService {
 			.json();
 	}
 
-	public async getSiteStructureItemsForCT(
+	public async getContentTypeSiteStructureItems(
 		siteId: string,
 		contentTypeId: string,
 		searchParams: SearchParams

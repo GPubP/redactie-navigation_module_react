@@ -527,8 +527,7 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	disabled: context =>
 		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
 			rolesRightsConnector.securityRights.read,
-		]) ||
-		context.contentType?.meta?.canBeFiltered === false,
+		]) || context.contentType?.meta?.canBeFiltered === false,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {

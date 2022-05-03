@@ -181,6 +181,7 @@ export enum NavItemType {
 	external = 'external',
 	section = 'section',
 	primary = 'primary',
+	contentType = 'contentType',
 }
 
 export interface EmbeddedNavItems {

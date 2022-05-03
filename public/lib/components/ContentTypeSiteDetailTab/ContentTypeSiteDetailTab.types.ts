@@ -1,3 +1,4 @@
+import { ContentTypeDetailModel } from '@redactie/content-types-module';
 import { Language } from '@redactie/utils';
 import { FormikValues } from 'formik';
 
@@ -20,5 +21,6 @@ export interface ContentTypeSiteDetailFormProps {
 	onCancel: () => void;
 	onValidateCompartments: (invalidCompartments: string[]) => void;
 	siteId: string;
+	contentType: ContentTypeDetailModel;
 	activeLanguage: Language;
 }

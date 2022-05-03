@@ -15,7 +15,7 @@ import {
 	useDetectValueChanges,
 	useNavigate,
 } from '@redactie/utils';
-import { isEmpty } from 'ramda';
+import { isEmpty, omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 import { NavLink, useHistory, useParams } from 'react-router-dom';
 
@@ -25,7 +25,9 @@ import rolesRightsConnector from '../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
-import { CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
+import { ALERT_CONTAINER_IDS, CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
+import { NavItemType } from '../../navigation.types';
+import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
 import ContentTypeSiteDetailForm from './ContentTypeSiteDetailForm';
 import { NAV_SITE_COMPARTMENTS } from './ContentTypeSiteDetailTab.const';
@@ -151,13 +153,60 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		}
 	}, [activeLanguage, contentType.modulesConfig, initialValues, languages]);
 
+	const handleUpdateSiteStructureItems = async (): Promise<void> => {
+		await Promise.all(
+			Object.keys(formValue.updatedSiteStructurePosition).map((languageKey: string) => {
+				const itemInfo = formValue.updatedSiteStructurePosition[languageKey];
+				const siteStructureItemPayload = {
+					...(itemInfo.itemId && { id: itemInfo.itemId }),
+					description: contentType.meta.description,
+					label: contentType.meta.label,
+					slug: contentType.meta.safeLabel,
+					publishStatus: 'published',
+					externalUrl: '',
+					externalReference: contentType.uuid,
+					logicalId: '',
+					items: [],
+					parentId: itemInfo.position.slice(-1)[0],
+					properties: {
+						type: NavItemType.contentType,
+					},
+				};
+
+				if (!itemInfo.itemId) {
+					return siteStructureItemsFacade.createSiteStructureItem(
+						siteId,
+						itemInfo.treeId,
+						siteStructureItemPayload,
+						ALERT_CONTAINER_IDS.siteStructureItemsOverview
+					);
+				}
+
+				return siteStructureItemsFacade.updateSiteStructureItem(
+					siteId,
+					itemInfo.treeId,
+					siteStructureItemPayload,
+					ALERT_CONTAINER_IDS.siteStructureItemsOverview
+				);
+			})
+		);
+
+		siteStructureItemsFacade.getContentTypeSiteStructureItems(siteId, contentType?.uuid, {});
+	};
+
 	const onConfirm = async (): Promise<void> => {
+		if (formValue.updatedSiteStructurePosition) {
+			handleUpdateSiteStructureItems();
+		}
+
 		!metadataExists
 			? await contentTypeConnector.metadataFacade.createMetadata(
 					siteId,
 					contentType,
 					{
-						config: formValue,
+						config: omit(['updatedSiteStructurePosition', 'tempSiteStructurePosition'])(
+							formValue
+						),
 						label: 'Navigatie',
 						name: 'navigation',
 						ref: contentType.uuid,
@@ -172,7 +221,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					value.uuid,
 					{
 						...value,
-						config: formValue,
+						config: omit(['updatedSiteStructurePosition', 'tempSiteStructurePosition'])(
+							formValue
+						),
 					} as any,
 					'update'
 			  );
@@ -225,6 +276,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					onFormSubmit={onFormSubmit}
 					onCancel={onCancel}
 					siteId={siteId}
+					contentType={contentType}
 					activeLanguage={activeLanguage}
 					onValidateCompartments={onValidateCompartments}
 				/>
