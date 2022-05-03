@@ -7,7 +7,7 @@ import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getCTStructureConfig, getTreeConfig } from '../../helpers';
-import { useSiteStructure } from '../../hooks';
+import { useSiteStructure, useSiteStructureItems } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
@@ -33,6 +33,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	const CTStructureConfig = getCTStructureConfig(contentType, activeLanguage!, CONFIG.name, site);
 	const [, siteStructures] = useSiteStructures();
 	const { siteStructure } = useSiteStructure();
+	const { siteStructureItems } = useSiteStructureItems();
 	const [siteStructureForLang, setSiteStructureForLang] = useState<SiteStructure | null>(null);
 
 	/**
@@ -47,6 +48,14 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		}
 
 		siteStructuresFacade.getSiteStructures(siteId, {});
+	}, [activeLanguage, site, siteId]);
+
+	useEffect(() => {
+		if (!siteId || !site?.data.name || !activeLanguage) {
+			return;
+		}
+
+		siteStructureItemsFacade.getSiteStructureItemsForCT(siteId, contentType.uuid, {})
 	}, [activeLanguage, site, siteId]);
 
 	useEffect(() => {
@@ -89,6 +98,8 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		siteStructureItemsFacade.setPendingSiteStructureItem(values.meta.sitestructuur as NavItemDetailForm);
 		updateContentMeta((values as ContentSchema).meta);
 	};
+
+	console.log({siteStructureItems})
 
 	/**
 	 * Render

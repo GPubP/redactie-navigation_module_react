@@ -56,6 +56,35 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 			});
 	}
 
+	public getSiteStructureItemsForCT(siteId: string, contentTypeId: string, searchParams: SearchParams): void {
+		const { isFetching } = this.query.getValue();
+
+		if (isFetching) {
+			return;
+		}
+
+		this.store.setIsFetching(true);
+
+		this.service
+			.getSiteStructureItemsForCT(siteId, contentTypeId, searchParams)
+			.then((response: SiteStructureItemsResponse) => {
+				if (!response) {
+					throw new Error('Getting siteStructureItemsForCT failed!');
+				}
+
+				this.store.set(response?._embedded.resourceList);
+				this.store.update({
+					isFetching: false,
+				});
+			})
+			.catch(error => {
+				this.store.update({
+					error,
+					isFetching: false,
+				});
+			});
+	}
+
 	public async getSubset(
 		siteId: string,
 		menuId: string,
