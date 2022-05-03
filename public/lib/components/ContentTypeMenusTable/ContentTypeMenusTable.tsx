@@ -47,7 +47,19 @@ const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
 
 	const activateMenu = (id: number): void => {
 		const value = pathOr([], ['menu', 'allowedMenus', activeLanguage.key], values);
+		const activeMenus = Object.keys(pathOr({}, ['menu', 'allowedMenus'])(values))
+			.reduce(
+				(acc: string[], languageKey) => [
+					...acc,
+					...pathOr([], ['menu', 'allowedMenus', languageKey], values),
+				],
+				[]
+			)
+			.filter(id => !!id)
+			.map(id => id.toString());
+
 		setFieldValue(`menu.allowedMenus.${activeLanguage.key}`, [...value, id]);
+		setFieldValue(`menu.activatedMenus`, Array.from(new Set([...activeMenus, id.toString()])));
 	};
 
 	const deactivateMenu = (id: number): void => {
@@ -65,7 +77,9 @@ const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
 		return menus.map(menu => ({
 			id: menu.id,
 			label: menu.label,
-			active: (Array.isArray(currentMenus) ? currentMenus : []).find(currentMenu => currentMenu === menu.id),
+			active: (Array.isArray(currentMenus) ? currentMenus : []).find(
+				currentMenu => currentMenu === menu.id
+			),
 			activateMenu,
 			deactivateMenu,
 		}));
@@ -121,10 +135,32 @@ const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
 	};
 
 	const onConfirm = (): void => {
-		const value = pathOr([], ['menu', 'allowedMenus', activeLanguage.key], values);
+		const value: number[] = pathOr([], ['menu', 'allowedMenus', activeLanguage.key], values);
+		const activeMenus = Object.keys(pathOr({}, ['menu', 'allowedMenus'])(values))
+			.reduce((acc: string[], languageKey) => {
+				if (languageKey === activeLanguage.key) {
+					return acc;
+				}
+
+				return [...acc, ...pathOr([], ['menu', 'allowedMenus', languageKey], values)];
+			}, [])
+			.filter(id => !!id)
+			.map(id => id.toString());
+
 		setFieldValue(
 			`menu.allowedMenus.${activeLanguage.key}`,
 			value.filter(menuId => menuId !== selectedId && typeof menuId === 'number')
+		);
+		setFieldValue(
+			`menu.activatedMenus`,
+			Array.from(
+				new Set([
+					...activeMenus,
+					...value
+						.filter(menuId => menuId !== selectedId && typeof menuId === 'number')
+						.map(id => id.toString()),
+				])
+			)
 		);
 		setShowConfirmModal(false);
 	};
