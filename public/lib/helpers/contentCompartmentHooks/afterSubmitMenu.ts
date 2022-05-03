@@ -1,7 +1,8 @@
-import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
+import { ContentStatus, ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
 import { omit } from 'ramda';
 import { take } from 'rxjs/operators';
 
+import { NAV_STATUSES } from '../../components';
 import { menuItemsFacade } from '../../store/menuItems';
 /**
  *
@@ -16,6 +17,9 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 	site
 ): Promise<void> => {
 	const pendingMenuItems = await menuItemsFacade.pendingMenuItems$.pipe(take(1)).toPromise();
+	const contentIsPublished =
+		contentItem.meta.status === ContentStatus.PUBLISHED &&
+		prevContentItem?.meta.status !== ContentStatus.PUBLISHED;
 
 	const pendingUpsertWithContentLink = (pendingMenuItems?.upsertItems || [])?.map(pendingItem => {
 		return {
@@ -24,6 +28,10 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 			externalReference: contentItem.uuid,
 			// TODO: fix types
 			externalUrl: (site?.data.url as any)[contentItem.meta.lang],
+			...(contentIsPublished &&
+				pendingItem.publishStatus === NAV_STATUSES.READY && {
+					publishStatus: NAV_STATUSES.PUBLISHED,
+				}),
 		};
 	});
 
