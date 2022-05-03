@@ -45,9 +45,8 @@ const StructureCascader = ({
 }): React.ReactElement => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
-	const [ initialValue, setInitialValue ] = useState<number[]>([])
-	// CT structure config = number[]
-	const ctStructureValue = pathOr([], ['position', activeLanguage])(CTStructureConfig);
+	const [initialValue, setInitialValue] = useState<number[]>([]);
+
 	// CT structure > string
 	const ctPositionValue = getPositionInputValue(treeConfig.options as any, initialValue);
 	// CT structure position oneof PositionValues
@@ -63,12 +62,10 @@ const StructureCascader = ({
 		siteStructure
 	);
 
-	console.log({availableLimitedSiteStructure, treeConfig});
-
 	// available sitestructure when limited position
 	const availableLimitedTreeConfig = getTreeConfig<NavTree, NavItem>(
 		(availableLimitedSiteStructure as unknown) as NavTree,
-		availableLimitedSiteStructure?.id as number
+		siteStructure?.id!
 	);
 
 	const disabled =
@@ -106,13 +103,20 @@ const StructureCascader = ({
 		const val = (itemForLang.parents || []).map(parent => parent.id!);
 
 		setInitialValue(val);
-		setFieldValue(
-			'meta.sitestructuur.position',
-			initialValue
-		);
-		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
 
-	}, [activeLanguage, contentTypeSiteStructureItems, setFieldValue, siteStructure]);
+		if (isLimitedAndNotEditable) {
+			return;
+		}
+
+		setFieldValue('meta.sitestructuur.position', val);
+		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
+	}, [
+		activeLanguage,
+		contentTypeSiteStructureItems,
+		siteStructure,
+		isLimitedAndNotEditable,
+		setFieldValue,
+	]);
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue('meta.sitestructuur.position', value);
@@ -157,11 +161,12 @@ const StructureCascader = ({
 							: treeConfig.options
 					}
 					disabled={disabled}
-					onChange={(value: number[]) =>
-						handlePositionOnChange(
-							isLimitedAndEditable ? [...initialValue, ...value] : value
-						)
-					}
+					onChange={(value: number[]) => {
+						!isLimitedAndNotEditable &&
+							handlePositionOnChange(
+								isLimitedAndEditable ? [...initialValue, ...value] : value
+							);
+					}}
 				>
 					<div className="a-input__wrapper u-flex-item">
 						<input

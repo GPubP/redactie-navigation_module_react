@@ -33,6 +33,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 			publishStatus: 'published',
 			slug: pathOr("", ['meta', 'safeLabel'])(contentItem),
 			externalUrl: '',
+			externalReference: contentType.uuid,
 			logicalId: '',
 			items: [],
 			properties: {
