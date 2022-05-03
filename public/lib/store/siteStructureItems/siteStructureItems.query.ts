@@ -13,6 +13,9 @@ export class SiteStructureItemsQuery extends BaseEntityQuery<SiteStructureItemsS
 	public siteStructureItemDraft$ = this.select(state => state.siteStructureItemDraft).pipe(
 		filter(siteStructureItemDraft => !isNil(siteStructureItemDraft), distinctUntilChanged())
 	);
+	public pendingSiteStructureItem$ = this.select(state => state.pendingSiteStructureItem).pipe(
+		filter(pendingSiteStructureItem => !isNil(pendingSiteStructureItem), distinctUntilChanged())
+	);
 }
 
 export const siteStructureItemsQuery = new SiteStructureItemsQuery(siteStructureItemsStore);

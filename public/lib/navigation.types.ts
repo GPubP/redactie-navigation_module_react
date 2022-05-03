@@ -166,6 +166,7 @@ export interface NavItem {
 	items: NavItem[];
 	parentId?: number;
 	weight?: number;
+	externalReference?: string;
 	parents?: NavItem[];
 	childItemCount?: number;
 	properties?: {
@@ -179,6 +180,7 @@ export enum NavItemType {
 	internalOnContentUpsert = 'internalOnContentUpsert',
 	external = 'external',
 	section = 'section',
+	primary = 'primary',
 }
 
 export interface EmbeddedNavItems {

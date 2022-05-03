@@ -86,6 +86,7 @@ const StructureCascader = ({
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue('meta.sitestructuur.position', value);
+		setFieldValue(`meta.sitestructuur.treeId`, siteStructure?.id);
 	};
 
 	const renderCTStructure = (positionValue: string): React.ReactElement | null => {

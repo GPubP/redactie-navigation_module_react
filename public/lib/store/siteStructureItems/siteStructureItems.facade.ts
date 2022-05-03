@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { buildSubset } from '../../helpers';
 import { rearrangeItems } from '../../helpers/rearrangeItems';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { RearrangeNavItem } from '../../navigation.types';
+import { NavItemDetailForm, RearrangeNavItem } from '../../navigation.types';
 import {
 	SiteStructureItem,
 	SiteStructureItemsApiService,
@@ -25,6 +25,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 	public readonly siteStructureItems$ = this.query.siteStructureItems$;
 	public readonly siteStructureItem$ = this.query.siteStructureItem$;
 	public readonly siteStructureItemDraft$ = this.query.siteStructureItemDraft$;
+	public readonly pendingSiteStructureItem$ = this.query.pendingSiteStructureItem$;
 
 	public getSiteStructureItems(siteId: string, menuId: string, searchParams: SearchParams): void {
 		const { isFetching } = this.query.getValue();
@@ -314,6 +315,12 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		});
 	}
 
+	public setPendingSiteStructureItem(pendingSiteStructureItem: NavItemDetailForm): void {
+		this.store.update({
+			pendingSiteStructureItem,
+		});
+	}
+
 	public unsetSiteStructureItemDraft(): void {
 		this.store.update({
 			siteStructureItemDraft: undefined,
@@ -323,6 +330,12 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 	public unsetSiteStructureItem(): void {
 		this.store.update({
 			siteStructureItem: undefined,
+		});
+	}
+
+	public unsetPendingSiteStructureItem(): void {
+		this.store.update({
+			pendingSiteStructureItem: undefined,
 		});
 	}
 }

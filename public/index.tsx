@@ -34,6 +34,7 @@ import {
 	afterSubmitMenu,
 	afterSubmitNavigation,
 	beforeSubmitNavigation,
+	afterSubmitSiteStructure,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
@@ -444,6 +445,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 	module: CONFIG.module,
 	component: ContentDetailNavigationStructureCompartment,
 	isValid: false,
+	afterSubmit: afterSubmitSiteStructure,
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
 		const navModuleValue = values.modulesData?.navigation || {};
 

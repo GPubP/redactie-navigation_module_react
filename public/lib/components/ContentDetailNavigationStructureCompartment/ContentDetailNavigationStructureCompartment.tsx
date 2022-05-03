@@ -11,8 +11,9 @@ import { useSiteStructure } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
-import { NavItem, NavTree } from '../../navigation.types';
+import { NavItem, NavItemDetailForm, NavTree } from '../../navigation.types';
 import { SiteStructure } from '../../services/siteStructures';
+import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
 
 import StructureCascader from './StructureCascader';
@@ -85,6 +86,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
+		siteStructureItemsFacade.setPendingSiteStructureItem(values.meta.sitestructuur as NavItemDetailForm);
 		updateContentMeta((values as ContentSchema).meta);
 	};
 
@@ -100,7 +102,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 				}}
 				enableReinitialize
 				initialValues={contentValue!}
-				onSubmit={onChange}
+				onSubmit={() => undefined}
 			>
 				{() => {
 					return (
