@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CardBody, Textarea, TextField } from '@acpaas-ui/react-components';
-import { CompartmentProps, ContentSchema } from '@redactie/content-module';
+import { CompartmentProps } from '@redactie/content-module';
 import { CascaderOption, FormikOnChangeHandler, useSiteContext } from '@redactie/utils';
 import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import React, { FC, useEffect, useMemo, useRef, useState } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getCTStructureConfig, getTreeConfig } from '../../helpers';
-import { useSiteStructure, useContentTypeSiteStructureItems } from '../../hooks';
+import { useContentTypeSiteStructureItems, useSiteStructure } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
@@ -19,7 +19,7 @@ import { siteStructuresFacade } from '../../store/siteStructures';
 import StructureCascader from './StructureCascader';
 
 const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
-	updateContentMeta,
+	onChange,
 	contentValue,
 	contentItem,
 	activeLanguage,
@@ -54,8 +54,8 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			return;
 		}
 
-		siteStructureItemsFacade.getContentTypeSiteStructureItems(siteId, contentType.uuid, {})
-	}, [activeLanguage, site, siteId]);
+		siteStructureItemsFacade.getContentTypeSiteStructureItems(siteId, contentType.uuid, {});
+	}, [activeLanguage, contentType.uuid, site, siteId]);
 
 	useEffect(() => {
 		if (!siteStructures || !siteId || !activeLanguage) {
@@ -94,8 +94,10 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
-		siteStructureItemsFacade.setPendingSiteStructureItem(values.meta.sitestructuur as NavItemDetailForm);
-		updateContentMeta((values as ContentSchema).meta);
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			values.meta.sitestructuur as NavItemDetailForm
+		);
+		// onChange(values);
 	};
 
 	/**

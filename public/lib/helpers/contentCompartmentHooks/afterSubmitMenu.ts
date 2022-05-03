@@ -27,7 +27,10 @@ const afterSubmitMenu: ExternalCompartmentAfterSubmitFn = async (
 		};
 	});
 
-	if (!site?.uuid) {
+	if (
+		!site?.uuid ||
+		(pendingMenuItems?.upsertItems.length === 0 && pendingMenuItems.deleteItems.length === 0)
+	) {
 		return;
 	}
 

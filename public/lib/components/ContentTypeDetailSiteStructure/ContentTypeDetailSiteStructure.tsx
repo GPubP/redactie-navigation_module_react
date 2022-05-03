@@ -14,7 +14,7 @@ import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { getPositionInputValue, getTreeConfig } from '../../helpers';
-import { useSiteStructure, useContentTypeSiteStructureItems } from '../../hooks';
+import { useContentTypeSiteStructureItems, useSiteStructure } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';

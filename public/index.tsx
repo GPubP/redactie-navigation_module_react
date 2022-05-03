@@ -23,7 +23,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { ContentDetailNavigationStructureCompartment } from './lib/components/ContentDetailNavigationStructureCompartment';
+import { ContentDetailSiteStructureCompartment } from './lib/components/ContentDetailSiteStructureCompartment';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
@@ -33,8 +33,8 @@ import { isEmpty } from './lib/helpers';
 import {
 	afterSubmitMenu,
 	afterSubmitNavigation,
-	beforeSubmitNavigation,
 	afterSubmitSiteStructure,
+	beforeSubmitNavigation,
 	beforeSubmitSiteStructure,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
@@ -442,9 +442,9 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 });
 
 contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
-	label: 'Navigatiestructuur',
+	label: 'Sitestructuur',
 	module: CONFIG.module,
-	component: ContentDetailNavigationStructureCompartment,
+	component: ContentDetailSiteStructureCompartment,
 	isValid: false,
 	beforeSubmit: beforeSubmitSiteStructure,
 	afterSubmit: afterSubmitSiteStructure,
