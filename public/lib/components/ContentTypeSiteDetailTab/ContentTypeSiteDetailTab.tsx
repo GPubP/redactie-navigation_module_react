@@ -25,7 +25,13 @@ import rolesRightsConnector from '../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
-import { ALERT_CONTAINER_IDS, CONFIG, MODULE_PATHS, SITES_ROOT } from '../../navigation.const';
+import {
+	ALERT_CONTAINER_IDS,
+	CONFIG,
+	MODULE_PATHS,
+	PositionValues,
+	SITES_ROOT,
+} from '../../navigation.const';
 import { NavItemType } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
@@ -155,8 +161,8 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 	const handleUpdateSiteStructureItems = async (): Promise<void> => {
 		await Promise.all(
-			Object.keys(formValue.updatedSiteStructurePosition).map((languageKey: string) => {
-				const itemInfo = formValue.updatedSiteStructurePosition[languageKey];
+			Object.keys(formValue.pendingCTSiteStructure).map((languageKey: string) => {
+				const itemInfo = formValue.pendingCTSiteStructure[languageKey];
 				const siteStructureItemPayload = {
 					...(itemInfo.itemId && { id: itemInfo.itemId }),
 					description: contentType.meta.description,
@@ -195,7 +201,10 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	};
 
 	const onConfirm = async (): Promise<void> => {
-		if (formValue.updatedSiteStructurePosition) {
+		if (
+			formValue?.siteStructure?.structurePosition === PositionValues.limited &&
+			!formValue?.siteStructure?.editablePosition
+		) {
 			handleUpdateSiteStructureItems();
 		}
 
@@ -204,9 +213,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					siteId,
 					contentType,
 					{
-						config: omit(['updatedSiteStructurePosition', 'tempSiteStructurePosition'])(
-							formValue
-						),
+						config: omit(['pendingCTSiteStructure'])(formValue),
 						label: 'Navigatie',
 						name: 'navigation',
 						ref: contentType.uuid,
@@ -221,13 +228,12 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					value.uuid,
 					{
 						...value,
-						config: omit(['updatedSiteStructurePosition', 'tempSiteStructurePosition'])(
-							formValue
-						),
+						config: omit(['pendingCTSiteStructure'])(formValue),
 					} as any,
 					'update'
 			  );
 
+		contentTypeConnector.contentTypesFacade.getSiteContentType(siteId, contentType.uuid, true);
 		setMetadataExists(true);
 		setShowConfirmModal(false);
 		resetUrlChangeDetection();

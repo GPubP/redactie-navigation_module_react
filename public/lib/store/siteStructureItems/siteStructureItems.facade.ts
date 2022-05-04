@@ -203,13 +203,14 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		body: SiteStructureItem,
 		alertId: string
 	): Promise<SiteStructureItem | undefined> {
-		const { isCreating } = this.query.getValue();
+		// TODO: transform store to BaseMultiEntity
+		// const { isCreating } = this.query.getValue();
 
-		if (isCreating) {
-			return;
-		}
+		// if (isCreating) {
+		// 	return;
+		// }
 
-		this.store.setIsCreating(true);
+		// this.store.setIsCreating(true);
 
 		return this.service
 			.createSiteStructureItem(siteId, menuId, body)
@@ -250,13 +251,14 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		body: SiteStructureItem,
 		alertId: string
 	): Promise<void> {
-		const { isUpdating } = this.query.getValue();
+		// TODO: transform store to BaseMultiEntity
+		// const { isUpdating } = this.query.getValue();
 
-		if (isUpdating) {
-			return Promise.resolve();
-		}
+		// if (isUpdating) {
+		// 	return Promise.resolve();
+		// }
 
-		this.store.setIsUpdating(true);
+		// this.store.setIsUpdating(true);
 
 		return this.service
 			.updateSiteStructureItem(siteId, menuId, body)
