@@ -1,6 +1,5 @@
 import { TextField } from '@acpaas-ui/react-components';
-import { ContentModel } from '@redactie/content-module';
-import { InputFieldProps } from '@redactie/form-renderer-module';
+import { ContentModel, ContentSelectProps } from '@redactie/content-module';
 import { ErrorMessage } from '@redactie/utils';
 import { Field, FieldProps } from 'formik';
 import React, { FC, useMemo } from 'react';
@@ -27,14 +26,16 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 	const { siteId } = useParams<{ siteId: string }>();
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
-	const ContentSelect: React.FC<InputFieldProps> | null | undefined = useMemo(() => {
+	const ContentSelect: React.FC<ContentSelectProps> | null | undefined = useMemo(() => {
 		const fieldRegistry = formRendererConnector.api.fieldRegistry;
 
 		if (!fieldRegistry) {
 			return null;
 		}
 
-		return fieldRegistry.get('content', 'contentReference')?.component;
+		return fieldRegistry.get('content', 'contentReference')?.component as FC<
+			ContentSelectProps
+		>;
 	}, []);
 
 	switch (type) {
@@ -51,54 +52,49 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 								<ContentSelect
 									key={values.slug}
 									fieldProps={fieldProps}
-									fieldHelperProps={
-										{
-											...getFieldHelpers('slug'),
-											setInitialValue: (value: ContentModel) => {
-												setContentItemPublished(!!value?.meta.published);
-											},
-											setValue: (value: ContentModel) => {
-												setFieldValue('slug', value?.meta.slug?.nl);
+									fieldHelperProps={{
+										...getFieldHelpers('slug'),
+										setInitialValue: (value: ContentModel) => {
+											setContentItemPublished(!!value?.meta.published);
+										},
+										setValue: (value: ContentModel) => {
+											setFieldValue('slug', value?.meta.slug?.nl);
+											setFieldValue(
+												'publishStatus',
+												value?.meta.published
+													? NAV_STATUSES.PUBLISHED
+													: NAV_STATUSES.DRAFT
+											);
+											setFieldValue('externalReference', value?.uuid);
+											setContentItemPublished(!!value?.meta.published);
+
+											if (value?.meta.urlPath?.[value?.meta.lang]?.value) {
 												setFieldValue(
-													'publishStatus',
-													value?.meta.published
-														? NAV_STATUSES.PUBLISHED
-														: NAV_STATUSES.DRAFT
+													'externalUrl',
+													`${getLangSiteUrl(site, value?.meta.lang)}${
+														value?.meta.urlPath?.[value?.meta.lang]
+															?.value
+													}`
 												);
-												setFieldValue('externalReference', value?.uuid);
-												setContentItemPublished(!!value?.meta.published);
+											}
 
-												if (
-													value?.meta.urlPath?.[value?.meta.lang]?.value
-												) {
-													setFieldValue(
-														'externalUrl',
-														`${getLangSiteUrl(site, value?.meta.lang)}${
-															value?.meta.urlPath?.[value?.meta.lang]
-																?.value
-														}`
-													);
-												}
+											if (!values?.label) {
+												setFieldValue('label', value?.meta.label);
+											}
 
-												if (!values?.label) {
-													setFieldValue('label', value?.meta.label);
-												}
-
-												// This will not work until fields are returned by the content select
-												// TODO: see if we should return fields because of this
-												if (
-													!values?.description &&
-													value?.fields?.teaser?.text
-												) {
-													setFieldValue(
-														'description',
-														value.fields.teaser.text
-													);
-												}
-											},
-											// TODO: bump content module and fix type
-										} as any
-									}
+											// This will not work until fields are returned by the content select
+											// TODO: see if we should return fields because of this
+											if (
+												!values?.description &&
+												value?.fields?.teaser?.text
+											) {
+												setFieldValue(
+													'description',
+													value.fields.teaser.text
+												);
+											}
+										},
+									}}
 									fieldSchema={
 										{
 											label: 'Link',
