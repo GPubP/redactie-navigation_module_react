@@ -429,12 +429,20 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 	component: ContentDetailMenuCompartment,
 	isValid: true,
 	afterSubmit: afterSubmitMenu,
-	show: (context, settings, value, content, contentType, site) => {
+	show: (_, __, ___, ____, contentType, site) => {
+		const ctSiteNavigationConfig = (contentType?.modulesConfig || []).find(
+			config => config.name === 'navigation' && config.site
+		);
+		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
+			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
+		);
+
+		console.log('menus', ctSiteNavigationConfig?.config, siteNavigationConfig?.config);
+
 		return (
-			(site?.data?.modulesConfig || []).find(
-				(siteNavigationConfig: ModuleSettings) =>
-					siteNavigationConfig?.name === 'navigation'
-			)?.config?.allowMenus ?? false
+			ctSiteNavigationConfig?.config?.menu?.allowMenus &&
+			ctSiteNavigationConfig?.config?.menu?.allowMenus !== 'false' &&
+			siteNavigationConfig?.config?.allowMenus
 		);
 	},
 	validate: () => true,
@@ -450,19 +458,22 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	validate: () => {
 		return true;
 	},
-	show: (_, __, ___, ____, contentType) => {
-		const siteNavigationConfig = (contentType.modulesConfig || []).find(
+	show: (_, __, ___, ____, contentType, site) => {
+		const ctSiteNavigationConfig = (contentType?.modulesConfig || []).find(
 			config => config.name === 'navigation' && config.site
 		);
+		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
+			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
+		);
 
-		if (
-			!siteNavigationConfig?.config?.siteStructure ||
-			siteNavigationConfig?.config?.siteStructure?.structurePosition === PositionValues.none
-		) {
-			return false;
-		}
+		console.log('structure', ctSiteNavigationConfig?.config);
 
-		return true;
+		return (
+			ctSiteNavigationConfig?.config?.siteStructure &&
+			ctSiteNavigationConfig?.config?.siteStructure?.structurePosition !==
+				PositionValues.none &&
+			siteNavigationConfig?.config?.allowSiteStructure
+		);
 	},
 });
 
