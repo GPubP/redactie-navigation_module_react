@@ -7,7 +7,6 @@ import {
 	LoadingState,
 	SearchParams,
 	SelectOption,
-	useDetectValueChanges,
 } from '@redactie/utils';
 import { FormikErrors, FormikProps, FormikValues, setNestedObjectValues } from 'formik';
 import { isEmpty, isNil, omit } from 'ramda';
@@ -47,6 +46,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	activeLanguage,
 	site,
 	contentItem,
+	contentValue,
 	onChange,
 	contentType,
 }) => {
@@ -109,13 +109,11 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		);
 	}, [contentMenuItemsLoading, menusLoading]);
 
-	const [isChanged, resetIsChanged] = useDetectValueChanges(
-		!loading && !!menuItemDraft,
-		menuItemDraft
-	);
-
 	const resetMenuItem = (): void => {
-		const emptyMenuItem = generateEmptyNavItem(NavItemType.internal);
+		const emptyMenuItem = generateEmptyNavItem(NavItemType.internal, {
+			label: contentValue?.fields.titel?.text,
+			description: contentValue?.fields.teaser?.text,
+		});
 
 		menuItemsFacade.setMenuItem(emptyMenuItem);
 		menuItemsFacade.setMenuItemDraft(emptyMenuItem);
@@ -301,7 +299,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		menuItemsFacade.setPendingMenuItems(pending);
 		onContentChange(pending);
 		resetMenuItem();
-		resetIsChanged();
 		setShowModal(false);
 	};
 
@@ -350,7 +347,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		}
 		onContentChange(pending);
 		resetMenuItem();
-		resetIsChanged();
 	};
 
 	const hasChildren = (items: MenuItem[], id: number): boolean => {
@@ -496,7 +492,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				menu={(menu as unknown) as NavTree}
 				menuItemDraft={menuItemDraft || ({} as NavItem)}
 				menuItems={menuItems || []}
-				isChanged={isChanged}
 				loading={loading}
 				onSave={() => onSave()}
 				onChange={onChangeForm}
