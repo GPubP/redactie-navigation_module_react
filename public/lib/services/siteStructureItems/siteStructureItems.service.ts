@@ -30,6 +30,13 @@ export class SiteStructureItemsApiService {
 			.json();
 	}
 
+	public async getContentSiteStructurePrimaryItem(
+		siteId: string,
+		contentId: string
+	): Promise<SiteStructureItem> {
+		return api.get(`${siteId}/content/${contentId}/site-structure-primary-item`).json();
+	}
+
 	public async getSubset(
 		siteId: string,
 		siteStructureId: string,

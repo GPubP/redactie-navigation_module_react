@@ -28,5 +28,5 @@ export const getCTStructureConfig = (
 		return {};
 	}
 
-	return config?.config?.sitestructuur;
+	return config?.config?.siteStructure;
 };

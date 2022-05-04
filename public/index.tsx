@@ -23,7 +23,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { ContentDetailNavigationStructureCompartment } from './lib/components/ContentDetailNavigationStructureCompartment';
+import { ContentDetailSiteStructureCompartment } from './lib/components/ContentDetailSiteStructureCompartment';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
@@ -33,6 +33,7 @@ import { isEmpty } from './lib/helpers';
 import {
 	afterSubmitMenu,
 	afterSubmitNavigation,
+	afterSubmitSiteStructure,
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
@@ -439,19 +440,15 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 	validate: () => true,
 });
 
-contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`, {
 	label: 'Sitestructuur',
 	module: CONFIG.module,
-	component: ContentDetailNavigationStructureCompartment,
+	component: ContentDetailSiteStructureCompartment,
 	isValid: false,
+	afterSubmit: afterSubmitSiteStructure,
+	// TODO: fix validation
 	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
-		const navModuleValue = values.modulesData?.navigation || {};
-
-		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
-			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
-		}
-
-		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		return true;
 	},
 	show: (_, __, ___, ____, contentType) => {
 		const siteNavigationConfig = (contentType.modulesConfig || []).find(
@@ -460,7 +457,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstru
 
 		if (
 			!siteNavigationConfig ||
-			siteNavigationConfig?.config?.sitestructuur?.structurePosition === PositionValues.none
+			siteNavigationConfig?.config?.siteStructure?.structurePosition === PositionValues.none
 		) {
 			return false;
 		}

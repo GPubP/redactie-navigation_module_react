@@ -56,7 +56,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	);
 	const [hasSiteStructureChanges, resetSiteStructureChangeDetection] = useDetectValueChanges(
 		!isLoading,
-		formValue.sitestructuur
+		formValue.siteStructure
 	);
 	const [hasChanges, resetHasChanges] = useDetectValueChanges(!isLoading, formValue);
 	const { generatePath } = useNavigate(SITES_ROOT);
@@ -167,7 +167,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 					externalReference: contentType.uuid,
 					logicalId: '',
 					items: [],
-					parentId: itemInfo.position.slice(-1)[0],
+					parentId: itemInfo.position,
 					properties: {
 						type: NavItemType.contentType,
 					},

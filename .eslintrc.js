@@ -1,12 +1,6 @@
 module.exports = {
 	parser: '@typescript-eslint/parser',
-	plugins: [
-		'@typescript-eslint',
-		'react',
-		'import',
-		'react-hooks',
-		'prettier',
-	],
+	plugins: ['@typescript-eslint', 'react', 'import', 'react-hooks', 'prettier'],
 	extends: [
 		'eslint:recommended',
 		'plugin:react/recommended',
@@ -33,6 +27,8 @@ module.exports = {
 		],
 		'@typescript-eslint/no-var-requires': 0,
 		'@typescript-eslint/no-explicit-any': 0,
+		'@typescript-eslint/no-non-null-assertion': 0,
+		'@typescript-eslint/no-non-null-asserted-optional-chain': 0,
 		'react/self-closing-comp': 'warn',
 		'react-hooks/rules-of-hooks': 'error',
 		'react-hooks/exhaustive-deps': 'warn',
