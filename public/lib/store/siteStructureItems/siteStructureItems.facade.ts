@@ -27,6 +27,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 	public readonly siteStructureItemDraft$ = this.query.siteStructureItemDraft$;
 	public readonly pendingSiteStructureItem$ = this.query.pendingSiteStructureItem$;
 	public readonly contentTypeSiteStructureItems$ = this.query.contentTypeSiteStructureItems$;
+	public readonly pendingSiteStructureItemSync = this.query.pendingSiteStructureItemSync;
 
 	public getSiteStructureItems(siteId: string, menuId: string, searchParams: SearchParams): void {
 		const { isFetching } = this.query.getValue();

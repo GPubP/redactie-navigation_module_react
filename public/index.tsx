@@ -36,9 +36,11 @@ import {
 	afterSubmitSiteStructure,
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
+import { SITE_STRUCTURE_VALIDATION_SCHEMA } from './lib/helpers/contentCompartmentHooks/beforeAfterSubmit.const';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, CtTypes, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
+import { siteStructureItemsFacade } from './lib/store/siteStructureItems';
 import {
 	MenuCreate,
 	MenuDetailSettings,
@@ -454,7 +456,18 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	afterSubmit: afterSubmitSiteStructure,
 	// TODO: fix validation
 	validate: () => {
-		return true;
+		const pendingSiteStructureItem = siteStructureItemsFacade.pendingSiteStructureItemSync();
+
+		if (!pendingSiteStructureItem || !Object.keys(pendingSiteStructureItem).length) {
+			return true;
+		}
+
+		try {
+			SITE_STRUCTURE_VALIDATION_SCHEMA.validateSync(pendingSiteStructureItem);
+			return true;
+		} catch {
+			return false;
+		}
 	},
 	show: (_, __, ___, ____, contentType, site) => {
 		const ctSiteNavigationConfig = (contentType?.modulesConfig || []).find(
