@@ -16,6 +16,10 @@ class ContentTypeConnector {
 	public registerCTDetailTab(key: string, options: ExternalTabOptions): void | false {
 		return this.api.registerCTDetailTab(key, options);
 	}
+
+	public get contentTypeService(): ContentTypeAPI['store']['contentTypes']['service'] {
+		return this.api.store.contentTypes.service;
+	}
 }
 
 const contentTypeConnector = new ContentTypeConnector();

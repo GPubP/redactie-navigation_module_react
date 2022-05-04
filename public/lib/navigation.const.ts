@@ -33,6 +33,8 @@ export const MODULE_PATHS = {
 	site: {
 		contentTypes: `${SITE_ROOT}/:ctType(content-types|content-blokken)`,
 		contentDetail: `${SITE_ROOT}/content/content-types/:contentTypeId/content/:contentId`,
+		contentOverview: `${SITE_ROOT}/content/overzicht`,
+		contentTypeDetailSiteStructureTab: `${SITE_ROOT}/content-types/:contentTypeId/navigation/sitestructuur`,
 		explicitContentTypes: `${SITE_ROOT}/content-types`,
 		admin: `${SITE_ROOT}/content/overzicht`,
 		dashboard: `${SITE_ROOT}/content`,

@@ -18,6 +18,18 @@ export class SiteStructureItemsApiService {
 			.json();
 	}
 
+	public async getContentTypeSiteStructureItems(
+		siteId: string,
+		contentTypeId: string,
+		searchParams: SearchParams
+	): Promise<SiteStructureItemsResponse> {
+		return api
+			.get(`${siteId}/content-types/${contentTypeId}/site-structure-items`, {
+				searchParams,
+			})
+			.json();
+	}
+
 	public async getSubset(
 		siteId: string,
 		siteStructureId: string,
