@@ -6,6 +6,7 @@ import {
 	DataLoader,
 	LoadingState,
 	SearchParams,
+	SelectOption,
 	useDetectValueChanges,
 } from '@redactie/utils';
 import { FormikErrors, FormikProps, FormikValues, setNestedObjectValues } from 'formik';
@@ -47,6 +48,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	site,
 	contentItem,
 	onChange,
+	contentType,
 }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
@@ -63,17 +65,42 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const [pendingMenuItems] = usePendingMenuItems();
 	const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 	const [parentChanged, setParentChanged] = useState<boolean>(false);
+	const ctSiteNavigationConfig = useMemo(
+		() =>
+			(contentType?.modulesConfig || []).find(
+				config => config.name === 'navigation' && config.site
+			),
+		[contentType.modulesConfig]
+	);
 
 	const menuOptions = useMemo(() => {
-		if (!menus) {
+		if (!Array.isArray(menus)) {
 			return [];
 		}
 
-		return menus.map(menu => ({
-			label: menu.label,
-			value: `${menu.id}`,
-		}));
-	}, [menus]);
+		return menus.reduce((acc, menu) => {
+			if (
+				!activeLanguage ||
+				(ctSiteNavigationConfig?.config?.menu?.allowedMenus &&
+					!Array.isArray(
+						ctSiteNavigationConfig?.config?.menu?.allowedMenus[activeLanguage]
+					)) ||
+				!ctSiteNavigationConfig?.config?.menu?.allowedMenus[activeLanguage].includes(
+					menu.id
+				)
+			) {
+				return acc;
+			}
+
+			return [
+				...acc,
+				{
+					label: menu.label,
+					value: `${menu.id}`,
+				},
+			];
+		}, [] as SelectOption[]);
+	}, [activeLanguage, ctSiteNavigationConfig, menus]);
 
 	const loading = useMemo(() => {
 		return (
