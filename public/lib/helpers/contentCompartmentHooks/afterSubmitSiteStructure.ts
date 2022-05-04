@@ -1,9 +1,10 @@
 import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
-import { pathOr } from 'ramda';
+import { isEmpty, omit, pathOr } from 'ramda';
 import { take } from 'rxjs/operators';
 
+import { NAV_STATUSES } from '../../components';
 import { ALERT_CONTAINER_IDS, CONFIG, PositionValues } from '../../navigation.const';
-import { NavItemType } from '../../navigation.types';
+import { ContentStatus, NavItem } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
 /**
@@ -13,74 +14,79 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
  */
 const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	error,
-	contentItemDraft,
-	contentType,
 	contentItem,
+	contentType,
+	prevContentItem,
 	site
 ): Promise<void> => {
 	const modulesConfig = contentType.modulesConfig?.find(
 		config => config.site === site?.uuid && config.name === CONFIG.name
 	);
+
 	const editablePosition = pathOr(false, ['config', 'siteStructure', 'editablePosition'])(
 		modulesConfig
 	);
+
 	const structurePosition = pathOr(PositionValues.none, [
 		'config',
 		'siteStructure',
 		'structurePosition',
 	])(modulesConfig);
+
 	const isEditable =
 		(structurePosition === PositionValues.limited && editablePosition) ||
 		structurePosition === PositionValues.unlimited;
 
 	if (!isEditable) {
-		return;
+		return Promise.resolve();
 	}
 
 	const pendingSiteStructureItem = await siteStructureItemsFacade.pendingSiteStructureItem$
 		.pipe(take(1))
 		.toPromise();
 
-	console.log(contentItem);
+	if (isEmpty(pendingSiteStructureItem)) {
+		return Promise.resolve();
+	}
 
-	// TODO: sync status met CI
-	console.log({
-		description: pendingSiteStructureItem?.description!,
-		label: pendingSiteStructureItem?.label!,
-		parentId: pendingSiteStructureItem?.position.slice(-1)[0],
-		publishStatus: 'published',
-		slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
-		externalUrl: '',
-		externalReference: contentItem?.uuid,
-		logicalId: '',
-		items: [],
-		properties: {
-			type: NavItemType.primary,
+	const contentIsPublished = !!(
+		contentItem?.meta.status === ContentStatus.PUBLISHED &&
+		prevContentItem?.meta.status !== ContentStatus.PUBLISHED
+	);
+
+	const contentIsArchived = !!(
+		contentItem?.meta.status === ContentStatus.UNPUBLISHED &&
+		prevContentItem?.meta.status !== ContentStatus.UNPUBLISHED
+	);
+
+	if (pendingSiteStructureItem?.id) {
+		await siteStructureItemsFacade.updateSiteStructureItem(
+			site?.uuid!,
+			`${pendingSiteStructureItem?.treeId}`,
+			omit(['weight'], pendingSiteStructureItem) as NavItem,
+			ALERT_CONTAINER_IDS.siteStructureItemsOverview
+		);
+		return Promise.resolve();
+	}
+
+	await siteStructureItemsFacade.createSiteStructureItem(
+		site?.uuid!,
+		`${pendingSiteStructureItem?.treeId}`,
+		{
+			...(omit(['weight'], pendingSiteStructureItem) as NavItem),
+			slug: contentItem.meta.slug[contentItem.meta.lang],
+			externalReference: contentItem.uuid,
+			// TODO: fix types
+			externalUrl: (site?.data.url as any)[contentItem.meta.lang],
+			...(contentIsPublished && {
+				publishStatus: NAV_STATUSES.PUBLISHED,
+			}),
+			...(contentIsArchived && {
+				publishStatus: NAV_STATUSES.ARCHIVED,
+			}),
 		},
-	});
-
-	// await siteStructureItemsFacade
-	// 	.createSiteStructureItem(
-	// 		site?.uuid!,
-	// 		`${pendingSiteStructureItem?.treeId}`,
-	// 		{
-	// 			description: pendingSiteStructureItem?.description!,
-	// 			label: pendingSiteStructureItem?.label!,
-	// 			parentId: pendingSiteStructureItem?.position.slice(-1)[0],
-	// 			publishStatus: 'published',
-	// 			slug: pathOr('', ['meta', 'safeLabel'])(contentItem),
-	// 			externalUrl: '',
-	// 			externalReference: contentType.uuid,
-	// 			logicalId: '',
-	// 			items: [],
-	// 			properties: {
-	// 				type: NavItemType.primary,
-	// 			},
-	// 		},
-	// 		ALERT_CONTAINER_IDS.siteStructureItemsOverview
-	// 	)
-	// 	// eslint-disable-next-line @typescript-eslint/no-empty-function
-	// 	.then(() => {});
+		ALERT_CONTAINER_IDS.siteStructureItemsOverview
+	);
 };
 
 export default afterSubmitSiteStructure;

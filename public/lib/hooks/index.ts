@@ -17,3 +17,4 @@ export * from './useSiteStructureItemDraft';
 export * from './usePendingMenuItems';
 export * from './useContentMenuItems';
 export * from './useContentTypeSiteStructureItems';
+export * from './usePendingSiteStructureItem';

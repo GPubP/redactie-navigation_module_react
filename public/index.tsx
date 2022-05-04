@@ -440,7 +440,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 	validate: () => true,
 });
 
-contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`, {
 	label: 'Sitestructuur',
 	module: CONFIG.module,
 	component: ContentDetailSiteStructureCompartment,

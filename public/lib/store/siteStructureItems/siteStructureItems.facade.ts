@@ -5,7 +5,7 @@ import { take } from 'rxjs/operators';
 import { buildSubset } from '../../helpers';
 import { rearrangeItems } from '../../helpers/rearrangeItems';
 import { ALERT_CONTAINER_IDS } from '../../navigation.const';
-import { RearrangeNavItem } from '../../navigation.types';
+import { NavItem, RearrangeNavItem } from '../../navigation.types';
 import {
 	SiteStructureItem,
 	SiteStructureItemsApiService,
@@ -14,7 +14,6 @@ import {
 } from '../../services/siteStructureItems';
 
 import { getAlertMessages } from './siteStructureItems.messages';
-import { PendingSiteStructureItem } from './siteStructureItems.model';
 import { siteStructureItemsQuery, SiteStructureItemsQuery } from './siteStructureItems.query';
 import { siteStructureItemsStore, SiteStructureItemsStore } from './siteStructureItems.store';
 
@@ -381,7 +380,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		});
 	}
 
-	public setPendingSiteStructureItem(pendingSiteStructureItem: PendingSiteStructureItem): void {
+	public setPendingSiteStructureItem(pendingSiteStructureItem: NavItem): void {
 		this.store.update({
 			pendingSiteStructureItem,
 		});

@@ -7,17 +7,23 @@ import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
-import { findPosition, getCTStructureConfig, getTreeConfig } from '../../helpers';
+import {
+	findPosition,
+	generateEmptyNavItem,
+	getCTStructureConfig,
+	getTreeConfig,
+} from '../../helpers';
 import {
 	useContentTypeSiteStructureItems,
+	usePendingSiteStructure,
 	useSiteStructure,
 	useSiteStructureItem,
 } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
-import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
-import { PendingSiteStructureItem, siteStructureItemsFacade } from '../../store/siteStructureItems';
+import { CascaderOption, NavItem, NavItemType, NavTree } from '../../navigation.types';
+import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
 
 import StructureCascader from './StructureCascader';
@@ -38,6 +44,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	const { siteStructure, fetchingState: siteStructureLoadingState } = useSiteStructure();
 	const [siteStructuresLoadingState, siteStructures] = useSiteStructures();
 	const [, contentTypeSiteStructureItems] = useContentTypeSiteStructureItems();
+	const [pendingSiteStructureItem] = usePendingSiteStructure();
 	const {
 		siteStructureItem,
 		fetchingState: siteStructureItemLoadingState,
@@ -59,9 +66,9 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		() =>
 			getTreeConfig<NavTree, NavItem>(
 				(siteStructure as unknown) as NavTree,
-				siteStructure?.id as number
+				siteStructureItem?.id as number
 			),
-		[siteStructure]
+		[siteStructure, siteStructureItem]
 	);
 
 	const initialFormValue = useMemo(() => {
@@ -72,7 +79,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		return {
 			label: siteStructureItem?.label || contentValue?.fields.titel?.text || '',
 			description: siteStructureItem?.description || contentValue?.fields.teaser?.text || '',
-			treeId: siteStructureItem?.treeId || siteStructureForLang?.id,
 			position:
 				!isNil(siteStructureItem?.parentId) && treeConfig.options.length > 0
 					? findPosition(treeConfig.options, siteStructureItem?.parentId)
@@ -116,13 +122,33 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		}
 
 		siteStructureItemsFacade.getContentSiteStructurePrimaryItem(siteId, contentItem?.uuid);
-	}, [contentItem, siteId]);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [siteId]);
+
+	useEffect(() => {
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			siteStructureItem ? siteStructureItem : generateEmptyNavItem(NavItemType.primary)
+		);
+
+		return () => {
+			siteStructureItemsFacade.unsetPendingSiteStructureItem();
+		};
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [siteStructureItem]);
 
 	/**
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
-		siteStructureItemsFacade.setPendingSiteStructureItem(values as PendingSiteStructureItem);
+		siteStructureItemsFacade.setPendingSiteStructureItem({
+			...(pendingSiteStructureItem as NavItem),
+			...(!pendingSiteStructureItem?.treeId && {
+				treeId: siteStructureForLang?.id,
+			}),
+			label: values.label,
+			description: values.description,
+			parentId: values.position.slice(-1)[0],
+		});
 		onChange(values);
 	};
 
