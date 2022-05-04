@@ -41,13 +41,9 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		return Promise.resolve();
 	}
 
-	console.log('pending');
-
 	const pendingSiteStructureItem = await siteStructureItemsFacade.pendingSiteStructureItem$
 		.pipe(take(1))
 		.toPromise();
-
-	console.log('done');
 
 	if (isEmpty(pendingSiteStructureItem)) {
 		return Promise.resolve();
