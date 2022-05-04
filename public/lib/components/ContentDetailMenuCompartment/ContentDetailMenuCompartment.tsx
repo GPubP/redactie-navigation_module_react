@@ -102,7 +102,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 
 	const onShowEdit = async (
 		menuItem: Omit<MenuItem, 'id'> & { id?: string | number },
-		menuId: string
+		menuId: string,
+		newItem: boolean
 	): Promise<void> => {
 		if (!site) {
 			return;
@@ -111,8 +112,12 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		setSelectedMenuId(menuId);
 
 		menuItemsFacade.getSubset(site?.uuid, menuId, menuItem?.parentId, 1);
-		menuItemsFacade.setMenuItem(menuItem as MenuItem);
-		menuItemsFacade.setMenuItemDraft(menuItem as MenuItem);
+		menuItemsFacade.setMenuItem(
+			newItem ? omit(['id'], menuItem as MenuItem) : (menuItem as MenuItem)
+		);
+		menuItemsFacade.setMenuItemDraft(
+			newItem ? omit(['id'], menuItem as MenuItem) : (menuItem as MenuItem)
+		);
 
 		const id = menuItem.id?.toString() || '';
 
@@ -182,7 +187,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					menuId: menu?.id.toString() || '',
 					position: item?.parents?.length ? buildParentPath(item.parents) : 'Hoofdniveau',
 					newItem: false,
-					editMenuItem: () => onShowEdit(item, menu?.id.toString() || ''),
+					editMenuItem: () => onShowEdit(item, menu?.id.toString() || '', false),
 				};
 			})
 		);
@@ -237,7 +242,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 							position: formattedPosition,
 							newItem: false,
 							editMenuItem: () =>
-								onShowEdit(menuItemDraft, menu?.id.toString() || ''),
+								onShowEdit(menuItemDraft, menu?.id.toString() || '', false),
 						};
 					}),
 			  ])
@@ -256,7 +261,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 									id: itemUuid as string,
 									...menuItemDraft,
 								},
-								menu?.id.toString() || ''
+								menu?.id.toString() || '',
+								true
 							),
 					},
 			  ]);
