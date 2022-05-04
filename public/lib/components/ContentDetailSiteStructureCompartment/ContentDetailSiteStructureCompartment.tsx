@@ -149,10 +149,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 		siteStructureItemsFacade.setPendingSiteStructureItem(
 			siteStructureItem ? siteStructureItem : generateEmptyNavItem(NavItemType.primary)
 		);
-
-		return () => {
-			siteStructureItemsFacade.unsetPendingSiteStructureItem();
-		};
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [siteStructureItem]);
 
