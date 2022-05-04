@@ -13,6 +13,10 @@ class ContentTypeConnector {
 		return this.api.store.metadata.facade;
 	}
 
+	public get contentTypesFacade(): ContentTypeAPI['store']['contentTypes']['facade'] {
+		return this.api.store.contentTypes.facade;
+	}
+
 	public registerCTDetailTab(key: string, options: ExternalTabOptions): void | false {
 		return this.api.registerCTDetailTab(key, options);
 	}

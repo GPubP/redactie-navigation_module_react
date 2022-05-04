@@ -66,6 +66,7 @@ export class SiteStructuresFacade extends BaseEntityFacade<
 
 	public getSiteStructure(siteId: string, uuid: string): void {
 		const { isFetchingOne } = this.query.getValue();
+
 		if (isFetchingOne) {
 			return;
 		}
