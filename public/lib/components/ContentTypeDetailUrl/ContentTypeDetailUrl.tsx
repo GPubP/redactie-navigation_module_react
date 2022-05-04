@@ -81,7 +81,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 			</div>
 			<FormikMultilanguageField
 				asComponent={TextField}
-				disabled={!navigationRights.updateUrlPattern}
+				disabled={siteId && !navigationRights.updateUrlPattern}
 				label="Patroon"
 				name="url.urlPattern"
 				placeholder="Geef een url patroon op"
