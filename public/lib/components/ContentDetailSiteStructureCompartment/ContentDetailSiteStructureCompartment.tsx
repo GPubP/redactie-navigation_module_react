@@ -76,14 +76,34 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			return;
 		}
 
-		return {
-			label: siteStructureItem?.label || contentValue?.fields.titel?.text || '',
-			description: siteStructureItem?.description || contentValue?.fields.teaser?.text || '',
+		const formValue = {
+			label:
+				pendingSiteStructureItem?.label ||
+				siteStructureItem?.label ||
+				contentValue?.fields.titel?.text ||
+				'',
+			description:
+				pendingSiteStructureItem?.description ||
+				siteStructureItem?.description ||
+				contentValue?.fields.teaser?.text ||
+				'',
 			position:
 				!isNil(siteStructureItem?.parentId) && treeConfig.options.length > 0
 					? findPosition(treeConfig.options, siteStructureItem?.parentId)
 					: [],
 		};
+
+		siteStructureItemsFacade.setPendingSiteStructureItem({
+			...(pendingSiteStructureItem as NavItem),
+			...(!pendingSiteStructureItem?.treeId && {
+				treeId: siteStructureForLang?.id,
+			}),
+			label: formValue.label,
+			description: formValue.description,
+			parentId: formValue.position?.slice(-1)[0],
+		});
+
+		return formValue;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [siteStructureItem, treeConfig.options, siteStructureForLang, initialLoading]);
 
@@ -197,6 +217,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 									contentTypeSiteStructureItems={contentTypeSiteStructureItems}
 									treeConfig={treeConfig}
 									siteStructure={siteStructure}
+									siteStructureItem={siteStructureItem}
 								/>
 								{(CTStructureConfig?.structurePosition !== PositionValues.limited ||
 									(CTStructureConfig?.structurePosition ===
