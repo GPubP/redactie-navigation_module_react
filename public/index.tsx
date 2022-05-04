@@ -407,7 +407,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (context, settings) => {
+	show: (_, settings) => {
 		let securityRights: string[] = [];
 
 		rolesRightsConnector.api.store.mySecurityRights.query
