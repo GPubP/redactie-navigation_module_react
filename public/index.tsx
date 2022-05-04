@@ -37,7 +37,7 @@ import {
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
 import { registerTranslations } from './lib/i18next';
-import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
+import { CONFIG, CtTypes, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
 import {
 	MenuCreate,
@@ -518,12 +518,13 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	show: context => context.isActive,
+	show: context => context.ctType === CtTypes.contentTypes,
 	disabled: context =>
-		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
-			rolesRightsConnector.securityRights.read,
-		]) ||
-		context.contentType?.meta?.canBeFiltered === false,
+		(context.site &&
+			!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+				rolesRightsConnector.securityRights.read,
+			])) ||
+		context.ctType !== CtTypes.contentTypes,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {
