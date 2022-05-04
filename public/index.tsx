@@ -444,7 +444,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	label: 'Sitestructuur',
 	module: CONFIG.module,
 	component: ContentDetailSiteStructureCompartment,
-	isValid: false,
+	isValid: true,
 	afterSubmit: afterSubmitSiteStructure,
 	// TODO: fix validation
 	validate: () => {

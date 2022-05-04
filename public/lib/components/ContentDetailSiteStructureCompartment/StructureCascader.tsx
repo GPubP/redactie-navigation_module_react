@@ -27,6 +27,7 @@ const StructureCascader = ({
 	treeConfig,
 	siteStructure,
 	placeholder,
+	siteStructureItem,
 }: {
 	label: string;
 	state: any;
@@ -41,6 +42,7 @@ const StructureCascader = ({
 	PositionValues: PositionValues;
 	siteStructure: SiteStructure;
 	placeholder: string;
+	siteStructureItem: NavItem | undefined;
 }): React.ReactElement => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
@@ -91,9 +93,11 @@ const StructureCascader = ({
 			return;
 		}
 
+		const parentId = siteStructureItem?.parentId || CTStructureConfig?.position[activeLanguage];
+
 		const val =
-			!isNil(CTStructureConfig?.position[activeLanguage]) && treeConfig.options.length > 0
-				? findPosition(treeConfig.options, CTStructureConfig.position[activeLanguage])
+			!isNil(parentId) && treeConfig.options.length > 0
+				? findPosition(treeConfig.options, parentId)
 				: [];
 
 		setInitialValue(val);
@@ -109,6 +113,7 @@ const StructureCascader = ({
 		isLimitedAndNotEditable,
 		setFieldValue,
 		siteStructure,
+		siteStructureItem,
 		treeConfig.options,
 	]);
 
