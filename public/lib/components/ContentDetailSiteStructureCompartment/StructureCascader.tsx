@@ -2,11 +2,12 @@ import { Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { pathOr, propOr } from 'ramda';
+import { isNil, pathOr, propOr } from 'ramda';
 import React, { useEffect, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import {
+	findPosition,
 	getAvailableSiteStructureOptions,
 	getPositionInputValue,
 	getTreeConfig,
@@ -23,7 +24,6 @@ const StructureCascader = ({
 	activeLanguage,
 	value,
 	CTStructureConfig,
-	contentTypeSiteStructureItems,
 	treeConfig,
 	siteStructure,
 	placeholder,
@@ -33,8 +33,7 @@ const StructureCascader = ({
 	required: boolean;
 	activeLanguage: string;
 	value: number[];
-	CTStructureConfig: { [key: string]: unknown };
-	contentTypeSiteStructureItems: NavItem[];
+	CTStructureConfig: { [key: string]: any };
 	treeConfig: {
 		options: CascaderOption[];
 		activeItem: NavItem | undefined;
@@ -88,19 +87,14 @@ const StructureCascader = ({
 			: value) || initialValue;
 
 	useEffect(() => {
-		if (!contentTypeSiteStructureItems?.length || !siteStructure) {
+		if (!siteStructure) {
 			return;
 		}
 
-		const itemForLang = contentTypeSiteStructureItems.find(
-			item => item.treeId === siteStructure.id
-		);
-
-		if (!itemForLang) {
-			return;
-		}
-
-		const val = (itemForLang.parents || []).map(parent => parent.id!);
+		const val =
+			!isNil(CTStructureConfig?.position[activeLanguage]) && treeConfig.options.length > 0
+				? findPosition(treeConfig.options, CTStructureConfig.position[activeLanguage])
+				: [];
 
 		setInitialValue(val);
 
@@ -110,11 +104,12 @@ const StructureCascader = ({
 
 		setFieldValue('position', val);
 	}, [
+		CTStructureConfig,
 		activeLanguage,
-		contentTypeSiteStructureItems,
-		siteStructure,
 		isLimitedAndNotEditable,
 		setFieldValue,
+		siteStructure,
+		treeConfig.options,
 	]);
 
 	const handlePositionOnChange = (value: number[]): void => {

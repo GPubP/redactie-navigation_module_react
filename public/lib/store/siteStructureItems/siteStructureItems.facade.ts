@@ -219,6 +219,7 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				}
 
 				this.store.update({
+					siteStructureItem: response,
 					isCreating: false,
 				});
 
