@@ -198,8 +198,8 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 									treeConfig={treeConfig}
 									siteStructure={siteStructure}
 								/>
-								{(CTStructureConfig.position !== PositionValues.limited ||
-									CTStructureConfig.editablePosition) && (
+								{(CTStructureConfig?.position !== PositionValues.limited ||
+									CTStructureConfig?.editablePosition) && (
 									<>
 										<div className="a-input has-icon-right u-margin-bottom">
 											<Field
