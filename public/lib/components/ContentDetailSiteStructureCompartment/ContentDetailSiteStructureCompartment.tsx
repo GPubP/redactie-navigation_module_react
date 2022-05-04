@@ -147,7 +147,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			}),
 			label: values.label,
 			description: values.description,
-			parentId: values.position.slice(-1)[0],
+			parentId: values.position?.slice(-1)[0],
 		});
 		onChange(values);
 	};
