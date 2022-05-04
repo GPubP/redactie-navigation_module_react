@@ -8,9 +8,10 @@ import {
 } from '@redactie/utils';
 import classNames from 'classnames';
 import { Field, FormikValues, useFormikContext } from 'formik';
-import { isNil, pathOr } from 'ramda';
-import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from 'react';
+import { isEmpty, isNil, pathOr } from 'ramda';
+import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
+import languagesConnector from '../../connectors/languages';
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { findPosition, getPositionInputValue, getTreeConfig } from '../../helpers';
@@ -19,22 +20,55 @@ import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
-import { SiteStructure } from '../../services/siteStructures';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
 
 const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentType }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const { values, setFieldValue } = useFormikContext<FormikValues>();
+	const { values, setFieldValue, touched } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
-	const [, contentTypeSiteStructureItems] = useContentTypeSiteStructureItems();
+	const [
+		contentTypeSiteStructureItemsLoading,
+		contentTypeSiteStructureItems,
+	] = useContentTypeSiteStructureItems();
 	const [site] = sitesConnector.hooks.useSite(siteId);
-	const [siteStructureForLang, setSiteStructureForLang] = useState<SiteStructure | null>(null);
+	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
+	const [initFields, setInitFields] = useState(false);
+	const prevLangSiteStructure = useRef<number | undefined>();
 	const siteStructureItem = useMemo(() => {
 		return contentTypeSiteStructureItems?.find(item => item.treeId === siteStructure?.id);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contentTypeSiteStructureItems, siteStructure]);
+	const [siteStructurePosition, setSiteStructurePosition] = useState<Record<string, number[]>>(
+		{}
+	);
+
+	useEffect(() => {
+		if (
+			initFields ||
+			!languages?.length ||
+			!siteStructures?.length ||
+			contentTypeSiteStructureItemsLoading !== LoadingState.Loaded ||
+			isEmpty(touched)
+		) {
+			return;
+		}
+
+		(languages || [])?.forEach(lang => {
+			const langSiteStructure = (siteStructures || []).find(i => i.lang === lang.key);
+			const langSiteStructureItem = contentTypeSiteStructureItems?.find(
+				item => item.treeId === langSiteStructure?.id
+			);
+
+			setFieldValue(`pendingCTSiteStructure.${lang.key}.treeId`, langSiteStructure?.id);
+			setFieldValue(`pendingCTSiteStructure.${lang.key}.itemId`, langSiteStructureItem?.id);
+		});
+
+		setInitFields(true);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [languages, contentTypeSiteStructureItems, siteStructures, touched]);
 
 	useEffect(() => {
 		if (!siteId || !site?.data.name || !activeLanguage) {
@@ -49,19 +83,18 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 			return;
 		}
 
-		setSiteStructureForLang(siteStructures.find(i => i.lang === activeLanguage.key) || null);
-	}, [activeLanguage, siteId, siteStructures]);
+		const langSiteStructure = siteStructures.find(i => i.lang === activeLanguage.key) || null;
 
-	useEffect(() => {
-		if (!siteStructureForLang) {
-			return;
+		if (langSiteStructure && langSiteStructure?.id !== prevLangSiteStructure.current) {
+			siteStructuresFacade.getSiteStructure(
+				siteId,
+				(langSiteStructure?.id as unknown) as string
+			);
+			prevLangSiteStructure.current = langSiteStructure?.id;
 		}
 
-		siteStructuresFacade.getSiteStructure(
-			siteId,
-			(siteStructureForLang?.id as unknown) as string
-		);
-	}, [siteId, siteStructureForLang]);
+		setInitFields(false);
+	}, [activeLanguage, siteId, siteStructures]);
 
 	useEffect(() => {
 		if (!contentType) {
@@ -98,55 +131,44 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 				? findPosition(treeConfig.options, parentId)
 				: [];
 
-		setFieldValue(`tempSiteStructurePosition.${activeLanguage.key}`, position);
-	}, [activeLanguage.key, contentType, setFieldValue, siteId, treeConfig]);
-
-	const setItem = (): void => {
-		if (siteStructureItem) {
-			setFieldValue(
-				`updatedSiteStructurePosition.${activeLanguage.key}.itemId`,
-				siteStructureItem.id
-			);
-			setFieldValue(
-				`updatedSiteStructurePosition.${activeLanguage.key}.position`,
-				siteStructureItem.parentId
-			);
-		}
-
-		setFieldValue(
-			`updatedSiteStructurePosition.${activeLanguage.key}.treeId`,
-			siteStructure?.id
-		);
-	};
+		setSiteStructurePosition({
+			...siteStructurePosition,
+			[activeLanguage.key]: position,
+		});
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [activeLanguage.key, contentType, siteId, treeConfig]);
 
 	const handlePositionOnChange = (value: number[]): void => {
 		const parentId = value.slice(-1)[0];
 
-		setItem();
-		setFieldValue(`tempSiteStructurePosition.${activeLanguage.key}`, value);
-		setFieldValue(`updatedSiteStructurePosition.${activeLanguage.key}.position`, parentId);
+		setSiteStructurePosition({
+			...siteStructurePosition,
+			[activeLanguage.key]: value,
+		});
+
+		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, parentId);
 		setFieldValue(`siteStructure.position.${activeLanguage.key}`, parentId);
 	};
 
 	const onEditableToggle = (e: ChangeEvent<HTMLInputElement>): void => {
 		setFieldValue('siteStructure.editablePosition', e.target.checked);
-
-		if (!e.target.checked) {
-			setItem();
-		}
 	};
 
 	const onClearInput = (e: React.SyntheticEvent): void => {
 		e.preventDefault();
 		e.stopPropagation();
-		setItem();
-		setFieldValue(`tempSiteStructurePosition.${activeLanguage.key}`, []);
-		setFieldValue(`updatedSiteStructurePosition.${activeLanguage.key}.position`, null);
+
+		setSiteStructurePosition({
+			...siteStructurePosition,
+			[activeLanguage.key]: [],
+		});
+		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, null);
 		setFieldValue(`siteStructure.position.${activeLanguage.key}`, null);
 	};
 
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
-		const value = pathOr([], ['tempSiteStructurePosition', activeLanguage.key])(values);
+		const value = siteStructurePosition[activeLanguage.key] || [];
+
 		const disabled =
 			!treeConfig.options.length ||
 			loadingState === LoadingState.Loading ||
