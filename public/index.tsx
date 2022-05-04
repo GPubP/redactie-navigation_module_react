@@ -447,7 +447,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	isValid: false,
 	afterSubmit: afterSubmitSiteStructure,
 	// TODO: fix validation
-	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
+	validate: () => {
 		return true;
 	},
 	show: (_, __, ___, ____, contentType) => {
@@ -456,7 +456,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 		);
 
 		if (
-			!siteNavigationConfig ||
+			!siteNavigationConfig?.config?.siteStructure ||
 			siteNavigationConfig?.config?.siteStructure?.structurePosition === PositionValues.none
 		) {
 			return false;
