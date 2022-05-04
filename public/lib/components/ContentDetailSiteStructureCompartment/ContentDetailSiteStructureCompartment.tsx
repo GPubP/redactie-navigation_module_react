@@ -1,7 +1,13 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CardBody, Textarea, TextField } from '@acpaas-ui/react-components';
 import { CompartmentProps } from '@redactie/content-module';
-import { DataLoader, FormikOnChangeHandler, LoadingState, useSiteContext } from '@redactie/utils';
+import {
+	DataLoader,
+	ErrorMessage,
+	FormikOnChangeHandler,
+	LoadingState,
+	useSiteContext,
+} from '@redactie/utils';
 import { Field, Formik, FormikBag, FormikValues } from 'formik';
 import { isNil } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
@@ -13,6 +19,7 @@ import {
 	getCTStructureConfig,
 	getTreeConfig,
 } from '../../helpers';
+import { SITE_STRUCTURE_VALIDATION_SCHEMA } from '../../helpers/contentCompartmentHooks/beforeAfterSubmit.const';
 import {
 	useContentTypeSiteStructureItems,
 	usePendingSiteStructure,
@@ -184,6 +191,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 					formikRef && formikRef(instance);
 				}}
 				enableReinitialize
+				validationSchema={SITE_STRUCTURE_VALIDATION_SCHEMA}
 				initialValues={initialFormValue}
 				onSubmit={() => undefined}
 			>
@@ -236,6 +244,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 													MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_LABEL_HINT
 												)}
 											</small>
+											<ErrorMessage name="label" />
 										</div>
 										<div className="a-input has-icon-right">
 											<Field
@@ -253,6 +262,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 													MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_DESCRIPTION_HINT
 												)}
 											</small>
+											<ErrorMessage name="description" />
 										</div>
 									</>
 								)}
