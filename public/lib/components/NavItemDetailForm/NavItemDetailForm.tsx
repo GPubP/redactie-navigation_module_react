@@ -60,7 +60,6 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 			return undefined;
 		}
 
-		setContentItemPublished(navItem.publishStatus === NAV_STATUSES.PUBLISHED);
 		return getInitialNavItemsFormValues(navItem, treeConfig.options);
 	}, [navItem, treeConfig]);
 
