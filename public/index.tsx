@@ -437,8 +437,6 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
 		);
 
-		console.log('menus', ctSiteNavigationConfig?.config, siteNavigationConfig?.config);
-
 		return (
 			ctSiteNavigationConfig?.config?.menu?.allowMenus &&
 			ctSiteNavigationConfig?.config?.menu?.allowMenus !== 'false' &&
@@ -465,8 +463,6 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
 			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
 		);
-
-		console.log('structure', ctSiteNavigationConfig?.config);
 
 		return (
 			ctSiteNavigationConfig?.config?.siteStructure &&
