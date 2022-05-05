@@ -23,7 +23,6 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 	menuItemDraft,
 	menuItems,
 	loading,
-	isChanged,
 	formikRef,
 	onClose,
 	onChange,
@@ -66,7 +65,7 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 							</Button>
 							<Button
 								iconLeft={loading ? 'circle-o-notch fa-spin' : null}
-								disabled={loading || !isChanged}
+								disabled={loading}
 								onClick={onSave}
 								type="success"
 							>

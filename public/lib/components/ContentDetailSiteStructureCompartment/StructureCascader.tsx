@@ -2,11 +2,12 @@ import { Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { pathOr, propOr } from 'ramda';
-import React from 'react';
+import { isNil, pathOr, propOr } from 'ramda';
+import React, { useEffect, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import {
+	findPosition,
 	getAvailableSiteStructureOptions,
 	getPositionInputValue,
 	getTreeConfig,
@@ -26,13 +27,14 @@ const StructureCascader = ({
 	treeConfig,
 	siteStructure,
 	placeholder,
+	siteStructureItem,
 }: {
 	label: string;
 	state: any;
 	required: boolean;
 	activeLanguage: string;
 	value: number[];
-	CTStructureConfig: { [key: string]: unknown };
+	CTStructureConfig: { [key: string]: any };
 	treeConfig: {
 		options: CascaderOption[];
 		activeItem: NavItem | undefined;
@@ -40,29 +42,31 @@ const StructureCascader = ({
 	PositionValues: PositionValues;
 	siteStructure: SiteStructure;
 	placeholder: string;
+	siteStructureItem: NavItem | undefined;
 }): React.ReactElement => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
-	// CT structure config = number[]
-	const ctStructureValue = pathOr([], ['position', activeLanguage])(CTStructureConfig);
+	const [initialValue, setInitialValue] = useState<number[]>([]);
+
 	// CT structure > string
-	const ctPositionValue = getPositionInputValue(treeConfig.options as any, ctStructureValue);
+	const ctPositionValue = getPositionInputValue(treeConfig.options as any, initialValue);
 	// CT structure position oneof PositionValues
 	const structurePosition = pathOr(PositionValues.none, ['structurePosition'])(CTStructureConfig);
 	// available positions after ctPositionValue = number[]
 	const availablePositions =
 		structurePosition === PositionValues.limited
-			? value && value.slice(ctStructureValue.length)
+			? value && value.slice(initialValue.length)
 			: value;
 	// available sitestructure when limited position
 	const availableLimitedSiteStructure = getAvailableSiteStructureOptions(
-		ctStructureValue,
+		initialValue,
 		siteStructure
 	);
+
 	// available sitestructure when limited position
 	const availableLimitedTreeConfig = getTreeConfig<NavTree, NavItem>(
 		(availableLimitedSiteStructure as unknown) as NavTree,
-		availableLimitedSiteStructure?.id as number
+		siteStructure?.id!
 	);
 
 	const disabled =
@@ -79,13 +83,42 @@ const StructureCascader = ({
 	// displayed value
 	const fieldValue =
 		(isLimitedAndNotEditable
-			? ctStructureValue
+			? initialValue
 			: value !== undefined && value.length > 0
 			? availablePositions
-			: value) || ctStructureValue;
+			: value) || initialValue;
+
+	useEffect(() => {
+		if (!siteStructure) {
+			return;
+		}
+
+		const parentId = siteStructureItem?.parentId || CTStructureConfig?.position[activeLanguage];
+
+		const val =
+			!isNil(parentId) && treeConfig.options.length > 0
+				? findPosition(treeConfig.options, parentId)
+				: [];
+
+		setInitialValue(val);
+
+		if (isLimitedAndNotEditable) {
+			return;
+		}
+
+		setFieldValue('position', val);
+	}, [
+		CTStructureConfig,
+		activeLanguage,
+		isLimitedAndNotEditable,
+		setFieldValue,
+		siteStructure,
+		siteStructureItem,
+		treeConfig.options,
+	]);
 
 	const handlePositionOnChange = (value: number[]): void => {
-		setFieldValue('meta.sitestructuur.position', value);
+		setFieldValue('position', value);
 	};
 
 	const renderCTStructure = (positionValue: string): React.ReactElement | null => {
@@ -126,11 +159,12 @@ const StructureCascader = ({
 							: treeConfig.options
 					}
 					disabled={disabled}
-					onChange={(value: number[]) =>
-						handlePositionOnChange(
-							isLimitedAndEditable ? [...ctStructureValue, ...value] : value
-						)
-					}
+					onChange={(value: number[]) => {
+						!isLimitedAndNotEditable &&
+							handlePositionOnChange(
+								isLimitedAndEditable ? [...initialValue, ...value] : value
+							);
+					}}
 				>
 					<div className="a-input__wrapper u-flex-item">
 						<input
@@ -165,7 +199,7 @@ const StructureCascader = ({
 										onClick={(e: React.SyntheticEvent) => {
 											e.preventDefault();
 											e.stopPropagation();
-											setFieldValue('meta.sitestructuur.position', []);
+											setFieldValue('position', []);
 										}}
 									/>
 								</span>

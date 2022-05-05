@@ -198,3 +198,8 @@ export enum LangKeys {
 export const LANG_OPTIONS = [
 	{ key: LangKeys.generic, label: 'Taalonafhankelijk (alle talen)', value: LangKeys.generic },
 ];
+
+export enum CtTypes {
+	contentTypes = 'content-types',
+	contentBlocks = 'content-blokken',
+}

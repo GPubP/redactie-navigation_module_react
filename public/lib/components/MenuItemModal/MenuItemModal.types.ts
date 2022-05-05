@@ -8,7 +8,6 @@ export interface MenuItemModalProps {
 	menu: NavTree;
 	menuItemDraft: NavItem;
 	menuItems: NavItem[];
-	isChanged: boolean;
 	loading: boolean;
 	formikRef: Ref<FormikProps<FormikValues>>;
 	onChange: (values: NavItemDetailForm) => void;

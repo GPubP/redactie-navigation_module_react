@@ -6,7 +6,7 @@ import {
 	DataLoader,
 	LoadingState,
 	SearchParams,
-	useDetectValueChanges,
+	SelectOption,
 } from '@redactie/utils';
 import { FormikErrors, FormikProps, FormikValues, setNestedObjectValues } from 'formik';
 import { isEmpty, isNil, omit } from 'ramda';
@@ -46,7 +46,9 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	activeLanguage,
 	site,
 	contentItem,
+	contentValue,
 	onChange,
+	contentType,
 }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
@@ -63,17 +65,42 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const [pendingMenuItems] = usePendingMenuItems();
 	const [expandedRows, setExpandedRows] = useState<Record<string, boolean>>({});
 	const [parentChanged, setParentChanged] = useState<boolean>(false);
+	const ctSiteNavigationConfig = useMemo(
+		() =>
+			(contentType?.modulesConfig || []).find(
+				config => config.name === 'navigation' && config.site
+			),
+		[contentType.modulesConfig]
+	);
 
 	const menuOptions = useMemo(() => {
-		if (!menus) {
+		if (!Array.isArray(menus)) {
 			return [];
 		}
 
-		return menus.map(menu => ({
-			label: menu.label,
-			value: `${menu.id}`,
-		}));
-	}, [menus]);
+		return menus.reduce((acc, menu) => {
+			if (
+				!activeLanguage ||
+				(ctSiteNavigationConfig?.config?.menu?.allowedMenus &&
+					!Array.isArray(
+						ctSiteNavigationConfig?.config?.menu?.allowedMenus[activeLanguage]
+					)) ||
+				!ctSiteNavigationConfig?.config?.menu?.allowedMenus[activeLanguage].includes(
+					menu.id
+				)
+			) {
+				return acc;
+			}
+
+			return [
+				...acc,
+				{
+					label: menu.label,
+					value: `${menu.id}`,
+				},
+			];
+		}, [] as SelectOption[]);
+	}, [activeLanguage, ctSiteNavigationConfig, menus]);
 
 	const loading = useMemo(() => {
 		return (
@@ -82,13 +109,11 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		);
 	}, [contentMenuItemsLoading, menusLoading]);
 
-	const [isChanged, resetIsChanged] = useDetectValueChanges(
-		!loading && !!menuItemDraft,
-		menuItemDraft
-	);
-
 	const resetMenuItem = (): void => {
-		const emptyMenuItem = generateEmptyNavItem(NavItemType.internal);
+		const emptyMenuItem = generateEmptyNavItem(NavItemType.internal, {
+			label: contentValue?.fields.titel?.text,
+			description: contentValue?.fields.teaser?.text,
+		});
 
 		menuItemsFacade.setMenuItem(emptyMenuItem);
 		menuItemsFacade.setMenuItemDraft(emptyMenuItem);
@@ -102,7 +127,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 
 	const onShowEdit = async (
 		menuItem: Omit<MenuItem, 'id'> & { id?: string | number },
-		menuId: string
+		menuId: string,
+		newItem: boolean
 	): Promise<void> => {
 		if (!site) {
 			return;
@@ -111,8 +137,12 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		setSelectedMenuId(menuId);
 
 		menuItemsFacade.getSubset(site?.uuid, menuId, menuItem?.parentId, 1);
-		menuItemsFacade.setMenuItem(menuItem as MenuItem);
-		menuItemsFacade.setMenuItemDraft(menuItem as MenuItem);
+		menuItemsFacade.setMenuItem(
+			newItem ? omit(['id'], menuItem as MenuItem) : (menuItem as MenuItem)
+		);
+		menuItemsFacade.setMenuItemDraft(
+			newItem ? omit(['id'], menuItem as MenuItem) : (menuItem as MenuItem)
+		);
 
 		const id = menuItem.id?.toString() || '';
 
@@ -182,7 +212,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					menuId: menu?.id.toString() || '',
 					position: item?.parents?.length ? buildParentPath(item.parents) : 'Hoofdniveau',
 					newItem: false,
-					editMenuItem: () => onShowEdit(item, menu?.id.toString() || ''),
+					editMenuItem: () => onShowEdit(item, menu?.id.toString() || '', false),
 				};
 			})
 		);
@@ -237,7 +267,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 							position: formattedPosition,
 							newItem: false,
 							editMenuItem: () =>
-								onShowEdit(menuItemDraft, menu?.id.toString() || ''),
+								onShowEdit(menuItemDraft, menu?.id.toString() || '', false),
 						};
 					}),
 			  ])
@@ -256,7 +286,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 									id: itemUuid as string,
 									...menuItemDraft,
 								},
-								menu?.id.toString() || ''
+								menu?.id.toString() || '',
+								true
 							),
 					},
 			  ]);
@@ -268,7 +299,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		menuItemsFacade.setPendingMenuItems(pending);
 		onContentChange(pending);
 		resetMenuItem();
-		resetIsChanged();
 		setShowModal(false);
 	};
 
@@ -317,7 +347,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		}
 		onContentChange(pending);
 		resetMenuItem();
-		resetIsChanged();
 	};
 
 	const hasChildren = (items: MenuItem[], id: number): boolean => {
@@ -463,7 +492,6 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				menu={(menu as unknown) as NavTree}
 				menuItemDraft={menuItemDraft || ({} as NavItem)}
 				menuItems={menuItems || []}
-				isChanged={isChanged}
 				loading={loading}
 				onSave={() => onSave()}
 				onChange={onChangeForm}

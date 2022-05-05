@@ -23,7 +23,7 @@ import {
 	MINIMAL_VALIDATION_SCHEMA,
 	VALIDATION_SCHEMA,
 } from './lib/components/ContentDetailCompartment/ContentDetailCompartment.const';
-import { ContentDetailNavigationStructureCompartment } from './lib/components/ContentDetailNavigationStructureCompartment';
+import { ContentDetailSiteStructureCompartment } from './lib/components/ContentDetailSiteStructureCompartment';
 import contentConnector from './lib/connectors/content';
 import contentTypeConnector from './lib/connectors/contentTypes';
 import rolesRightsConnector from './lib/connectors/rolesRights';
@@ -33,11 +33,14 @@ import { isEmpty } from './lib/helpers';
 import {
 	afterSubmitMenu,
 	afterSubmitNavigation,
+	afterSubmitSiteStructure,
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
+import { SITE_STRUCTURE_VALIDATION_SCHEMA } from './lib/helpers/contentCompartmentHooks/beforeAfterSubmit.const';
 import { registerTranslations } from './lib/i18next';
-import { CONFIG, MODULE_PATHS, PositionValues } from './lib/navigation.const';
+import { CONFIG, CtTypes, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
+import { siteStructureItemsFacade } from './lib/store/siteStructureItems';
 import {
 	MenuCreate,
 	MenuDetailSettings,
@@ -406,7 +409,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-url`, {
 
 		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
 	},
-	show: (context, settings) => {
+	show: (_, settings) => {
 		let securityRights: string[] = [];
 
 		rolesRightsConnector.api.store.mySecurityRights.query
@@ -428,44 +431,58 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-menu`, {
 	component: ContentDetailMenuCompartment,
 	isValid: true,
 	afterSubmit: afterSubmitMenu,
-	show: (context, settings, value, content, contentType, site) => {
+	show: (_, __, ___, ____, contentType, site) => {
+		const ctSiteNavigationConfig = (contentType?.modulesConfig || []).find(
+			config => config.name === 'navigation' && config.site
+		);
+		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
+			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
+		);
+
 		return (
-			(site?.data?.modulesConfig || []).find(
-				(siteNavigationConfig: ModuleSettings) =>
-					siteNavigationConfig?.name === 'navigation'
-			)?.config?.allowMenus ?? false
+			ctSiteNavigationConfig?.config?.menu?.allowMenus &&
+			ctSiteNavigationConfig?.config?.menu?.allowMenus !== 'false' &&
+			siteNavigationConfig?.config?.allowMenus
 		);
 	},
 	validate: () => true,
 });
 
-contentConnector.registerContentDetailCompartment(`${CONFIG.name}-navigationstructure`, {
+contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`, {
 	label: 'Sitestructuur',
 	module: CONFIG.module,
-	component: ContentDetailNavigationStructureCompartment,
-	isValid: false,
-	validate: (values: ContentSchema, activeCompartment: ContentCompartmentModel) => {
-		const navModuleValue = values.modulesData?.navigation || {};
+	component: ContentDetailSiteStructureCompartment,
+	isValid: true,
+	afterSubmit: afterSubmitSiteStructure,
+	// TODO: fix validation
+	validate: () => {
+		const pendingSiteStructureItem = siteStructureItemsFacade.pendingSiteStructureItemSync();
 
-		if (activeCompartment.name === CONFIG.name || isEmpty(navModuleValue.id)) {
-			return VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
+		if (!pendingSiteStructureItem || !Object.keys(pendingSiteStructureItem).length) {
+			return true;
 		}
 
-		return MINIMAL_VALIDATION_SCHEMA.isValidSync(values.modulesData?.navigation);
-	},
-	show: (_, __, ___, ____, contentType) => {
-		const siteNavigationConfig = (contentType.modulesConfig || []).find(
-			config => config.name === 'navigation' && config.site
-		);
-
-		if (
-			!siteNavigationConfig ||
-			siteNavigationConfig?.config?.sitestructuur?.structurePosition === PositionValues.none
-		) {
+		try {
+			SITE_STRUCTURE_VALIDATION_SCHEMA.validateSync(pendingSiteStructureItem);
+			return true;
+		} catch {
 			return false;
 		}
+	},
+	show: (_, __, ___, ____, contentType, site) => {
+		const ctSiteNavigationConfig = (contentType?.modulesConfig || []).find(
+			config => config.name === 'navigation' && config.site
+		);
+		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
+			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
+		);
 
-		return true;
+		return (
+			ctSiteNavigationConfig?.config?.siteStructure &&
+			ctSiteNavigationConfig?.config?.siteStructure?.structurePosition !==
+				PositionValues.none &&
+			siteNavigationConfig?.config?.allowSiteStructure
+		);
 	},
 });
 
@@ -521,11 +538,13 @@ contentTypeConnector.registerCTDetailTab(CONFIG.name, {
 	module: CONFIG.module,
 	component: ContentTypeDetailTab,
 	containerId: 'update' as any,
-	show: context => context.isActive,
+	show: context => context.ctType === CtTypes.contentTypes,
 	disabled: context =>
-		!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
-			rolesRightsConnector.securityRights.read,
-		]) || context.contentType?.meta?.canBeFiltered === false,
+		(context.site &&
+			!rolesRightsConnector.api.helpers.checkSecurityRights(context.mySecurityrights, [
+				rolesRightsConnector.securityRights.read,
+			])) ||
+		context.ctType !== CtTypes.contentTypes,
 });
 
 sitesConnector.registerSiteUpdateTab(CONFIG.name, {
