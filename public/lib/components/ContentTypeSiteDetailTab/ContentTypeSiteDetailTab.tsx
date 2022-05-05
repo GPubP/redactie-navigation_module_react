@@ -347,7 +347,6 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 									</Button>
 								</div>
 							</ControlledModalFooter>
-							{console.info('formvalue', formValue, 'initialValues', initialValues)}
 						</ControlledModal>
 					</div>
 				</div>

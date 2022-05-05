@@ -60,7 +60,6 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 
 			return !!Object.values(compartmentErrors).find(langErrors => !isEmpty(langErrors));
 		});
-{console.info(errors)}
 		onValidateCompartments(invalidCompartments);
 		setInvalidCompartment(invalidCompartments);
 	};
