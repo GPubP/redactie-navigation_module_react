@@ -79,7 +79,6 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		contentTypeUuid: string;
 		child: string;
 	}>();
-
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
 	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
@@ -87,7 +86,6 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
 		[child]
 	);
-
 	const navigationRights = useNavigationRights(siteId);
 
 	const history = useHistory();
