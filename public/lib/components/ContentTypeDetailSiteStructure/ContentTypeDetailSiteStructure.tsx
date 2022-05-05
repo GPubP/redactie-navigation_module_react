@@ -162,8 +162,8 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 			...siteStructurePosition,
 			[activeLanguage.key]: [],
 		});
-		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, null);
-		setFieldValue(`siteStructure.position.${activeLanguage.key}`, null);
+		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, '');
+		setFieldValue(`siteStructure.position.${activeLanguage.key}`, '');
 	};
 
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
