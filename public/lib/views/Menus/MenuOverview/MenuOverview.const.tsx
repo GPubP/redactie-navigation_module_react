@@ -101,7 +101,7 @@ export const OVERVIEW_COLUMNS = (
 			return (
 				<rolesRightsConnector.api.components.SecurableRender
 					userSecurityRights={mySecurityrights}
-					requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.update]}
+					requiredSecurityRights={[rolesRightsConnector.menuSecurityRights.update]}
 				>
 					<Button ariaLabel="Edit" icon="edit" onClick={() => navigate(id)} transparent />
 				</rolesRightsConnector.api.components.SecurableRender>
