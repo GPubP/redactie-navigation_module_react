@@ -63,7 +63,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		await siteStructureItemsFacade.updateSiteStructureItem(
 			site?.uuid!,
 			`${pendingSiteStructureItem?.treeId}`,
-			omit(['weight'], pendingSiteStructureItem) as NavItem,
+			omit(['weight', 'parents'], pendingSiteStructureItem) as NavItem,
 			ALERT_CONTAINER_IDS.siteStructureItemsOverview
 		);
 		return Promise.resolve();

@@ -2,8 +2,8 @@ import { Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { isNil, pathOr, propOr } from 'ramda';
-import React, { useEffect, useState } from 'react';
+import { difference, isNil, pathOr, propOr } from 'ramda';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import {
@@ -14,8 +14,11 @@ import {
 } from '../../helpers';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PositionValues } from '../../navigation.const';
-import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
+import { CascaderOption, NavItem } from '../../navigation.types';
+import { SiteStructureItem } from '../../services/siteStructureItems';
 import { SiteStructure } from '../../services/siteStructures';
+
+import { CTStructureTypes } from './StructureCascader.const';
 
 const StructureCascader = ({
 	label,
@@ -43,79 +46,67 @@ const StructureCascader = ({
 	siteStructure: SiteStructure;
 	placeholder: string;
 	siteStructureItem: NavItem | undefined;
-}): React.ReactElement => {
+}): ReactElement => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
-	const [initialValue, setInitialValue] = useState<number[]>([]);
+	const [fieldPositionArray, setFieldPositionArray] = useState<number[]>([]);
 
-	// CT structure > string
-	const ctPositionValue = getPositionInputValue(treeConfig.options as any, initialValue);
-	// CT structure position oneof PositionValues
-	const structurePosition = pathOr(PositionValues.none, ['structurePosition'])(CTStructureConfig);
-	// available positions after ctPositionValue = number[]
-	const availablePositions =
-		structurePosition === PositionValues.limited
-			? value && value.slice(initialValue.length)
-			: value;
-	// available sitestructure when limited position
-	const availableLimitedSiteStructure = getAvailableSiteStructureOptions(
-		initialValue,
-		siteStructure
-	);
+	const type = useMemo(() => {
+		const structurePosition = pathOr<PositionValues>(
+			PositionValues.none,
+			['structurePosition'],
+			CTStructureConfig
+		);
 
-	// available sitestructure when limited position
-	const availableLimitedTreeConfig = getTreeConfig<NavTree, NavItem>(
-		(availableLimitedSiteStructure as unknown) as NavTree,
-		siteStructure?.id!
-	);
+		if (structurePosition !== CTStructureTypes.limited) {
+			return structurePosition;
+		}
 
-	const disabled =
-		(structurePosition === PositionValues.limited &&
-			(!availableLimitedTreeConfig.options.length || !CTStructureConfig.editablePosition)) ||
-		!treeConfig.options.length;
+		if (CTStructureConfig.editablePosition) {
+			return CTStructureTypes.isLimitedAndEditable;
+		}
 
-	const isLimitedAndEditable =
-		structurePosition === PositionValues.limited && CTStructureConfig.editablePosition;
+		return CTStructureTypes.isLimitedAndNotEditable;
+	}, [CTStructureConfig]);
 
-	const isLimitedAndNotEditable =
-		structurePosition === PositionValues.limited && !CTStructureConfig.editablePosition;
+	const standardPosition = useMemo(() => {
+		return !isNil(CTStructureConfig?.position[activeLanguage]) && treeConfig.options.length > 0
+			? findPosition(treeConfig.options, CTStructureConfig?.position[activeLanguage])
+			: [];
+	}, [CTStructureConfig.position, activeLanguage, treeConfig.options]);
 
-	// displayed value
-	const fieldValue =
-		(isLimitedAndNotEditable
-			? initialValue
-			: value !== undefined && value.length > 0
-			? availablePositions
-			: value) || initialValue;
+	const availableLimitedSiteStructure = useMemo(() => {
+		return getAvailableSiteStructureOptions(standardPosition, siteStructure);
+	}, [siteStructure, standardPosition]);
+
+	const availableLimitedTreeConfig = useMemo(() => {
+		return getTreeConfig<SiteStructure, SiteStructureItem>(
+			availableLimitedSiteStructure,
+			siteStructureItem?.id || 0
+		);
+	}, [availableLimitedSiteStructure, siteStructureItem]);
+
+	const pathPrefix = useMemo(() => {
+		return getPositionInputValue(treeConfig.options as any, standardPosition);
+	}, [standardPosition, treeConfig.options]);
 
 	useEffect(() => {
-		if (!siteStructure) {
+		if (type === CTStructureTypes.isLimitedAndEditable) {
+			setFieldPositionArray(difference(value, standardPosition));
 			return;
 		}
 
-		const parentId = siteStructureItem?.parentId || CTStructureConfig?.position[activeLanguage];
+		setFieldPositionArray(value);
+	}, [standardPosition, type, value]);
 
-		const val =
-			!isNil(parentId) && treeConfig.options.length > 0
-				? findPosition(treeConfig.options, parentId)
-				: [];
-
-		setInitialValue(val);
-
-		if (isLimitedAndNotEditable) {
-			return;
-		}
-
-		setFieldValue('position', val);
-	}, [
-		CTStructureConfig,
-		activeLanguage,
-		isLimitedAndNotEditable,
-		setFieldValue,
-		siteStructure,
-		siteStructureItem,
-		treeConfig.options,
-	]);
+	const disabled = useMemo(() => {
+		return (
+			(type === CTStructureTypes.isLimitedAndEditable &&
+				!availableLimitedTreeConfig.options.length) ||
+			type === CTStructureTypes.isLimitedAndNotEditable ||
+			!treeConfig.options.length
+		);
+	}, [availableLimitedTreeConfig.options.length, treeConfig.options.length, type]);
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue('position', value);
@@ -139,30 +130,32 @@ const StructureCascader = ({
 		>
 			<label
 				className={classNames('a-input__label', {
-					'u-no-margin': isLimitedAndNotEditable,
+					'u-no-margin': type === CTStructureTypes.isLimitedAndNotEditable,
 				})}
 				htmlFor="text-field"
 			>
 				{label as string}
 			</label>
-			{isLimitedAndNotEditable && (
+			{type === CTStructureTypes.isLimitedAndNotEditable && (
 				<small>{tModule(MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_HINT)}</small>
 			)}
 			<div className="u-flex u-flex-align-center">
-				{isLimitedAndEditable && renderCTStructure(ctPositionValue)}
+				{type === CTStructureTypes.isLimitedAndEditable && renderCTStructure(pathPrefix)}
 				<Cascader
 					changeOnSelect
-					value={fieldValue}
+					value={fieldPositionArray}
 					options={
-						isLimitedAndEditable
+						type === CTStructureTypes.isLimitedAndEditable
 							? availableLimitedTreeConfig.options
 							: treeConfig.options
 					}
 					disabled={disabled}
 					onChange={(value: number[]) => {
-						!isLimitedAndNotEditable &&
+						type !== CTStructureTypes.isLimitedAndNotEditable &&
 							handlePositionOnChange(
-								isLimitedAndEditable ? [...initialValue, ...value] : value
+								type === CTStructureTypes.isLimitedAndEditable
+									? [...standardPosition, ...value]
+									: value
 							);
 					}}
 				>
@@ -172,14 +165,15 @@ const StructureCascader = ({
 							disabled={disabled}
 							placeholder={placeholder}
 							value={getPositionInputValue(
-								isLimitedAndEditable
+								type === CTStructureTypes.isLimitedAndEditable
 									? availableLimitedTreeConfig.options
 									: treeConfig.options,
-								fieldValue
+								fieldPositionArray
 							)}
 						/>
-						{((isLimitedAndEditable && value && value.length > 0) ||
-							(!isLimitedAndEditable && fieldValue && fieldValue.length > 0)) &&
+						{type === CTStructureTypes.isLimitedAndEditable &&
+							fieldPositionArray &&
+							fieldPositionArray.length > 0 &&
 							!disabled && (
 								<span
 									className="fa"
@@ -199,7 +193,7 @@ const StructureCascader = ({
 										onClick={(e: React.SyntheticEvent) => {
 											e.preventDefault();
 											e.stopPropagation();
-											setFieldValue('position', []);
+											setFieldValue('position', standardPosition);
 										}}
 									/>
 								</span>

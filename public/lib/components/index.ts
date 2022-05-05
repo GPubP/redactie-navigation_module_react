@@ -11,3 +11,4 @@ export * from './ContentDetailMenuCompartment';
 export * from './NewMenuItemForm';
 export * from './MenuItemModal';
 export * from './ContentTypeMenusTable';
+export * from './StructureCascader';
