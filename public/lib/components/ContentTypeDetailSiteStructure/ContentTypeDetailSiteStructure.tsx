@@ -26,7 +26,7 @@ import { siteStructuresFacade } from '../../store/siteStructures';
 
 const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentType }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const { values, setFieldValue } = useFormikContext<FormikValues>();
+	const { values, setFieldValue, touched, errors } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
@@ -111,12 +111,12 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 			item => item.treeId === siteStructure?.id
 		);
 
-		if (existingItem) {
-			setFieldValue(
-				`updatedSiteStructurePosition.${activeLanguage.key}.itemId`,
-				existingItem.id
-			);
-		}
+		setSiteStructurePosition({
+			...siteStructurePosition,
+			[activeLanguage.key]: [],
+		});
+		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, '');
+		setFieldValue(`siteStructure.position.${activeLanguage.key}`, '');
 	};
 
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
@@ -218,6 +218,15 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 								required={
 									values.sitestructuur?.structurePosition ===
 									PositionValues.limited
+								}
+								state={
+									activeLanguage &&
+									pathOr(
+										null,
+										['siteStructure', 'position', activeLanguage.key],
+										errors
+									) &&
+									'error'
 								}
 							/>
 							{values.sitestructuur?.structurePosition === PositionValues.limited && (

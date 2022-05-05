@@ -9,6 +9,8 @@ import {
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
 import {
+	AlertContainer,
+	alertService,
 	DataLoader,
 	Language,
 	NavListItem,
@@ -49,6 +51,14 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	const [languagesLoading, languages] = languagesConnector.hooks.useActiveLanguagesForSite(
 		siteId
 	);
+	const { contentTypeUuid, child } = useParams<{
+		contentTypeUuid: string;
+		child: string;
+	}>();
+	const activeCompartment = useMemo(
+		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
+		[child]
+	);
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasUrlChanges, resetUrlChangeDetection] = useDetectValueChanges(
 		!isLoading,
@@ -58,19 +68,19 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 		!isLoading,
 		formValue.sitestructuur
 	);
-	const [hasChanges, resetHasChanges] = useDetectValueChanges(!isLoading, formValue);
+	const [hasMenuChanges, resetMenuChangeDetection] = useDetectValueChanges(
+		!isLoading,
+		formValue.menu
+	);
+
+	const hasChanges = hasUrlChanges || hasSiteStructureChanges || hasMenuChanges;
+
 	const { generatePath } = useNavigate(SITES_ROOT);
-	const { contentTypeUuid, child } = useParams<{
-		contentTypeUuid: string;
-		child: string;
-	}>();
+
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
 	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
-	const activeCompartment = useMemo(
-		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
-		[child]
-	);
+
 	const navigationRights = useNavigationRights(siteId);
 
 	const history = useHistory();
@@ -140,12 +150,20 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				url: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
 					?.url || {
 					urlPattern: {
-						multilanguage: true,
+						multiLanguage: true,
 					},
 				},
 				menu: contentType.modulesConfig.find(config => config.name === 'navigation')?.config
 					?.menu || {
+					activatedMenus: [],
 					allowMenus: 'false',
+					allowedMenus: {},
+				},
+				siteStructure: contentType.modulesConfig.find(
+					config => config.name === 'navigation'
+				)?.config?.siteStructure || {
+					position: { multiLanguage: true },
+					structurePosition: 'none',
 				},
 			};
 			setInitialValues(form);
@@ -230,17 +248,9 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 
 		setMetadataExists(true);
 		setShowConfirmModal(false);
+		resetMenuChangeDetection();
 		resetUrlChangeDetection();
 		resetSiteStructureChangeDetection();
-		resetHasChanges();
-	};
-
-	const onFormSubmit = (): void => {
-		if (hasUrlChanges || hasSiteStructureChanges) {
-			return setShowConfirmModal(true);
-		}
-
-		onConfirm();
 	};
 
 	const onValidateCompartments = (invalidCompartments: string[]): void => {
@@ -250,6 +260,13 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 				hasError: invalidCompartments.includes(compartment.key),
 			}))
 		);
+	};
+
+	const onFormSubmit = (): void => {
+		if (hasUrlChanges || hasSiteStructureChanges) {
+			return setShowConfirmModal(true);
+		}
+		onConfirm();
 	};
 
 	const onSavePromptCancel = (): void => {
@@ -285,44 +302,51 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	};
 
 	return (
-		<div className="row top-xs u-margin-bottom-lg">
-			<div className="col-xs-12 col-md-3 u-margin-bottom">
-				<NavList items={navListChecked} linkComponent={NavLink} />
-			</div>
-			<div className="col-xs-12 col-md-9">
-				<div className="m-card u-padding">
-					<h3 className="u-margin-bottom">{activeCompartment?.label}</h3>
-					<DataLoader loadingState={languagesLoading} render={renderForm} />
-					<ControlledModal
-						show={showConfirmModal}
-						onClose={onSavePromptCancel}
-						size="large"
-					>
-						<ControlledModalHeader>
-							<h4>{t(CORE_TRANSLATIONS.CONFIRM)}</h4>
-						</ControlledModalHeader>
-						<ControlledModalBody>
-							{tModule(MODULE_TRANSLATIONS.SITE_NAVIGATION_CONFIRM_DESCRIPTION)}
-						</ControlledModalBody>
-						<ControlledModalFooter>
-							<div className="u-flex u-flex-item u-flex-justify-end">
-								<Button onClick={onSavePromptCancel} negative>
-									{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
-								</Button>
-								<Button
-									iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
-									disabled={isLoading}
-									onClick={onConfirm}
-									type="success"
-								>
-									{t(CORE_TRANSLATIONS.MODAL_CONFIRM)}
-								</Button>
-							</div>
-						</ControlledModalFooter>
-					</ControlledModal>
+		<>
+			<AlertContainer
+				toastClassName="u-margin-bottom"
+				containerId={ALERT_CONTAINER_IDS.contentTypeEdit}
+			/>
+			<div className="row top-xs u-margin-bottom-lg">
+				<div className="col-xs-12 col-md-3 u-margin-bottom">
+					<NavList items={navListChecked} linkComponent={NavLink} />
+				</div>
+				<div className="col-xs-12 col-md-9">
+					<div className="m-card u-padding">
+						<h3 className="u-margin-bottom">{activeCompartment?.label}</h3>
+						<DataLoader loadingState={languagesLoading} render={renderForm} />
+						<ControlledModal
+							show={showConfirmModal}
+							onClose={onSavePromptCancel}
+							size="large"
+						>
+							<ControlledModalHeader>
+								<h4>{t(CORE_TRANSLATIONS.CONFIRM)}</h4>
+							</ControlledModalHeader>
+							<ControlledModalBody>
+								{tModule(MODULE_TRANSLATIONS.SITE_NAVIGATION_CONFIRM_DESCRIPTION)}
+							</ControlledModalBody>
+							<ControlledModalFooter>
+								<div className="u-flex u-flex-item u-flex-justify-end">
+									<Button onClick={onSavePromptCancel} negative>
+										{t(CORE_TRANSLATIONS.BUTTON_CANCEL)}
+									</Button>
+									<Button
+										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
+										disabled={isLoading}
+										onClick={onConfirm}
+										type="success"
+									>
+										{t(CORE_TRANSLATIONS.MODAL_CONFIRM)}
+									</Button>
+								</div>
+							</ControlledModalFooter>
+							{console.info('formvalue', formValue, 'initialValues', initialValues)}
+						</ControlledModal>
+					</div>
 				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 

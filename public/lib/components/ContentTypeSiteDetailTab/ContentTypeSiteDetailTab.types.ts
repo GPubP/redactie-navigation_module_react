@@ -9,6 +9,20 @@ export interface ContentTypeSiteDetailTabFormState {
 			[lang: string]: string | boolean;
 		};
 	};
+	menu: {
+		allowMenus: boolean;
+		allowedMenus: {
+			multiLanguage: boolean;
+			[lang: string]: number[] | boolean;
+		};
+	};
+	siteStructure: {
+		position: {
+			multiLanguage: boolean;
+			[lang: string]: string | boolean;
+		},
+		structurePosition?: string;
+	}
 }
 
 export interface ContentTypeSiteDetailFormProps {

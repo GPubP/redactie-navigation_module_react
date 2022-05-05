@@ -71,4 +71,14 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 					})
 			),
 		}),
+		siteStructure: MultilanguageYup.object().shape({
+			structurePosition: MultilanguageYup.string().required('Preferred contact is required.'),
+			position: MultilanguageYup.object().when('structurePosition', {
+				is: 'limited',
+				then: MultilanguageYup.object().validateMultiLanguage(
+					languages,
+					MultilanguageYup.string().required()
+				),
+			}),
+		}),
 	});
