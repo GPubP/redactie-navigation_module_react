@@ -57,14 +57,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	const [languagesLoading, languages] = languagesConnector.hooks.useActiveLanguagesForSite(
 		siteId
 	);
-	const { contentTypeUuid, child } = useParams<{
-		contentTypeUuid: string;
-		child: string;
-	}>();
-	const activeCompartment = useMemo(
-		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
-		[child]
-	);
+
 	const [formValue, setFormValue] = useState<any | null>(initialValues);
 	const [hasUrlChanges, resetUrlChangeDetection] = useDetectValueChanges(
 		!isLoading,
@@ -82,10 +75,18 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	const hasChanges = hasUrlChanges || hasSiteStructureChanges || hasMenuChanges;
 
 	const { generatePath } = useNavigate(SITES_ROOT);
+	const { contentTypeUuid, child } = useParams<{
+		contentTypeUuid: string;
+		child: string;
+	}>();
 
 	const [showConfirmModal, setShowConfirmModal] = useState(false);
 	const [metadataExists, setMetadataExists] = useState(!isEmpty(value?.config));
 	const [navList, setNavlist] = useState<(NavListItem & { key: string })[]>([]);
+	const activeCompartment = useMemo(
+		() => NAV_SITE_COMPARTMENTS.find(compartment => compartment.to === child),
+		[child]
+	);
 
 	const navigationRights = useNavigationRights(siteId);
 
