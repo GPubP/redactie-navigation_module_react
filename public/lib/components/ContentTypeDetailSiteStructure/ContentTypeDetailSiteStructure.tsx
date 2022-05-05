@@ -263,15 +263,6 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 									values.siteStructure?.structurePosition ===
 									PositionValues.limited
 								}
-								state={
-									activeLanguage &&
-									pathOr(
-										null,
-										['siteStructure', 'position', activeLanguage.key],
-										errors
-									) &&
-									'error'
-								}
 							/>
 							{values.siteStructure?.structurePosition === PositionValues.limited && (
 								<div className="u-margin-top-xs">
