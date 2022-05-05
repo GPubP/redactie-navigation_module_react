@@ -34,8 +34,6 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
 import { StructureCascader } from '../StructureCascader';
 
-// import StructureCascader from './StructureCascader';
-
 const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	onChange,
 	contentValue,
