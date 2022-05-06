@@ -22,10 +22,13 @@ import { CONFIG, PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../n
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
+import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 
-const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentType }) => {
+const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
+	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
+}> = ({ siteId, contentType, setActiveCompartment }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const { values, setFieldValue, touched, errors } = useFormikContext<FormikValues>();
+	const { values, setFieldValue, touched } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [loadingState, siteStructures] = useSiteStructures();
 	const { fetchingState, siteStructure } = useSiteStructure();
@@ -44,6 +47,11 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 	const [siteStructurePosition, setSiteStructurePosition] = useState<Record<string, number[]>>(
 		{}
 	);
+
+	useEffect(() => {
+		setActiveCompartment(NavSiteCompartments.siteStructure);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (
