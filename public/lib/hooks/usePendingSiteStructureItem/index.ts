@@ -1,1 +1,1 @@
-export { default as usePendingSiteStructure } from './usePendingSiteStructure';
+export { default as usePendingSiteStructureItem } from './usePendingSiteStructureItem';

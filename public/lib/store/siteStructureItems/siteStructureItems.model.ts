@@ -1,6 +1,5 @@
-import { BaseEntityState } from '@redactie/utils';
+import { BaseMultiEntityState } from '@redactie/utils';
 
-import { NavItem } from '../../navigation.types';
 import { SiteStructureItem } from '../../services/siteStructureItems';
 
 export interface InternalState {
@@ -9,8 +8,7 @@ export interface InternalState {
 
 export type SiteStructureItemModel = SiteStructureItem;
 
-export interface SiteStructureItemsState extends BaseEntityState<SiteStructureItemModel, string> {
-	siteStructureItem?: SiteStructureItemModel;
-	siteStructureItemDraft?: SiteStructureItemModel;
-	pendingSiteStructureItem?: NavItem;
-}
+export type SiteStructureItemsState = BaseMultiEntityState<
+	SiteStructureItemModel[] | SiteStructureItemModel | undefined,
+	string
+>;

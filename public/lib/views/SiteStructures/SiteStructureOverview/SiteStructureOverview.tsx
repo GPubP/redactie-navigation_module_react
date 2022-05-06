@@ -50,27 +50,33 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 	);
 	const [site] = sitesConnector.hooks.useSite(siteId);
 
-	const [loadingState, siteStructures, siteStructuresPaging] = useSiteStructures();
+	const [loadingState, siteStructures, siteStructuresPaging] = useSiteStructures(siteId);
 
 	const isLoading = useMemo(() => {
 		return loadingState === LoadingState.Loading;
 	}, [loadingState]);
 
 	useEffect(() => {
-		if (loadingState !== LoadingState.Loading) {
+		if (loadingState !== LoadingState.Loading && siteStructures) {
 			return setInitialLoading(LoadingState.Loaded);
 		}
-	}, [loadingState]);
+
+		setInitialLoading(LoadingState.Loading);
+	}, [loadingState, siteStructures]);
 
 	useEffect(() => {
 		if (!siteId || !site?.data.name) {
 			return;
 		}
 
-		siteStructuresFacade.getSiteStructures(siteId, {
-			...query,
-			includeItemCount: true,
-		} as SearchParams);
+		siteStructuresFacade.getSiteStructures(
+			siteId,
+			{
+				...query,
+				includeItemCount: true,
+			} as SearchParams,
+			true
+		);
 	}, [query, site, siteId]);
 
 	/**

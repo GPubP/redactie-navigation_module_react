@@ -1,9 +1,9 @@
 import { StoreConfig } from '@datorama/akita';
-import { BaseEntityStore } from '@redactie/utils';
+import { BaseMultiEntityStore } from '@redactie/utils';
 
-import { SiteStructureModel, SiteStructuresState } from './siteStructures.model';
+import { SiteStructuresState } from './siteStructures.model';
 
 @StoreConfig({ name: 'siteStructures', idKey: 'id' })
-export class SiteStructuresStore extends BaseEntityStore<SiteStructuresState, SiteStructureModel> {}
+export class SiteStructuresStore extends BaseMultiEntityStore<SiteStructuresState> {}
 
-export const siteStructuresStore = new SiteStructuresStore();
+export const siteStructuresStore = new SiteStructuresStore({});

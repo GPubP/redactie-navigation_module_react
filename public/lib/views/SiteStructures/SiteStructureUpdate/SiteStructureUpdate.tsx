@@ -71,7 +71,7 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 		upsertingState: upsertSiteStructureLoadingState,
 		removingState: removeSiteStructureLoadingState,
 		siteStructure,
-	} = useSiteStructure();
+	} = useSiteStructure(`${siteStructureId}`);
 	const [
 		mySecurityRightsLoadingState,
 		mySecurityrights,
@@ -96,19 +96,20 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 	const isRemoving = useMemo(() => {
 		return removeSiteStructureLoadingState === LoadingState.Loading;
 	}, [removeSiteStructureLoadingState]);
-	const [siteStructureDraft] = useSiteStructureDraft();
+	const [siteStructureDraft] = useSiteStructureDraft(`${siteStructureId}`);
 	const activeTabs = useActiveTabs(SITE_STRUCTURE_DETAIL_TABS, location.pathname);
 
 	useEffect(() => {
 		if (
 			siteStructureLoadingState !== LoadingState.Loading &&
-			mySecurityRightsLoadingState !== LoadingState.Loading
+			mySecurityRightsLoadingState !== LoadingState.Loading &&
+			siteStructureDraft
 		) {
 			return setInitialLoading(LoadingState.Loaded);
 		}
 
 		setInitialLoading(LoadingState.Loading);
-	}, [mySecurityRightsLoadingState, siteStructureLoadingState]);
+	}, [mySecurityRightsLoadingState, siteStructureDraft, siteStructureLoadingState]);
 
 	useEffect(() => {
 		if (siteStructureLoadingState !== LoadingState.Loading && siteStructure) {
@@ -118,12 +119,12 @@ const SiteStructureUpdate: FC<NavigationRouteProps<SiteStructureMatchProps>> = (
 
 	useEffect(() => {
 		if (siteStructureId) {
-			siteStructuresFacade.getSiteStructure(siteId, siteStructureId);
+			siteStructuresFacade.getSiteStructure(siteId, siteStructureId, true);
 		}
 
 		return () => {
-			siteStructuresFacade.unsetSiteStructure();
-			siteStructuresFacade.unsetSiteStructureDraft();
+			siteStructuresFacade.unsetSiteStructure(`${siteStructureId}`);
+			siteStructuresFacade.unsetSiteStructureDraft(`${siteStructureId}`);
 		};
 	}, [siteId, siteStructureId]);
 

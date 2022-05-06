@@ -1,6 +1,5 @@
 import { ExternalCompartmentAfterSubmitFn } from '@redactie/content-module';
 import { isEmpty, omit, pathOr } from 'ramda';
-import { take } from 'rxjs/operators';
 
 import { NAV_STATUSES } from '../../components';
 import { ALERT_CONTAINER_IDS, CONFIG, PositionValues } from '../../navigation.const';
@@ -41,9 +40,9 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		return Promise.resolve();
 	}
 
-	const pendingSiteStructureItem = await siteStructureItemsFacade.pendingSiteStructureItem$
-		.pipe(take(1))
-		.toPromise();
+	const pendingSiteStructureItem = siteStructureItemsFacade.getItemValue(
+		`${contentItem.uuid}.pending`
+	) as NavItem;
 
 	if (isEmpty(pendingSiteStructureItem)) {
 		return Promise.resolve();
@@ -66,6 +65,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 			omit(['weight', 'parents'], pendingSiteStructureItem) as NavItem,
 			ALERT_CONTAINER_IDS.siteStructureItemsOverview
 		);
+		siteStructureItemsFacade.setPendingSiteStructureItem(undefined, contentItem.uuid);
 		return Promise.resolve();
 	}
 
@@ -87,6 +87,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		},
 		ALERT_CONTAINER_IDS.siteStructureItemsOverview
 	);
+	siteStructureItemsFacade.setPendingSiteStructureItem(undefined, contentItem.uuid);
 };
 
 export default afterSubmitSiteStructure;

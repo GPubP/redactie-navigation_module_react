@@ -67,6 +67,7 @@ export interface MenuRouteParams {
 
 export interface NavigationMatchProps {
 	siteId: string;
+	siteStructureId: string;
 }
 
 export interface MenuItemMatchProps {

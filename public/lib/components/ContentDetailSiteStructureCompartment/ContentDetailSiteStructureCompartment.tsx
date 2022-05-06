@@ -20,12 +20,7 @@ import {
 	getTreeConfig,
 } from '../../helpers';
 import { SITE_STRUCTURE_VALIDATION_SCHEMA } from '../../helpers/contentCompartmentHooks/beforeAfterSubmit.const';
-import {
-	useContentTypeSiteStructureItems,
-	usePendingSiteStructure,
-	useSiteStructure,
-	useSiteStructureItem,
-} from '../../hooks';
+import { usePendingSiteStructureItem, useSiteStructure, useSiteStructureItem } from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
@@ -47,14 +42,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const CTStructureConfig = getCTStructureConfig(contentType, activeLanguage!, CONFIG.name, site);
-	const { siteStructure, fetchingState: siteStructureLoadingState } = useSiteStructure();
-	const [siteStructuresLoadingState, siteStructures] = useSiteStructures();
-	const [, contentTypeSiteStructureItems] = useContentTypeSiteStructureItems();
-	const [pendingSiteStructureItem] = usePendingSiteStructure();
-	const {
-		siteStructureItem,
-		fetchingState: siteStructureItemLoadingState,
-	} = useSiteStructureItem();
+	const [siteStructuresLoadingState, siteStructures] = useSiteStructures(siteId);
 	const internalFormRef = useRef<FormikBag<any, any>>(null);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 
@@ -65,6 +53,17 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 
 		return siteStructures.find(i => i.lang === activeLanguage) || null;
 	}, [activeLanguage, siteId, siteStructures]);
+
+	const {
+		siteStructureItem,
+		fetchingState: siteStructureItemLoadingState,
+	} = useSiteStructureItem(`${contentItem?.uuid}`);
+
+	const [pendingSiteStructureItem] = usePendingSiteStructureItem(`${contentItem?.uuid}`);
+
+	const { siteStructure, fetchingState: siteStructureLoadingState } = useSiteStructure(
+		`${siteStructureForLang?.id}`
+	);
 
 	const treeConfig = useMemo<{
 		options: CascaderOption[];
@@ -99,15 +98,18 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 					: [],
 		};
 
-		siteStructureItemsFacade.setPendingSiteStructureItem({
-			...(pendingSiteStructureItem as NavItem),
-			...(!pendingSiteStructureItem?.treeId && {
-				treeId: siteStructureForLang?.id,
-			}),
-			label: formValue.label,
-			description: formValue.description,
-			parentId: formValue.position?.slice(-1)[0],
-		});
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			{
+				...(pendingSiteStructureItem as NavItem),
+				...(!pendingSiteStructureItem?.treeId && {
+					treeId: siteStructureForLang?.id,
+				}),
+				label: formValue.label,
+				description: formValue.description,
+				parentId: formValue.position?.slice(-1)[0],
+			},
+			`${contentItem?.uuid}`
+		);
 
 		return formValue;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -139,7 +141,10 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			siteStructureItemLoadingState !== LoadingState.Loading
 		) {
 			setInitialLoading(LoadingState.Loaded);
+			return;
 		}
+
+		setInitialLoading(LoadingState.Loading);
 	}, [siteStructureItemLoadingState, siteStructureLoadingState, siteStructuresLoadingState]);
 
 	useEffect(() => {
@@ -152,8 +157,13 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	}, [siteId]);
 
 	useEffect(() => {
+		if (pendingSiteStructureItem || siteStructureItemLoadingState !== LoadingState.Loaded) {
+			return;
+		}
+
 		siteStructureItemsFacade.setPendingSiteStructureItem(
-			siteStructureItem ? siteStructureItem : generateEmptyNavItem(NavItemType.primary)
+			siteStructureItem ? siteStructureItem : generateEmptyNavItem(NavItemType.primary),
+			`${contentItem?.uuid}`
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [siteStructureItem]);
@@ -162,15 +172,18 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	 * Functions
 	 */
 	const onFormChange = (values: FormikValues): void => {
-		siteStructureItemsFacade.setPendingSiteStructureItem({
-			...(pendingSiteStructureItem as NavItem),
-			...(!pendingSiteStructureItem?.treeId && {
-				treeId: siteStructureForLang?.id,
-			}),
-			label: values.label,
-			description: values.description,
-			parentId: values.position?.slice(-1)[0],
-		});
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			{
+				...(pendingSiteStructureItem as NavItem),
+				...(!pendingSiteStructureItem?.treeId && {
+					treeId: siteStructureForLang?.id,
+				}),
+				label: values.label,
+				description: values.description,
+				parentId: values.position?.slice(-1)[0],
+			},
+			`${contentItem?.uuid}`
+		);
 		onChange(values);
 	};
 
@@ -217,7 +230,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 									activeLanguage={activeLanguage}
 									contentItem={contentItem}
 									CTStructureConfig={CTStructureConfig}
-									contentTypeSiteStructureItems={contentTypeSiteStructureItems}
 									treeConfig={treeConfig}
 									siteStructure={siteStructure}
 									siteStructureItem={siteStructureItem}
