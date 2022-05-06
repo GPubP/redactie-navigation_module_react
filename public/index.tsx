@@ -1,5 +1,4 @@
 // import { akitaDevtools } from '@datorama/akita';
-import { akitaDevtools } from '@datorama/akita';
 import { ContentSchema } from '@redactie/content-module';
 import { ContentCompartmentModel } from '@redactie/content-module/dist/lib/store/ui/contentCompartments';
 import { ChildModuleRouteConfig } from '@redactie/redactie-core';
@@ -60,7 +59,7 @@ import {
 	SiteStructureUpdate,
 } from './lib/views';
 
-akitaDevtools();
+// akitaDevtools();
 registerTranslations();
 
 const NavigationComponent: FC<NavigationModuleProps<{ siteId: string }>> = ({
