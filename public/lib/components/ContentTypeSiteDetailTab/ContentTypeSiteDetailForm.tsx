@@ -93,7 +93,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 			{({ submitForm }) => {
 				return (
 					<div className="u-margin-top">
-						<FormikOnChangeHandler onChange={setFormValue} onError={handleOnError} />
+						<FormikOnChangeHandler onChange={onChange} onError={handleOnError} />
 						<RenderChildRoutes
 							routes={siteContentTypeDetailTabRoutes}
 							extraOptions={{
