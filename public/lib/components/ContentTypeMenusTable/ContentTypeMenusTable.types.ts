@@ -1,4 +1,5 @@
 import { Language } from '@redactie/utils';
+
 import { ContentTypeSiteDetailTabFormState } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.types';
 
 export interface ContentTypeMenusTableProps {

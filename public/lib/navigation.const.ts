@@ -176,7 +176,7 @@ export const ALERT_CONTAINER_IDS = {
 	siteStructureItemsOverview: 'site-structure-items-overview',
 	menuCompartment: 'menu-compartment',
 	contentEdit: 'content-edit',
-	contentTypeEdit: 'content-type-edit'
+	contentTypeEdit: 'content-type-edit',
 };
 
 export enum PositionValues {

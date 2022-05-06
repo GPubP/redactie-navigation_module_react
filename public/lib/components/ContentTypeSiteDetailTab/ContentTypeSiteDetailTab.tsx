@@ -10,7 +10,6 @@ import {
 import { ExternalTabProps } from '@redactie/content-types-module';
 import {
 	AlertContainer,
-	alertService,
 	DataLoader,
 	Language,
 	NavListItem,

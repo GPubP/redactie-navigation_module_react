@@ -160,14 +160,13 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 												<a
 													target="_blank"
 													rel="noopener noreferrer"
-													href={`${url &&
-														url[activeLanguage!] || url}${
+													href={`${(url && url[activeLanguage!]) || url}${
 														contentValue?.meta?.urlPath[activeLanguage!]
 															.value
 													}`}
 													className="u-margin-left-xs"
 												>
-													{`${url && url[activeLanguage!] || url}${
+													{`${(url && url[activeLanguage!]) || url}${
 														contentValue?.meta?.urlPath[activeLanguage!]
 															.value
 													}`}

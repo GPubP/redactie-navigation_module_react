@@ -45,7 +45,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	const [t] = translationsConnector.useCoreTranslation();
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const { setErrors } = useContext(LanguageHeaderContext);
-	const [activeCompartment, setActiveCompartment] = useState(child ?? NavSiteCompartments.url);
+	const [activeCompartment, setActiveCompartment] = useState(child ?? NavSiteCompartments.menu);
 	const [invalidCompartment, setInvalidCompartment] = useState<string[]>();
 	const [currentFormErrors, setCurrentFormErrors] = useState<FormikErrors<FormikValues>>({});
 
@@ -71,17 +71,16 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 		setErrors(getCompartmentErrors(formErrors, formValue, activeCompartment));
 	};
 
-	const alert = () => {
+	const alert = (): void => {
 		alertService.invalidForm({
-			containerId:
-				ALERT_CONTAINER_IDS.contentTypeEdit,
-	  })
-	}
+			containerId: ALERT_CONTAINER_IDS.contentTypeEdit,
+		});
+	};
 
-	const onChange = (values: FormikValues) => {
-		setFormValue(values)
+	const onChange = (values: FormikValues): void => {
+		setFormValue(values);
 		alertService.dismiss();
-	}
+	};
 
 	return (
 		<Formik
@@ -101,7 +100,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 								activeLanguage,
 								setActiveCompartment,
 								contentType,
-								value
+								value,
 							}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>

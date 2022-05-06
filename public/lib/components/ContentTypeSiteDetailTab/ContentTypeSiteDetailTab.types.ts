@@ -20,9 +20,9 @@ export interface ContentTypeSiteDetailTabFormState {
 		position: {
 			multiLanguage: boolean;
 			[lang: string]: string | boolean;
-		},
-		structurePosition?: string;
-	}
+		};
+		structurePosition: string;
+	};
 }
 
 export interface ContentTypeSiteDetailFormProps {
