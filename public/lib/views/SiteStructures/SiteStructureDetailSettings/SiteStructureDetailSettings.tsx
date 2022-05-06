@@ -1,7 +1,12 @@
 import { Button, RadioGroup, Textarea, TextField } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
-import { ErrorMessage, Field, Formik } from 'formik';
+import {
+	AlertContainer,
+	FormikOnChangeHandler,
+	LeavePrompt,
+	useDetectValueChanges,
+} from '@redactie/utils';
+import { ErrorMessage, Field, Formik, FormikValues } from 'formik';
 import React, { FC, useEffect, useMemo } from 'react';
 
 import languagesConnector from '../../../connectors/languages';
@@ -26,9 +31,9 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 	rights,
 	onSubmit,
 }) => {
-	const { siteId } = match.params;
-	const [siteStructure] = useSiteStructureDraft();
-	const { siteStructure: values } = useSiteStructure();
+	const { siteId, siteStructureId } = match.params;
+	const [siteStructure] = useSiteStructureDraft(siteStructureId);
+	const { siteStructure: values } = useSiteStructure(siteStructureId);
 	const [t] = translationsConnector.useCoreTranslation();
 	const [isChanged, resetIsChanged] = useDetectValueChanges(!loading, siteStructure);
 	const [, , , languages] = languagesConnector.hooks.useLanguages();
@@ -45,8 +50,8 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 		resetIsChanged();
 	};
 
-	const onChange = (newSiteStructureValue: SiteStructure): void => {
-		siteStructuresFacade.setSiteStructureDraft(newSiteStructureValue);
+	const onChange = (newSiteStructureValue: FormikValues): void => {
+		siteStructuresFacade.setSiteStructureDraft(newSiteStructureValue as SiteStructure);
 	};
 
 	const canEdit = isCreating ? true : rights.canUpdate;
@@ -97,11 +102,10 @@ const SiteStructureSettings: FC<SiteStructureDetailRouteProps<NavigationMatchPro
 				onSubmit={onSave}
 				validationSchema={SITE_STRUCTURE_SETTINGS_VALIDATION_SCHEMA}
 			>
-				{({ errors, submitForm, values, resetForm }) => {
-					onChange(values);
-
+				{({ errors, submitForm, resetForm }) => {
 					return (
 						<>
+							<FormikOnChangeHandler onChange={onChange} />
 							<div className="row top-xs u-margin-bottom">
 								<div className="col-xs-12">
 									<Field

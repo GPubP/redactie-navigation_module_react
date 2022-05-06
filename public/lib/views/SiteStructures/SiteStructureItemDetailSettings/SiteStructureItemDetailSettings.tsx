@@ -38,7 +38,9 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [showDeleteModal, setShowDeleteModal] = useState(false);
 	const [parentChanged, setParentChanged] = useState<boolean>(false);
-	const { siteStructureItems, upsertingState } = useSiteStructureItems();
+	const { siteStructureItems, upsertingState } = useSiteStructureItems(
+		`${siteStructureId}` || 'new'
+	);
 	const [isChanged, resetIsChanged] = useDetectValueChanges(
 		!loading && !!siteStructureItemDraft,
 		siteStructureItemDraft
@@ -58,7 +60,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			return;
 		}
 
-		siteStructuresFacade.getSiteStructure(siteId, siteStructureId);
+		siteStructuresFacade.getSiteStructure(siteId, siteStructureId, true);
 	}, [siteStructureId, siteId]);
 
 	useEffect(() => {
@@ -72,7 +74,8 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			siteId,
 			siteStructureId,
 			siteStructureItemDraft?.parentId,
-			1
+			1,
+			true
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [siteStructureItem, siteStructureId, siteStructureItemDraft, siteId]);
@@ -104,11 +107,14 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
 
-		siteStructureItemsFacade.setSiteStructureItemDraft({
-			...omit(['parentId'], siteStructureItemDraft),
-			...omit(['position', 'parentId'], formValue),
-			...(parentId && { parentId }),
-		} as SiteStructureItem);
+		siteStructureItemsFacade.setSiteStructureItemDraft(
+			{
+				...omit(['parentId'], siteStructureItemDraft),
+				...omit(['position', 'parentId'], formValue),
+				...(parentId && { parentId }),
+			} as SiteStructureItem,
+			siteStructureItem?.id ? `${siteStructureItem?.id}` : 'new'
+		);
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {

@@ -27,16 +27,19 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue, touched } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
-	const [loadingState, siteStructures] = useSiteStructures();
-	const { fetchingState, siteStructure } = useSiteStructure();
+	const [loadingState, siteStructures] = useSiteStructures(siteId);
 	const [
 		contentTypeSiteStructureItemsLoading,
 		contentTypeSiteStructureItems,
-	] = useContentTypeSiteStructureItems();
+	] = useContentTypeSiteStructureItems(contentType.uuid);
 	const [site] = sitesConnector.hooks.useSite(siteId);
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const [initFields, setInitFields] = useState(false);
 	const prevLangSiteStructure = useRef<number | undefined>();
+	const [langSiteStructureId, setLangSiteStructureId] = useState<number | undefined>(
+		prevLangSiteStructure.current
+	);
+	const { fetchingState, siteStructure } = useSiteStructure(`${langSiteStructureId}`);
 	const siteStructureItem = useMemo(() => {
 		return contentTypeSiteStructureItems?.find(item => item.treeId === siteStructure?.id);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -91,6 +94,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 				(langSiteStructure?.id as unknown) as string
 			);
 			prevLangSiteStructure.current = langSiteStructure?.id;
+			setLangSiteStructureId(langSiteStructure.id);
 		}
 
 		setInitFields(false);

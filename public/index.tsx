@@ -455,8 +455,10 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	isValid: true,
 	afterSubmit: afterSubmitSiteStructure,
 	// TODO: fix validation
-	validate: () => {
-		const pendingSiteStructureItem = siteStructureItemsFacade.pendingSiteStructureItemSync();
+	validate: values => {
+		const pendingSiteStructureItem = siteStructureItemsFacade.pendingSiteStructureItemSync(
+			values?.uuid || ''
+		);
 
 		if (!pendingSiteStructureItem || !Object.keys(pendingSiteStructureItem).length) {
 			return true;

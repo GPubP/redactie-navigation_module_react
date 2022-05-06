@@ -31,7 +31,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 		siteStructureItems,
 		fetchingState: siteStructureItemsLoadingState,
 		upsertingState: siteStructureItemsUpsertingState,
-	} = useSiteStructureItems();
+	} = useSiteStructureItems(`${siteStructureId}`);
 	const { navigate } = useNavigate(SITES_ROOT);
 	const [nestedLoadingId, setNestedLoadingId] = useState<number | undefined>();
 	const [
@@ -115,7 +115,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 			return;
 		}
 
-		siteStructureItemsFacade.getSubset(siteId, siteStructureId, 0, 1);
+		siteStructureItemsFacade.getSubset(siteId, siteStructureId, 0, 1, true);
 	}, [siteId, siteStructureId]);
 
 	const openRows = useMemo(() => {
@@ -131,7 +131,13 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 
 		if (!cachedItems.includes(rowId)) {
 			setNestedLoadingId(rowId);
-			await siteStructureItemsFacade.getSubset(siteId, siteStructureId as string, rowId, 1);
+			await siteStructureItemsFacade.getSubset(
+				siteId,
+				siteStructureId as string,
+				rowId,
+				1,
+				true
+			);
 		}
 
 		setCachedItems([...cachedItems, rowId]);

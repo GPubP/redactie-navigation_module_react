@@ -1,6 +1,5 @@
-import { alertService, BaseEntityFacade, SearchParams } from '@redactie/utils';
+import { alertService, BaseMultiEntityFacade, SearchParams } from '@redactie/utils';
 import { pathOr } from 'ramda';
-import { take } from 'rxjs/operators';
 
 import { buildSubset } from '../../helpers';
 import { rearrangeItems } from '../../helpers/rearrangeItems';
@@ -17,90 +16,115 @@ import { getAlertMessages } from './siteStructureItems.messages';
 import { siteStructureItemsQuery, SiteStructureItemsQuery } from './siteStructureItems.query';
 import { siteStructureItemsStore, SiteStructureItemsStore } from './siteStructureItems.store';
 
-export class SiteStructureItemsFacade extends BaseEntityFacade<
+export class SiteStructureItemsFacade extends BaseMultiEntityFacade<
 	SiteStructureItemsStore,
 	SiteStructureItemsApiService,
 	SiteStructureItemsQuery
 > {
-	public readonly siteStructureItems$ = this.query.siteStructureItems$;
-	public readonly siteStructureItem$ = this.query.siteStructureItem$;
-	public readonly siteStructureItemDraft$ = this.query.siteStructureItemDraft$;
-	public readonly pendingSiteStructureItem$ = this.query.pendingSiteStructureItem$;
-	public readonly contentTypeSiteStructureItems$ = this.query.contentTypeSiteStructureItems$;
 	public readonly pendingSiteStructureItemSync = this.query.pendingSiteStructureItemSync;
 
-	public getSiteStructureItems(siteId: string, menuId: string, searchParams: SearchParams): void {
-		const { isFetching } = this.query.getValue();
+	public getSiteStructureItems(
+		siteId: string,
+		siteStructureId: string,
+		searchParams: SearchParams,
+		reload = false,
+		key = ''
+	): void {
+		if (!key) {
+			key = siteStructureId;
+		}
 
-		if (isFetching) {
+		const oldValue = this.query.getItem(key);
+		const isFetching = this.query.getItemIsFetching(key);
+
+		if ((!reload && oldValue) || isFetching) {
 			return;
 		}
 
-		this.store.setIsFetching(true);
+		if (!oldValue) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsFetching(key, true);
 
 		this.service
-			.getSiteStructureItems(siteId, menuId, searchParams)
+			.getSiteStructureItems(siteId, siteStructureId, searchParams)
 			.then((response: SiteStructureItemsResponse) => {
 				if (!response) {
 					throw new Error('Getting siteStructureItems failed!');
 				}
 
-				this.store.set(response?._embedded.resourceList);
-				this.store.update({
-					isFetching: false,
-				});
+				this.store.setItemValue(key, response?._embedded.resourceList);
+				this.store.setItemIsFetching(key, false);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isFetching: false,
-				});
+				this.store.setItemError(key, error);
+				this.store.setItemIsFetching(key, false);
 			});
 	}
 
 	public getContentTypeSiteStructureItems(
 		siteId: string,
-		contentId: string,
-		searchParams: SearchParams
+		contentTypeId: string,
+		searchParams: SearchParams,
+		reload = false,
+		key = ''
 	): void {
-		const { isFetchingContentTypeSiteStructureItems } = this.query.getValue();
+		if (!key) {
+			key = contentTypeId;
+		}
 
-		if (isFetchingContentTypeSiteStructureItems) {
+		const oldValue = this.query.getItem(key);
+		const isFetching = this.query.getItemIsFetching(key);
+
+		if ((!reload && oldValue) || isFetching) {
 			return;
 		}
 
-		this.store.update({
-			isFetchingContentTypeSiteStructureItems: true,
-		});
+		if (!oldValue) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsFetching(key, true);
 
 		this.service
-			.getContentTypeSiteStructureItems(siteId, contentId, searchParams)
+			.getContentTypeSiteStructureItems(siteId, contentTypeId, searchParams)
 			.then((response: SiteStructureItemsResponse) => {
 				if (!response) {
 					throw new Error('Getting contentTypeSiteStructureItems failed!');
 				}
 
-				this.store.update({
-					contentTypeSiteStructureItems: response?._embedded.resourceList,
-					isFetchingContentTypeSiteStructureItems: false,
-				});
+				this.store.setItemValue(key, response?._embedded.resourceList);
+				this.store.setItemIsFetching(key, false);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isFetchingContentTypeSiteStructureItems: false,
-				});
+				this.store.setItemError(key, error);
+				this.store.setItemIsFetching(key, false);
 			});
 	}
 
-	public getContentSiteStructurePrimaryItem(siteId: string, contentId: string): void {
-		const { isFetchingOne } = this.query.getValue();
+	public getContentSiteStructurePrimaryItem(
+		siteId: string,
+		contentId: string,
+		reload = false,
+		key = ''
+	): void {
+		if (!key) {
+			key = contentId;
+		}
 
-		if (isFetchingOne) {
+		const oldValue = this.query.getItem(key);
+		const isFetching = this.query.getItemIsFetching(key);
+
+		if ((!reload && oldValue) || isFetching) {
 			return;
 		}
 
-		this.store.setIsFetchingOne(true);
+		if (!oldValue) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsFetching(key, true);
 
 		this.service
 			.getContentSiteStructurePrimaryItem(siteId, contentId)
@@ -109,45 +133,51 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 					throw new Error('Getting siteStructureItem failed!');
 				}
 
-				this.store.update({
-					siteStructureItem: response,
-					isFetchingOne: false,
-				});
+				this.store.setItemValue(key, response);
+				this.store.setItemIsFetching(key, false);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isFetchingOne: false,
-				});
+				this.store.setItemError(key, error);
+				this.store.setItemIsFetching(key, false);
 			});
 	}
 
 	public async getSubset(
 		siteId: string,
-		menuId: string,
+		siteStructureId: string,
 		startitem = 0,
-		depth = 0
+		depth = 0,
+		reload = false,
+		key = ''
 	): Promise<void> {
-		const { isFetching } = this.query.getValue();
-
-		if (isFetching) {
-			return Promise.resolve();
+		if (!key) {
+			key = siteStructureId;
 		}
 
-		this.store.setIsFetching(true);
+		const oldValue = this.query.getItem(key);
+		const isFetching = this.query.getItemIsFetching(key);
+
+		if ((!reload && oldValue) || isFetching) {
+			return;
+		}
+
+		if (!oldValue) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsFetching(key, true);
 
 		return this.service
-			.getSubset(siteId, menuId, startitem, depth)
+			.getSubset(siteId, siteStructureId, startitem, depth)
 			.then(async (response: SiteStructureItemsResponse) => {
 				if (!response) {
 					throw new Error('Getting siteStructureItems subset failed!');
 				}
 
-				const result = await this.siteStructureItems$.pipe(take(1)).toPromise();
-
-				this.store.set(
+				this.store.setItemValue(
+					key,
 					buildSubset(
-						result,
+						(oldValue?.value as NavItem[]) || [],
 						startitem === 0
 							? response?._embedded.resourceList
 							: response?._embedded.resourceList[0].items,
@@ -159,71 +189,82 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 					)
 				);
 
-				this.store.update({
-					isFetching: false,
-				});
+				this.store.setItemIsFetching(key, false);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isFetching: false,
-				});
+				this.store.setItemError(key, error);
+				this.store.setItemIsFetching(key, false);
 			});
 	}
 
-	public getSiteStructureItem(siteId: string, menuId: string, uuid: string): void {
-		const { isFetchingOne } = this.query.getValue();
-		if (isFetchingOne) {
+	public getSiteStructureItem(
+		siteId: string,
+		siteStructureId: string,
+		siteStructureItemId: string,
+		reload = false,
+		key = ''
+	): void {
+		if (!key) {
+			key = siteStructureItemId;
+		}
+
+		const oldValue = this.query.getItem(key);
+		const isFetching = this.query.getItemIsFetching(key);
+
+		if ((!reload && oldValue) || isFetching) {
 			return;
 		}
 
-		this.store.setIsFetchingOne(true);
+		if (!oldValue) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsFetching(key, true);
+
 		this.service
-			.getSiteStructureItem(siteId, menuId, uuid)
+			.getSiteStructureItem(siteId, siteStructureId, siteStructureItemId)
 			.then((response: SiteStructureItem) => {
 				if (!response) {
-					throw new Error(`Getting siteStructureItem '${uuid}' failed!`);
+					throw new Error(`Getting siteStructureItem '${siteStructureItemId}' failed!`);
 				}
 
-				this.store.update({
-					siteStructureItem: response,
-					isFetchingOne: false,
-				});
+				this.store.setItemValue(key, response);
+				this.store.setItemIsFetching(key, false);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isFetchingOne: false,
-				});
+				this.store.setItemError(key, error);
+				this.store.setItemIsFetching(key, false);
 			});
 	}
 
 	public async createSiteStructureItem(
 		siteId: string,
-		menuId: string,
+		siteStructureId: string,
 		body: SiteStructureItem,
-		alertId: string
+		alertId: string,
+		key = ''
 	): Promise<SiteStructureItem | undefined> {
-		// TODO: transform store to BaseMultiEntity
-		// const { isCreating } = this.query.getValue();
+		const isCreating = this.query.getItemIsCreating(key);
 
-		// if (isCreating) {
-		// 	return;
-		// }
+		if (isCreating) {
+			return;
+		}
 
-		// this.store.setIsCreating(true);
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsCreating(key, true);
 
 		return this.service
-			.createSiteStructureItem(siteId, menuId, body)
+			.createSiteStructureItem(siteId, siteStructureId, body)
 			.then((response: SiteStructureItem) => {
 				if (!response) {
 					throw new Error(`Creating siteStructureItem '${body?.label}' failed!`);
 				}
 
-				this.store.update({
-					siteStructureItem: response,
-					isCreating: false,
-				});
+				this.store.setItemValue(key, response);
+				this.store.setItemIsCreating(key, false);
 
 				// Timeout because the alert should be visible on the overview page
 				setTimeout(() => {
@@ -235,13 +276,13 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				return response;
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isCreating: false,
-				});
+				this.store.setItemIsCreating(key, false);
+				this.store.setItemError(key, error);
+
 				alertService.danger(getAlertMessages(body).create.error, {
 					containerId: alertId,
 				});
+
 				return undefined;
 			});
 	}
@@ -250,16 +291,24 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 		siteId: string,
 		menuId: string,
 		body: SiteStructureItem,
-		alertId: string
+		alertId: string,
+		key = ''
 	): Promise<void> {
-		// TODO: transform store to BaseMultiEntity
-		// const { isUpdating } = this.query.getValue();
+		if (!key) {
+			key = `${body.id}`;
+		}
 
-		// if (isUpdating) {
-		// 	return Promise.resolve();
-		// }
+		const isUpdating = this.query.getItemIsUpdating(key);
 
-		// this.store.setIsUpdating(true);
+		if (isUpdating) {
+			return Promise.resolve();
+		}
+
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsUpdating(key, true);
 
 		return this.service
 			.updateSiteStructureItem(siteId, menuId, body)
@@ -268,19 +317,15 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 					throw new Error(`Updating siteStructureItem '${body.id}' failed!`);
 				}
 
-				this.store.update({
-					isUpdating: false,
-				});
+				this.store.setItemIsUpdating(key, false);
 
 				alertService.success(getAlertMessages(response).update.success, {
 					containerId: alertId,
 				});
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isUpdating: false,
-				});
+				this.store.setItemIsUpdating(key, false);
+				this.store.setItemError(key, error);
 
 				alertService.danger(getAlertMessages(body).update.error, {
 					containerId: alertId,
@@ -290,37 +335,42 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 
 	public async rearrangeItems(
 		siteId: string,
-		menuId: string,
+		siteStructureId: string,
 		body: RearrangeNavItem[],
-		alertId: string
+		alertId: string,
+		key = ''
 	): Promise<void> {
-		const { isUpdating } = this.query.getValue();
+		if (!key) {
+			key = siteStructureId;
+		}
+
+		const isUpdating = this.query.getItemIsUpdating(key);
 
 		if (isUpdating) {
 			return Promise.resolve();
 		}
 
-		this.store.setIsUpdating(true);
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsUpdating(key, true);
 
 		return this.service
-			.rearrangeSiteStructureItems(siteId, menuId, body)
+			.rearrangeSiteStructureItems(siteId, siteStructureId, body)
 			.then(async () => {
-				const siteStructureItems = await this.siteStructureItems$.pipe(take(1)).toPromise();
+				const siteStructureItems = this.query.getItemValue(key) as NavItem[];
 
-				this.store.set(rearrangeItems(siteStructureItems, body));
-				this.store.update({
-					isUpdating: false,
-				});
+				this.store.setItemValue(key, rearrangeItems(siteStructureItems, body));
+				this.store.setItemIsUpdating(key, false);
 
 				alertService.success(getAlertMessages().rearrange.success, {
 					containerId: alertId,
 				});
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isUpdating: false,
-				});
+				this.store.setItemIsUpdating(key, false);
+				this.store.setItemError(key, error);
 
 				alertService.danger(getAlertMessages().rearrange.error, {
 					containerId: alertId,
@@ -330,26 +380,33 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 
 	public async deleteSiteStructureItem(
 		siteId: string,
-		menuId: string,
+		siteStructureId: string,
 		body: SiteStructureItem,
-		alertId: string
+		alertId: string,
+		key = ''
 	): Promise<void> {
-		const { isRemoving } = this.query.getValue();
+		if (!key) {
+			key = `${body.id}`;
+		}
+
+		const isRemoving = this.query.getItemIsRemoving(key);
 
 		if (isRemoving || !body) {
 			return Promise.resolve();
 		}
 
-		this.store.setIsRemoving(true);
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemIsRemoving(key, true);
 
 		return this.service
-			.deleteSiteStructureItem(siteId, menuId, body)
+			.deleteSiteStructureItem(siteId, siteStructureId, body)
 			.then(() => {
-				this.store.update({
-					siteStructureItem: undefined,
-					siteStructureItemDraft: undefined,
-					isRemoving: false,
-				});
+				this.store.setItemValue(key, undefined);
+				this.store.setItemValue(`${key}.draft`, undefined);
+				this.store.setItemIsRemoving(key, false);
 
 				// Timeout because the alert should be visible on the overview page
 				setTimeout(() => {
@@ -359,10 +416,8 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 				}, 300);
 			})
 			.catch(error => {
-				this.store.update({
-					error,
-					isRemoving: false,
-				});
+				this.store.setItemIsRemoving(key, false);
+				this.store.setItemError(key, error);
 
 				alertService.danger(getAlertMessages(body).delete.error, {
 					containerId: ALERT_CONTAINER_IDS.settings,
@@ -372,40 +427,61 @@ export class SiteStructureItemsFacade extends BaseEntityFacade<
 			});
 	}
 
-	public setSiteStructureItem(siteStructureItem: SiteStructureItem): void {
-		this.store.update({
-			siteStructureItem,
-		});
+	public setSiteStructureItem(siteStructureItem: SiteStructureItem, key = ''): void {
+		if (!key) {
+			key = `${siteStructureItem.id}`;
+		}
+
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemValue(key, siteStructureItem);
 	}
 
-	public setSiteStructureItemDraft(siteStructureItemDraft: SiteStructureItem): void {
-		this.store.update({
-			siteStructureItemDraft,
-		});
+	public setSiteStructureItemDraft(siteStructureItemDraft: SiteStructureItem, key = ''): void {
+		key =
+			key && key.includes('.draft')
+				? key
+				: key
+				? `${key}.draft`
+				: `${siteStructureItemDraft.id}.draft`;
+
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemValue(key, siteStructureItemDraft);
 	}
 
-	public setPendingSiteStructureItem(pendingSiteStructureItem: NavItem): void {
-		this.store.update({
-			pendingSiteStructureItem,
-		});
+	public setPendingSiteStructureItem(
+		pendingSiteStructureItem: NavItem | undefined,
+		key = ''
+	): void {
+		key =
+			key && key.includes('.pending')
+				? key
+				: key
+				? `${key}.pending`
+				: `${pendingSiteStructureItem?.id}.pending`;
+
+		if (!this.query.getItem(key)) {
+			this.store.addItem(key);
+		}
+
+		this.store.setItemValue(key, pendingSiteStructureItem);
 	}
 
-	public unsetSiteStructureItemDraft(): void {
-		this.store.update({
-			siteStructureItemDraft: undefined,
-		});
+	public unsetSiteStructureItemDraft(key: string): void {
+		this.store.setItemValue(key, undefined);
 	}
 
-	public unsetSiteStructureItem(): void {
-		this.store.update({
-			siteStructureItem: undefined,
-		});
+	public unsetSiteStructureItem(key: string): void {
+		this.store.setItemValue(key, undefined);
 	}
 
-	public unsetPendingSiteStructureItem(): void {
-		this.store.update({
-			pendingSiteStructureItem: undefined,
-		});
+	public unsetPendingSiteStructureItem(key: string): void {
+		this.store.setItemValue(key, undefined);
 	}
 }
 

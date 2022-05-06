@@ -15,12 +15,7 @@ import React, { FC, ReactElement, useEffect, useMemo } from 'react';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { createNavItemPayload, generateEmptyNavItem, getNavItemType } from '../../../helpers';
-import {
-	useSiteStructure,
-	useSiteStructureItem,
-	useSiteStructureItemDraft,
-	useSiteStructureItems,
-} from '../../../hooks';
+import { useSiteStructure, useSiteStructureItem, useSiteStructureItemDraft } from '../../../hooks';
 import {
 	ALERT_CONTAINER_IDS,
 	BREADCRUMB_OPTIONS,
@@ -47,12 +42,11 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	/**
 	 * Hooks
 	 */
-	const { siteStructureItem } = useSiteStructureItem();
-	const [siteStructureItemDraft] = useSiteStructureItemDraft();
-	const { siteStructure } = useSiteStructure();
+	const { siteStructureItem, fetchingState, upsertingState } = useSiteStructureItem('new');
+	const [siteStructureItemDraft] = useSiteStructureItemDraft('new');
+	const { siteStructure } = useSiteStructure(siteStructureId);
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
-	const { upsertingState, fetchingState } = useSiteStructureItems();
 	const [t] = translationsConnector.useCoreTranslation();
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
@@ -90,8 +84,8 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	useEffect(() => {
 		const emptyNavItem = generateEmptyNavItem(siteStructureItemType);
 
-		siteStructureItemsFacade.setSiteStructureItem(emptyNavItem);
-		siteStructureItemsFacade.setSiteStructureItemDraft(emptyNavItem);
+		siteStructureItemsFacade.setSiteStructureItem(emptyNavItem, 'new');
+		siteStructureItemsFacade.setSiteStructureItemDraft(emptyNavItem, 'new');
 	}, [siteStructureItemType]);
 
 	/**
@@ -105,7 +99,8 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 				siteId,
 				siteStructureId,
 				payload,
-				ALERT_CONTAINER_IDS.siteStructureItemsOverview
+				ALERT_CONTAINER_IDS.siteStructureItemsOverview,
+				'new'
 			)
 			.then(response => {
 				if (response && response.id) {

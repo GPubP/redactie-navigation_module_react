@@ -41,7 +41,7 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 	const { navigate, generatePath } = useNavigate(SITES_ROOT);
 	const routes = useRoutes();
 	const [t] = translationsConnector.useCoreTranslation();
-	const { siteStructure } = useSiteStructure();
+	const { siteStructure } = useSiteStructure(siteStructureId);
 	const breadcrumbs = useBreadcrumbs(
 		routes as ModuleRouteConfig[],
 		BREADCRUMB_OPTIONS(generatePath, [
@@ -67,8 +67,8 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 		upsertingState: upsertSiteStructureItemLoadingState,
 		removingState: removeSiteStructureItemLoadingState,
 		siteStructureItem,
-	} = useSiteStructureItem();
-	const [siteStructureItemDraft] = useSiteStructureItemDraft();
+	} = useSiteStructureItem(siteStructureItemId);
+	const [siteStructureItemDraft] = useSiteStructureItemDraft(siteStructureItemId);
 	const [forceNavigateToOverview] = useOnNextRender(() =>
 		navigate(MODULE_PATHS.site.siteStructureItems, { siteId, siteStructureId })
 	);
@@ -125,13 +125,14 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 			siteStructureItemsFacade.getSiteStructureItem(
 				siteId,
 				siteStructureId,
-				siteStructureItemId
+				siteStructureItemId,
+				true
 			);
 		}
 
 		return () => {
-			siteStructureItemsFacade.unsetSiteStructureItem();
-			siteStructureItemsFacade.unsetSiteStructureItemDraft();
+			siteStructureItemsFacade.unsetSiteStructureItem(siteStructureItemId);
+			siteStructureItemsFacade.unsetSiteStructureItemDraft(siteStructureItemId);
 		};
 	}, [siteId, siteStructureId, siteStructureItemId]);
 
