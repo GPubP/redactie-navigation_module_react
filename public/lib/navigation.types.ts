@@ -47,12 +47,12 @@ export interface NavigationSecurityRights {
 	read: boolean;
 	update: boolean;
 	delete: boolean;
-	contentPathUpdate: boolean;
-	replace: boolean;
-	readUrl: boolean;
-	updateUrl: boolean;
-	readUrlPattern: boolean;
-	updateUrlPattern: boolean;
+	contentPathUpdate?: boolean;
+	replace?: boolean;
+	readUrl?: boolean;
+	updateUrl?: boolean;
+	readUrlPattern?: boolean;
+	updateUrlPattern?: boolean;
 }
 
 export interface NavigationModuleProps<

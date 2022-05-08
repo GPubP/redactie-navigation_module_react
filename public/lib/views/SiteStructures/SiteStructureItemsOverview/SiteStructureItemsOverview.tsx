@@ -9,7 +9,7 @@ import rolesRightsConnector from '../../../connectors/rolesRights';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { getSiteStructureItemPath } from '../../../helpers';
 import { extractSiblings } from '../../../helpers/extractSiblings';
-import { useSiteStructureItems } from '../../../hooks';
+import { useSiteStructureItems, useSiteStructureRights } from '../../../hooks';
 import { ALERT_CONTAINER_IDS, SITES_ROOT } from '../../../navigation.const';
 import {
 	NavigationMatchProps,
@@ -41,6 +41,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
+	const [siteStructuresRights, siteStructureItemRights] = useSiteStructureRights(siteId);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [cachedItems, setCachedItems] = useState<number[]>([]);
 	const [showRearrange, setShowRearrange] = useState(false);
@@ -171,6 +172,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 				columns={SITE_STRUCTURE_ITEMS_COLUMNS(
 					t,
 					mySecurityrights,
+					[siteStructuresRights, siteStructureItemRights],
 					onRowExpand,
 					openRearrangeModal,
 					openRows

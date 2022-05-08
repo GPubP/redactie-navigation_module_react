@@ -9,7 +9,7 @@ import { ContentInfoTooltip } from '../../../components/ContentInfoTooltip';
 import { ContentTypeInfoTooltip } from '../../../components/ContentTypeInfoTooltip';
 import rolesRightsConnector from '../../../connectors/rolesRights';
 import { CORE_TRANSLATIONS } from '../../../connectors/translations';
-import { NavItemType } from '../../../navigation.types';
+import { NavigationSecurityRights, NavItemType } from '../../../navigation.types';
 
 import styles from './SiteStructureItemsOverview.module.scss';
 import { SiteStructureItemsTableRow } from './SiteStructureItemsOverview.types';
@@ -18,6 +18,7 @@ const cx = classnames.bind(styles);
 export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 	t: TranslateFunc,
 	mySecurityrights: string[],
+	[siteStructuresRights, siteStructureItemRights]: NavigationSecurityRights[],
 	expandRow: (id: number) => void,
 	openRearrangeModal: (id: number) => void,
 	openRows: string[]
@@ -97,17 +98,23 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		indentingComponent(value: string, rowData: SiteStructureItemsTableRow) {
 			return (
 				<div
-					className={cx('m-site-structure-items-table__indent-block')}
+					className={cx(
+						siteStructuresRights.update
+							? 'm-site-structure-items-table__indent-block'
+							: 'm-site-structure-items-table__indent-block-disabled'
+					)}
 					onClick={() => {
-						if (rowData.id) {
+						if (rowData.id && siteStructuresRights.update) {
 							openRearrangeModal(rowData.id);
 						}
 					}}
 				>
-					<Icon
-						name="sort"
-						className={cx('m-site-structure-items-table__indent-block__icon')}
-					/>
+					{siteStructuresRights.update && (
+						<Icon
+							name="sort"
+							className={cx('m-site-structure-items-table__indent-block__icon')}
+						/>
+					)}
 				</div>
 			);
 		},
@@ -162,7 +169,9 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 			return (
 				<rolesRightsConnector.api.components.SecurableRender
 					userSecurityRights={mySecurityrights}
-					requiredSecurityRights={[rolesRightsConnector.menuItemSecurityRights.read]}
+					requiredSecurityRights={[
+						rolesRightsConnector.siteStructureItemSecurityRights.update,
+					]}
 				>
 					<Button
 						ariaLabel="Edit"
