@@ -20,7 +20,12 @@ import {
 	getTreeConfig,
 } from '../../helpers';
 import { SITE_STRUCTURE_VALIDATION_SCHEMA } from '../../helpers/contentCompartmentHooks/beforeAfterSubmit.const';
-import { usePendingSiteStructureItem, useSiteStructure, useSiteStructureItem } from '../../hooks';
+import {
+	usePendingSiteStructureItem,
+	useSiteStructure,
+	useSiteStructureItem,
+	useSiteStructureRights,
+} from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues } from '../../navigation.const';
@@ -45,6 +50,8 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	const [siteStructuresLoadingState, siteStructures] = useSiteStructures(siteId);
 	const internalFormRef = useRef<FormikBag<any, any>>(null);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
+
+	const [siteStructuresRights] = useSiteStructureRights(siteId);
 
 	const siteStructureForLang = useMemo(() => {
 		if (!siteStructures || !siteId || !activeLanguage) {
@@ -242,6 +249,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 										<div className="a-input has-icon-right u-margin-bottom">
 											<Field
 												as={TextField}
+												disabled={!siteStructuresRights.update}
 												id="Label"
 												name="label"
 												label="Label"
@@ -260,6 +268,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 										<div className="a-input has-icon-right">
 											<Field
 												as={Textarea}
+												disabled={!siteStructuresRights.update}
 												id="Label"
 												name="description"
 												label={t(CORE_TRANSLATIONS.DESCRIPTION)}
