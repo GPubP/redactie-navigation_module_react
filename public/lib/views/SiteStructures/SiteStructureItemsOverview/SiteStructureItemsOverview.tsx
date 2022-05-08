@@ -41,7 +41,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 		siteUuid: siteId,
 		onlyKeys: true,
 	});
-	const [siteStructuresRights, siteStructureItemRights] = useSiteStructureRights(siteId);
+	const [siteStructuresRights] = useSiteStructureRights(siteId);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
 	const [cachedItems, setCachedItems] = useState<number[]>([]);
 	const [showRearrange, setShowRearrange] = useState(false);
@@ -172,7 +172,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 				columns={SITE_STRUCTURE_ITEMS_COLUMNS(
 					t,
 					mySecurityrights,
-					[siteStructuresRights, siteStructureItemRights],
+					siteStructuresRights,
 					onRowExpand,
 					openRearrangeModal,
 					openRows

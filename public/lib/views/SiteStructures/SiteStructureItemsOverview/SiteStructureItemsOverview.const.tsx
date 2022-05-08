@@ -18,7 +18,7 @@ const cx = classnames.bind(styles);
 export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 	t: TranslateFunc,
 	mySecurityrights: string[],
-	[siteStructuresRights, siteStructureItemRights]: NavigationSecurityRights[],
+	siteStructuresRights: NavigationSecurityRights,
 	expandRow: (id: number) => void,
 	openRearrangeModal: (id: number) => void,
 	openRows: string[]
