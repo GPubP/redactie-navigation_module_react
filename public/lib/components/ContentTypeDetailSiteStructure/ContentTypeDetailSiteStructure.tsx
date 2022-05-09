@@ -215,7 +215,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 							value={getPositionInputValue(treeConfig.options, value)}
 						/>
 
-						{value.length > 0 && siteStructuresRights.delete && (
+						{value.length > 0 && (
 							<span
 								className="fa"
 								style={{
