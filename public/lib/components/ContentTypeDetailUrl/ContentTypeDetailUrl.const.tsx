@@ -19,6 +19,11 @@ export const PATTERN_PLACEHOLDERS = (
 	includeSitePatterns = false
 ): PatternRowData[] => [
 	{
+		key: '[item:slug]',
+		description: tModule(MODULE_TRANSLATIONS.PATTERN_SLUG_DESCRIPTION),
+		example: 'een-artikel',
+	},
+	{
 		key: '[item:id]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_ID_DESCRIPTION),
 		example: '17389b47-8870-4ac5-91d7-292d9998b650',
@@ -32,11 +37,6 @@ export const PATTERN_PLACEHOLDERS = (
 		key: '[item:lang]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_LANG_DESCRIPTION),
 		example: 'nl',
-	},
-	{
-		key: '[item:slug]',
-		description: tModule(MODULE_TRANSLATIONS.PATTERN_SLUG_DESCRIPTION),
-		example: 'een-artikel',
 	},
 	{
 		key: '[item:created]',
