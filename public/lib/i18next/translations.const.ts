@@ -6,6 +6,7 @@ const tKey = translationsConnector.core.tKey;
 
 const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	VARIABLE: tKey('VARIABLE', 'Variabele'),
+	EDIT: tKey('EDIT', 'Bijwerken'),
 	TABLE_LABEL: tKey('TABLE_LABEL', 'Label'),
 	TABLE_MENU: tKey('TABLE_MENU', 'Menu'),
 	TABLE_POSITION: tKey('TABLE_POSITION', 'Positie'),
@@ -140,6 +141,14 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		"Er zijn geen menu's geconfigureerd voor deze site."
 	),
 	TABLE_MENU_FETCH_MESSAGE: tKey('TABLE_MENU_FETCH_MESSAGE', "Menu's ophalen"),
+	CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE: tKey(
+		'CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE',
+		'Opgelet, dit content item staat niet op de voorziene positie'
+	),
+	CONTENT_SITE_STRUCTURE_INVALID_POSITION_DESCRIPTION: tKey(
+		'CONTENT_SITE_STRUCTURE_INVALID_POSITION_DESCRIPTION',
+		'De contentbeheerder heeft de positie anders ingesteld voor dit content type. \n Wil je de positie van dit content item bijwerken?'
+	),
 });
 
 export { MODULE_TRANSLATIONS };

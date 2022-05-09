@@ -157,7 +157,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	}, [siteId]);
 
 	useEffect(() => {
-		if (pendingSiteStructureItem || siteStructureItemLoadingState !== LoadingState.Loaded) {
+		if (siteStructureItemLoadingState !== LoadingState.Loaded) {
 			return;
 		}
 
@@ -166,7 +166,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			`${contentItem?.uuid}`
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [siteStructureItem]);
+	}, [siteStructureItem, siteStructureItemLoadingState]);
 
 	/**
 	 * Functions

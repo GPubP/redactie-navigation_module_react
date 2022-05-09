@@ -12,7 +12,7 @@ export const getTreeConfig = <
 } => {
 	if (tree) {
 		let activeItem;
-		const mapTreeItemsToOptions = (items: U[]): CascaderOption[] => {
+		const mapTreeItemsToOptions = (items: U[], parentId?: number): CascaderOption[] => {
 			return items
 				.map((item: U) => {
 					// Filter out the current navigation item from the position list
@@ -21,13 +21,16 @@ export const getTreeConfig = <
 					const parsedTreeItemId =
 						typeof treeItemId === 'string' ? parseInt(treeItemId, 10) : treeItemId;
 					if (item.id === parsedTreeItemId) {
-						activeItem = item;
+						activeItem = {
+							...item,
+							parentId,
+						};
 						return null;
 					}
 					return {
 						value: item.id,
 						label: item.label,
-						children: mapTreeItemsToOptions(item.items || []),
+						children: mapTreeItemsToOptions(item.items || [], item.id),
 					};
 				})
 				.filter(item => item !== null) as CascaderOption[];
