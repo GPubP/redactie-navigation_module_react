@@ -4,7 +4,12 @@ import {
 	ActionBarContentSection,
 	LanguageHeaderContext,
 } from '@acpaas-ui/react-editorial-components';
-import { FormikOnChangeHandler, LeavePrompt, RenderChildRoutes } from '@redactie/utils';
+import {
+	alertService,
+	FormikOnChangeHandler,
+	LeavePrompt,
+	RenderChildRoutes,
+} from '@redactie/utils';
 import { Formik, FormikErrors, FormikValues } from 'formik';
 import { isEmpty } from 'lodash';
 import React, { FC, useContext, useEffect, useState } from 'react';
@@ -14,6 +19,7 @@ import { siteContentTypeDetailTabRoutes } from '../../..';
 import languagesConnector from '../../connectors/languages';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { getCompartmentErrors } from '../../helpers';
+import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 
 import {
 	FORM_VALIDATION_SCHEMA,
@@ -39,7 +45,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	const [t] = translationsConnector.useCoreTranslation();
 	const [, languages] = languagesConnector.hooks.useActiveLanguagesForSite(siteId);
 	const { setErrors } = useContext(LanguageHeaderContext);
-	const [activeCompartment, setActiveCompartment] = useState(child ?? NavSiteCompartments.url);
+	const [activeCompartment, setActiveCompartment] = useState(child ?? NavSiteCompartments.menu);
+	const [invalidCompartment, setInvalidCompartment] = useState<string[]>();
 	const [currentFormErrors, setCurrentFormErrors] = useState<FormikErrors<FormikValues>>({});
 
 	useEffect(() => {
@@ -53,8 +60,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 
 			return !!Object.values(compartmentErrors).find(langErrors => !isEmpty(langErrors));
 		});
-
 		onValidateCompartments(invalidCompartments);
+		setInvalidCompartment(invalidCompartments);
 	};
 
 	const handleOnError = (values: FormikValues, formErrors: FormikErrors<FormikValues>): void => {
@@ -62,6 +69,17 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 		validateCompartments(formErrors);
 		setFormValue(values);
 		setErrors(getCompartmentErrors(formErrors, formValue, activeCompartment));
+	};
+
+	const alert = (): void => {
+		alertService.invalidForm({
+			containerId: ALERT_CONTAINER_IDS.contentTypeEdit,
+		});
+	};
+
+	const onChange = (values: FormikValues): void => {
+		setFormValue(values);
+		alertService.dismiss();
 	};
 
 	return (
@@ -74,7 +92,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 			{({ submitForm }) => {
 				return (
 					<div className="u-margin-top">
-						<FormikOnChangeHandler onChange={setFormValue} onError={handleOnError} />
+						<FormikOnChangeHandler onChange={onChange} onError={handleOnError} />
 						<RenderChildRoutes
 							routes={siteContentTypeDetailTabRoutes}
 							extraOptions={{
@@ -82,6 +100,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 								activeLanguage,
 								setActiveCompartment,
 								contentType,
+								value,
 							}}
 						/>
 						<ActionBar className="o-action-bar--fixed" isOpen>
@@ -97,7 +116,11 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 									<Button
 										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
 										disabled={isLoading || !hasChanges}
-										onClick={submitForm}
+										onClick={
+											invalidCompartment && invalidCompartment.length > 0
+												? alert
+												: submitForm
+										}
 										type="success"
 										htmlType="submit"
 									>
