@@ -64,13 +64,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 		const urlPattern = pathOr('', ['url', 'urlPattern', activeLanguage.key], values);
 
 		if (!cursorPosition) {
-			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}${key}`);
+			setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${urlPattern}/${key}`);
 			return;
 		}
 
 		const left = urlPattern.substring(0, cursorPosition);
 		const right = urlPattern.substring(cursorPosition);
-		setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${left}${key}${right}`);
+		setFieldValue(`url.urlPattern.${activeLanguage.key}`, `${left}/${key}${right}`);
 		setCursorPosition(null);
 	};
 
