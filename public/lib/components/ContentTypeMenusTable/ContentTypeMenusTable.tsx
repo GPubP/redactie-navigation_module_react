@@ -35,6 +35,7 @@ const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
 	siteId,
 	name,
 	activeLanguage,
+	value,
 }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
@@ -72,7 +73,7 @@ const ContentTypeMenusTable: FC<ContentTypeMenusTableProps> = ({
 			return [];
 		}
 
-		const currentMenus = pathOr([], ['menu', 'allowedMenus', activeLanguage.key], values);
+		const currentMenus = value.menu.allowedMenus[activeLanguage.key];
 
 		return menus.map(menu => ({
 			id: menu.id,

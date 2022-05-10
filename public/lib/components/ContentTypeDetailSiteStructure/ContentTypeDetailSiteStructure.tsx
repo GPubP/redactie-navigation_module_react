@@ -26,8 +26,11 @@ import { CONFIG, PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../n
 import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
+import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 
-const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentType }) => {
+const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
+	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
+}> = ({ siteId, contentType, setActiveCompartment }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue, touched } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
@@ -52,6 +55,11 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 		{}
 	);
 	const [siteStructuresRights] = useSiteStructureRights(siteId);
+
+	useEffect(() => {
+		setActiveCompartment(NavSiteCompartments.siteStructure);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
 	useEffect(() => {
 		if (
@@ -171,8 +179,8 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps> = ({ siteId, contentT
 			...siteStructurePosition,
 			[activeLanguage.key]: [],
 		});
-		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, null);
-		setFieldValue(`siteStructure.position.${activeLanguage.key}`, null);
+		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, '');
+		setFieldValue(`siteStructure.position.${activeLanguage.key}`, '');
 	};
 
 	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {

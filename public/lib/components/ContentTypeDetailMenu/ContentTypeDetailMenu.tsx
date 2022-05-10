@@ -8,13 +8,15 @@ import translationsConnector from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { ContentTypeMenusTable } from '../ContentTypeMenusTable';
 import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
+import { ContentTypeSiteDetailTabFormState } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.types';
 
 import { ALLOW_MENUS_OPTIONS } from './ContentTypeDetailMenu.const';
 
 const ContentTypeDetailMenu: FC<ExternalTabProps & {
 	activeLanguage: Language;
 	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
-}> = ({ siteId, activeLanguage, setActiveCompartment }) => {
+	value: ContentTypeSiteDetailTabFormState;
+}> = ({ siteId, activeLanguage, setActiveCompartment, value }) => {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue } = useFormikContext<FormikValues>();
 
@@ -56,6 +58,7 @@ const ContentTypeDetailMenu: FC<ExternalTabProps & {
 							siteId={siteId}
 							name="menu.allowedMenus"
 							activeLanguage={activeLanguage}
+							value={value}
 						/>
 					</div>
 				</div>

@@ -42,6 +42,7 @@ export class MenuItemsApiService {
 				searchParams: {
 					startitem,
 					depth,
+					pagesize: -1,
 				},
 			})
 			.json();
