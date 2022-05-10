@@ -99,9 +99,9 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 			return (
 				<div
 					className={cx(
-						siteStructuresRights.update
-							? 'm-site-structure-items-table__indent-block'
-							: 'm-site-structure-items-table__indent-block-disabled'
+						'm-site-structure-items-table__indent-block',
+						!siteStructuresRights.update &&
+							'm-site-structure-items-table__indent-block--disabled'
 					)}
 					onClick={() => {
 						if (rowData.id && siteStructuresRights.update) {

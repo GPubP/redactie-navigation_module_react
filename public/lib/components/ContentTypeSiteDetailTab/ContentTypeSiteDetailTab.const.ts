@@ -50,6 +50,7 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 					.test(
 						'invalidCharacters',
 						"Er zijn ongeldige tekens gebruikt. Je kan enkel letters, cijfers en volgende tekens gebruiken: $ – _ . + ! * ‘ ( ) , ? ' .",
+						// eslint-disable-next-line no-useless-escape
 						value => value && /^[\w-_.:$–+!$(),‘'*?//\[//\]/]*$/.test(value)
 					)
 					.test({

@@ -39,19 +39,6 @@
 		flex-direction: row;
 	}
 
-	&__indent-block-disabled {
-		background-color: $grey-lighter;
-		width: $spacer-md;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-		border-right: 1px solid $white;
-		flex-shrink: 0;
-		min-height: 4rem;
-		cursor: not-allowed;
-		pointer-events: all;
-	}
-
 	&__indent-block {
 		background-color: $grey-lighter;
 		width: $spacer-md;
@@ -63,6 +50,11 @@
 		flex-shrink: 0;
 		min-height: 4rem;
 
+		&--disabled {
+			cursor: not-allowed !important;
+			pointer-events: all !important;
+		}
+
 		&__icon {
 			display: none;
 			color: $white;
@@ -73,10 +65,12 @@
 			cursor: pointer;
 
 			&:hover {
-				background-color: $brand-primary;
+				&:not(.m-site-structure-items-table__indent-block--disabled) {
+					background-color: $brand-primary;
 
-				.m-site-structure-items-table__indent-block__icon {
-					display: inline-block;
+					.m-site-structure-items-table__indent-block__icon {
+						display: inline-block;
+					}
 				}
 			}
 		}
