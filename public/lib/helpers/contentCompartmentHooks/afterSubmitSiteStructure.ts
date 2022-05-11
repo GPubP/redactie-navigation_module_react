@@ -65,7 +65,6 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 			omit(['weight', 'parents'], pendingSiteStructureItem) as NavItem,
 			ALERT_CONTAINER_IDS.siteStructureItemsOverview
 		);
-		siteStructureItemsFacade.setPendingSiteStructureItem(undefined, contentItem.uuid);
 		return Promise.resolve();
 	}
 
@@ -87,7 +86,6 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 		},
 		ALERT_CONTAINER_IDS.siteStructureItemsOverview
 	);
-	siteStructureItemsFacade.setPendingSiteStructureItem(undefined, contentItem.uuid);
 };
 
 export default afterSubmitSiteStructure;

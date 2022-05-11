@@ -1,9 +1,9 @@
-import { Button } from '@acpaas-ui/react-components';
+import { Alert, Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { difference, isNil, pathOr, propOr } from 'ramda';
-import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import translationsConnector from '../../connectors/translations';
@@ -53,7 +53,9 @@ const StructureCascader = ({
 	const [siteStructuresRights] = useSiteStructureRights(siteId);
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
+	const [standardPosition, setStandardPosition] = useState<number[]>([]);
 	const [fieldPositionArray, setFieldPositionArray] = useState<number[]>([]);
+	const [isInvalidPosition, setIsInvalidPosition] = useState<boolean>();
 
 	const type = useMemo(() => {
 		const structurePosition = pathOr<PositionValues>(
@@ -73,11 +75,31 @@ const StructureCascader = ({
 		return CTStructureTypes.isLimitedAndNotEditable;
 	}, [CTStructureConfig]);
 
-	const standardPosition = useMemo(() => {
-		return !isNil(CTStructureConfig?.position[activeLanguage]) && treeConfig.options.length > 0
-			? findPosition(treeConfig.options, CTStructureConfig?.position[activeLanguage])
+	const getPosition = useCallback(() => {
+		let itemId = CTStructureConfig?.position[activeLanguage];
+
+		// Prevent item pointing to itself
+		if (Number(CTStructureConfig?.position[activeLanguage]) === treeConfig?.activeItem?.id) {
+			itemId = treeConfig.activeItem.parentId;
+		}
+
+		return !isNil(itemId) && treeConfig.options.length > 0
+			? findPosition(treeConfig.options, itemId)
 			: [];
-	}, [CTStructureConfig.position, activeLanguage, treeConfig.options]);
+	}, [CTStructureConfig.position, activeLanguage, treeConfig]);
+
+	useEffect(() => {
+		const position = getPosition();
+
+		if (siteStructureItem?.parentId && !position.includes(siteStructureItem?.parentId)) {
+			setIsInvalidPosition(true);
+			return;
+		}
+
+		setFieldValue('position', position);
+		setStandardPosition(position);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [setFieldValue, siteStructureItem]);
 
 	const availableLimitedSiteStructure = useMemo(() => {
 		return getAvailableSiteStructureOptions(standardPosition, siteStructure);
@@ -130,88 +152,118 @@ const StructureCascader = ({
 		return <span className="u-margin-right-xs">{`${positionValue} >`}</span>;
 	};
 
+	const setValidPosition = (): void => {
+		const position = getPosition();
+		setStandardPosition(position);
+		setFieldValue('position', position);
+		setIsInvalidPosition(false);
+	};
+
 	return (
-		<div
-			className={classNames('a-input has-icon-right u-margin-bottom', {
-				'is-required': required,
-				'has-error': propOr(false, 'error')(state),
-			})}
-			style={{ flexGrow: 1 }}
-		>
-			<label
-				className={classNames('a-input__label', {
-					'u-no-margin': type === CTStructureTypes.isLimitedAndNotEditable,
-				})}
-				htmlFor="text-field"
-			>
-				{label as string}
-			</label>
-			{type === CTStructureTypes.isLimitedAndNotEditable && (
-				<small>{tModule(MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_HINT)}</small>
+		<>
+			{isInvalidPosition && (
+				<Alert className="u-margin-bottom" closable={false} type="danger">
+					<h5 className="u-margin-bottom-xs">
+						<i className="fa fa-info-circle u-margin-right-xs" />
+						{tModule(MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE)}
+					</h5>
+					<p>
+						{tModule(
+							MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_INVALID_POSITION_DESCRIPTION
+						)}
+					</p>
+					<Button type="danger" className="u-margin-top" onClick={setValidPosition}>
+						{tModule(MODULE_TRANSLATIONS.EDIT)}
+					</Button>
+				</Alert>
 			)}
-			<div className="u-flex u-flex-align-center">
-				{type === CTStructureTypes.isLimitedAndEditable && renderCTStructure(pathPrefix)}
-				<Cascader
-					changeOnSelect
-					value={fieldPositionArray}
-					options={
-						type === CTStructureTypes.isLimitedAndEditable
-							? availableLimitedTreeConfig.options
-							: treeConfig.options
-					}
-					disabled={disabled}
-					onChange={(value: number[]) => {
-						type !== CTStructureTypes.isLimitedAndNotEditable &&
-							handlePositionOnChange(
-								type === CTStructureTypes.isLimitedAndEditable
-									? [...standardPosition, ...value]
-									: value
-							);
-					}}
+			<div
+				className={classNames('a-input has-icon-right u-margin-bottom', {
+					'is-required': required,
+					'has-error': propOr(false, 'error')(state),
+				})}
+				style={{ flexGrow: 1 }}
+			>
+				<label
+					className={classNames('a-input__label', {
+						'u-no-margin': type === CTStructureTypes.isLimitedAndNotEditable,
+					})}
+					htmlFor="text-field"
 				>
-					<div className="a-input__wrapper u-flex-item">
-						<input
-							onChange={() => null}
-							disabled={disabled}
-							placeholder={placeholder}
-							value={getPositionInputValue(
-								type === CTStructureTypes.isLimitedAndEditable
-									? availableLimitedTreeConfig.options
-									: treeConfig.options,
-								fieldPositionArray
-							)}
-						/>
-						{type === CTStructureTypes.isLimitedAndEditable &&
-							fieldPositionArray &&
-							fieldPositionArray.length > 0 &&
-							!disabled && (
-								<span
-									className="fa"
-									style={{
-										pointerEvents: 'initial',
-										cursor: 'pointer',
-									}}
-								>
-									<Button
-										icon="close"
-										ariaLabel="Close"
-										size="small"
-										transparent
+					{label as string}
+				</label>
+				{type === CTStructureTypes.isLimitedAndNotEditable && (
+					<small>
+						{tModule(MODULE_TRANSLATIONS.CONTENT_SITE_STRUCTURE_POSITION_HINT)}
+					</small>
+				)}
+				<div className="u-flex u-flex-align-center">
+					{type === CTStructureTypes.isLimitedAndEditable &&
+						renderCTStructure(pathPrefix)}
+					<Cascader
+						changeOnSelect
+						value={fieldPositionArray}
+						options={
+							type === CTStructureTypes.isLimitedAndEditable
+								? availableLimitedTreeConfig.options
+								: treeConfig.options
+						}
+						disabled={disabled || isInvalidPosition}
+						onChange={(value: number[]) => {
+							type !== CTStructureTypes.isLimitedAndNotEditable &&
+								handlePositionOnChange(
+									type === CTStructureTypes.isLimitedAndEditable
+										? [...standardPosition, ...value]
+										: value
+								);
+						}}
+					>
+						<div className="a-input__wrapper u-flex-item">
+							<input
+								onChange={() => null}
+								disabled={disabled || isInvalidPosition}
+								placeholder={placeholder}
+								value={getPositionInputValue(
+									type === CTStructureTypes.isLimitedAndEditable &&
+										!isInvalidPosition
+										? availableLimitedTreeConfig.options
+										: treeConfig.options,
+									fieldPositionArray
+								)}
+							/>
+							{type === CTStructureTypes.isLimitedAndEditable &&
+								fieldPositionArray &&
+								fieldPositionArray.length > 0 &&
+								!disabled &&
+								!isInvalidPosition && (
+									<span
+										className="fa"
 										style={{
-											top: '-2px',
+											pointerEvents: 'initial',
+											cursor: 'pointer',
 										}}
-										onClick={(e: React.SyntheticEvent) => {
-											e.preventDefault();
-											e.stopPropagation();
-											setFieldValue('position', standardPosition);
-										}}
-									/>
-								</span>
-							)}
-					</div>
-				</Cascader>
+									>
+										<Button
+											icon="close"
+											ariaLabel="Close"
+											size="small"
+											transparent
+											style={{
+												top: '-2px',
+											}}
+											onClick={(e: React.SyntheticEvent) => {
+												e.preventDefault();
+												e.stopPropagation();
+												setFieldValue('position', standardPosition);
+											}}
+										/>
+									</span>
+								)}
+						</div>
+					</Cascader>
+				</div>
 			</div>
-		</div>
+		</>
 	);
 };
 
