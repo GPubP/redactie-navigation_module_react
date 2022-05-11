@@ -48,6 +48,7 @@ export class SiteStructureItemsApiService {
 				searchParams: {
 					startitem,
 					depth,
+					pagesize: -1,
 				},
 			})
 			.json();

@@ -15,7 +15,11 @@ import languagesConnector from '../../connectors/languages';
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
 import { findPosition, getPositionInputValue, getTreeConfig } from '../../helpers';
-import { useContentTypeSiteStructureItems, useSiteStructure } from '../../hooks';
+import {
+	useContentTypeSiteStructureItems,
+	useSiteStructure,
+	useSiteStructureRights,
+} from '../../hooks';
 import { useSiteStructures } from '../../hooks/useSiteStructures';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { CONFIG, PositionValues, SITE_STRUCTURE_POSITION_OPTIONS } from '../../navigation.const';
@@ -50,6 +54,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 	const [siteStructurePosition, setSiteStructurePosition] = useState<Record<string, number[]>>(
 		{}
 	);
+	const [siteStructuresRights] = useSiteStructureRights(siteId);
 
 	useEffect(() => {
 		setActiveCompartment(NavSiteCompartments.siteStructure);
@@ -183,6 +188,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 
 		const disabled =
 			!treeConfig.options.length ||
+			!siteStructuresRights.update ||
 			loadingState === LoadingState.Loading ||
 			fetchingState === LoadingState.Loading;
 
@@ -245,23 +251,27 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 
 	return (
 		<div>
-			<div className="u-margin-bottom">
-				<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_DESCRIPTION)}</p>
-			</div>
-			<div className="row">
-				<div className="col-xs-12">
-					<Field
-						as={RadioGroup}
-						id="structurePosition"
-						name="siteStructure.structurePosition"
-						options={SITE_STRUCTURE_POSITION_OPTIONS}
-						value={
-							values.siteStructure?.structurePosition ||
-							SITE_STRUCTURE_POSITION_OPTIONS[0].value
-						}
-					/>
-				</div>
-			</div>
+			{siteStructuresRights.update && (
+				<>
+					<div className="u-margin-bottom">
+						<p>{tModule(MODULE_TRANSLATIONS.NAVIGATION_SITE_STRUCTURE_DESCRIPTION)}</p>
+					</div>
+					<div className="row">
+						<div className="col-xs-12">
+							<Field
+								as={RadioGroup}
+								id="structurePosition"
+								name="siteStructure.structurePosition"
+								options={SITE_STRUCTURE_POSITION_OPTIONS}
+								value={
+									values.siteStructure?.structurePosition ||
+									SITE_STRUCTURE_POSITION_OPTIONS[0].value
+								}
+							/>
+						</div>
+					</div>
+				</>
+			)}
 			{values.siteStructure?.structurePosition &&
 				values.siteStructure?.structurePosition !== PositionValues.none && (
 					<div className="row u-margin-top">
@@ -281,6 +291,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 									<Field
 										as={Checkbox}
 										checked={values.siteStructure?.editablePosition}
+										disabled={!siteStructuresRights.update}
 										id="editable"
 										name="siteStructure.editablePosition"
 										label={tModule(MODULE_TRANSLATIONS.EDITABLE)}
