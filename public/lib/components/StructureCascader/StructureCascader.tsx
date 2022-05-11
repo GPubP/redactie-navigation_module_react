@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { difference, isNil, pathOr, propOr } from 'ramda';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
+import { useParams } from 'react-router-dom';
 
 import translationsConnector from '../../connectors/translations';
 import {
@@ -12,6 +13,7 @@ import {
 	getPositionInputValue,
 	getTreeConfig,
 } from '../../helpers';
+import { useSiteStructureRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { PositionValues } from '../../navigation.const';
 import { CascaderOption, NavItem } from '../../navigation.types';
@@ -47,6 +49,8 @@ const StructureCascader = ({
 	placeholder: string;
 	siteStructureItem: NavItem | undefined;
 }): ReactElement => {
+	const { siteId } = useParams<{ siteId: string }>();
+	const [siteStructuresRights] = useSiteStructureRights(siteId);
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { setFieldValue } = useFormikContext<FormikValues>();
 	const [fieldPositionArray, setFieldPositionArray] = useState<number[]>([]);
@@ -104,9 +108,15 @@ const StructureCascader = ({
 			(type === CTStructureTypes.isLimitedAndEditable &&
 				!availableLimitedTreeConfig.options.length) ||
 			type === CTStructureTypes.isLimitedAndNotEditable ||
-			!treeConfig.options.length
+			!treeConfig.options.length ||
+			!siteStructuresRights.update
 		);
-	}, [availableLimitedTreeConfig.options.length, treeConfig.options.length, type]);
+	}, [
+		availableLimitedTreeConfig.options.length,
+		treeConfig.options.length,
+		type,
+		siteStructuresRights.update,
+	]);
 
 	const handlePositionOnChange = (value: number[]): void => {
 		setFieldValue('position', value);

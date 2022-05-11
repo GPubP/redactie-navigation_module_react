@@ -532,6 +532,13 @@ export const siteContentTypeDetailTabRoutes: ChildModuleRouteConfig[] = [
 		path: MODULE_PATHS.site.contentTypeDetailExternalSiteStructure,
 		breadcrumb: false,
 		component: ContentTypeDetailSiteStructure,
+		guardOptions: {
+			guards: [
+				rolesRightsConnector.api.guards.securityRightsSiteGuard('siteId', [
+					rolesRightsConnector.siteStructuresSecurityRights.read,
+				]),
+			],
+		},
 	},
 ];
 

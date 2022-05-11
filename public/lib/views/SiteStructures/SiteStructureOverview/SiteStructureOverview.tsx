@@ -19,6 +19,7 @@ import {
 } from '@redactie/utils';
 import React, { FC, ReactElement, useEffect, useMemo, useState } from 'react';
 
+import rolesRightsConnector from '../../../connectors/rolesRights';
 import sitesConnector from '../../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../../connectors/translations';
 import { useSiteStructures } from '../../../hooks/useSiteStructures';
@@ -49,6 +50,11 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 		BREADCRUMB_OPTIONS(generatePath)
 	);
 	const [site] = sitesConnector.hooks.useSite(siteId);
+
+	const [, mySecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForSite({
+		siteUuid: siteId,
+		onlyKeys: true,
+	});
 
 	const [loadingState, siteStructures, siteStructuresPaging] = useSiteStructures(siteId);
 
@@ -119,7 +125,7 @@ const SiteStructureOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({
 				fixed
 				className="u-margin-top"
 				tableClassName="a-table--fixed--xs"
-				columns={OVERVIEW_COLUMNS(t)}
+				columns={OVERVIEW_COLUMNS(t, mySecurityrights)}
 				rows={customSiteStructuresRows}
 				currentPage={query.page}
 				itemsPerPage={DEFAULT_QUERY_PARAMS.pagesize}
