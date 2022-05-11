@@ -8,8 +8,8 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
 /**
  *
- * The beforeSubmit hook
- * This function is called before submitting a content item.
+ * The after hook
+ * This function is called before after submitting a content item.
  */
 const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	error,
