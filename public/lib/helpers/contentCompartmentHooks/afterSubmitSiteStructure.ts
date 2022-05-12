@@ -9,7 +9,7 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 /**
  *
  * The after hook
- * This function is called before after submitting a content item.
+ * This function is called after submitting a content item.
  */
 const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	error,
