@@ -67,8 +67,12 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 		contentItem?.meta.status === ContentStatus.UNPUBLISHED &&
 		prevContentItem?.meta?.status !== ContentStatus.UNPUBLISHED
 	);
+
+	if (!contentItem?.fields?.titel?.text || !contentItem?.fields?.teaser?.text) {
+		return Promise.reject();
+	}
+
 	const siteStructures = await siteStructuresApiService.getSiteStructures(site.uuid, {});
-	console.log({ siteStructures });
 	const siteStructureForLang = siteStructures._embedded.resourceList.find(i =>
 		i.category.label.endsWith(`_${contentItem.meta.lang}`)
 	);
