@@ -68,7 +68,7 @@ const MenuItemsOverview: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({ rig
 			return {
 				id: menuItem.id as number,
 				label: menuItem.label,
-				url: `${url}/${menuItem.slug}`,
+				url: url,
 				siteUrl: url,
 				type: menuItemType,
 				slug: menuItem.slug,
