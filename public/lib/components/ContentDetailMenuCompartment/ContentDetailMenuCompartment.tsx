@@ -35,6 +35,7 @@ import { NavItem, NavItemType, NavTree, RearrangeNavItem } from '../../navigatio
 import { MenuItem } from '../../services/menuItems';
 import { menuItemsFacade } from '../../store/menuItems';
 import { menusFacade } from '../../store/menus';
+import { NAV_STATUSES } from '../ContentDetailCompartment';
 import { MenuItemModal } from '../MenuItemModal';
 import { NavItemDetailForm } from '../NavItemDetailForm';
 import { NewMenuItemForm } from '../NewMenuItemForm';
@@ -113,6 +114,9 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		const emptyMenuItem = generateEmptyNavItem(NavItemType.internal, {
 			label: contentValue?.fields.titel?.text,
 			description: contentValue?.fields.teaser?.text,
+			publishStatus: contentValue?.meta.published
+				? NAV_STATUSES.PUBLISHED
+				: NAV_STATUSES.DRAFT,
 		});
 
 		menuItemsFacade.setMenuItem(emptyMenuItem);
@@ -392,6 +396,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					canEdit={true}
 					parentChanged={parentChanged}
 					onRearrange={onRearrange}
+					isPublishedContentItem={!!contentItem?.meta.published}
 					copy={{
 						label: tModule(MODULE_TRANSLATIONS.MENU_ITEM_LABEL_DESCRIPTION),
 						statusCheckbox: tModule(
@@ -493,6 +498,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				menuItemDraft={menuItemDraft || ({} as NavItem)}
 				menuItems={menuItems || []}
 				loading={loading}
+				isPublishedContentItem={!!contentItem?.meta.published}
 				onSave={() => onSave()}
 				onChange={onChangeForm}
 			/>
