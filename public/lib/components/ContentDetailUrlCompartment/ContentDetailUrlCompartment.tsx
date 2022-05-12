@@ -90,8 +90,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 								{contentTypeUrlPattern !==
 									(contentItem?.meta?.urlPath &&
 										contentItem?.meta?.urlPath![activeLanguage!].pattern) &&
-									contentItem?._id &&
-									navigationRights.updateUrl && (
+									contentItem?._id && (
 										<Alert
 											className="u-margin-bottom"
 											closable={false}
@@ -105,7 +104,7 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 												De content beheerder heeft het standaard pad voor
 												dit item ingesteld op `{contentTypeUrlPattern}`
 												<br />
-												Wil je de url van dit content item bijwerken?
+												Wil je het pad van dit content item bijwerken?
 											</p>
 											<Button
 												type="danger"
