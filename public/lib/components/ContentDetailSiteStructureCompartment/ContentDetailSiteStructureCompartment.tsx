@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { CardBody, Textarea, TextField } from '@acpaas-ui/react-components';
 import { CompartmentProps } from '@redactie/content-module';
 import {
@@ -164,7 +163,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	}, [siteId]);
 
 	useEffect(() => {
-		if (siteStructureItemLoadingState !== LoadingState.Loaded) {
+		if (siteStructureItemLoadingState !== LoadingState.Loaded || pendingSiteStructureItem) {
 			return;
 		}
 
