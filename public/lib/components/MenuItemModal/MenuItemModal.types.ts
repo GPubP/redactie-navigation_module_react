@@ -10,6 +10,7 @@ export interface MenuItemModalProps {
 	menuItems: NavItem[];
 	loading: boolean;
 	formikRef: Ref<FormikProps<FormikValues>>;
+	isPublishedContentItem: boolean;
 	onChange: (values: NavItemDetailForm) => void;
 	onSave: () => void;
 	onClose: () => void;

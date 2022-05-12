@@ -24,6 +24,7 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 	menuItems,
 	loading,
 	formikRef,
+	isPublishedContentItem,
 	onClose,
 	onChange,
 	onSave,
@@ -49,6 +50,7 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 						navItemType={NavItemType.internalOnContentUpsert}
 						onChange={onChange}
 						canEdit={true}
+						isPublishedContentItem={isPublishedContentItem}
 						copy={{
 							label: tModule(MODULE_TRANSLATIONS.MENU_ITEM_LABEL_DESCRIPTION),
 							statusCheckbox: tModule(

@@ -23,6 +23,7 @@ export interface NavItemDetailFormProps {
 		label: string;
 		statusCheckbox: string;
 	};
+	isPublishedContentItem?: boolean;
 	formikRef: Ref<FormikProps<FormikValues>>;
 	onRearrange?: (items: RearrangeNavItem[]) => Promise<void>;
 	onChange: (values: NavItemDetailForm) => void;

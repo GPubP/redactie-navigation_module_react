@@ -38,10 +38,11 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	copy,
 	canEdit,
 	formikRef,
+	isPublishedContentItem = false,
 	onRearrange,
 	onChange,
 }) => {
-	const [contentItemPublished, setContentItemPublished] = useState(false);
+	const [contentItemPublished, setContentItemPublished] = useState(isPublishedContentItem);
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
 	const [tModule] = translationsConnector.useModuleTranslation();
