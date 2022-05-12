@@ -43,6 +43,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	const pendingSiteStructureItem = siteStructureItemsFacade.getItemValue(
 		`${contentItem.uuid}.pending`
 	) as NavItem;
+	console.log('got pending', pendingSiteStructureItem, contentItem.uuid);
 
 	if (isEmpty(pendingSiteStructureItem)) {
 		return Promise.resolve();

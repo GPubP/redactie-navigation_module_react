@@ -1,14 +1,12 @@
 import { ExternalCompartmentBeforeSubmitFn } from '@redactie/content-module';
-import { omit } from 'lodash';
-import { isEmpty, pathOr } from 'ramda';
+import { pathOr } from 'ramda';
 
 import { NAV_STATUSES } from '../../components';
-import { ALERT_CONTAINER_IDS, CONFIG, PositionValues } from '../../navigation.const';
+import { CONFIG, PositionValues } from '../../navigation.const';
 import { ContentStatus, NavItem, NavItemType } from '../../navigation.types';
 import { siteStructureItemsApiService } from '../../services/siteStructureItems';
-import { SiteStructure, siteStructuresApiService } from '../../services/siteStructures';
+import { siteStructuresApiService } from '../../services/siteStructures';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
-import { siteStructuresFacade } from '../../store/siteStructures';
 import { generateEmptyNavItem } from '../generateEmptyNavItem';
 
 /**
@@ -70,19 +68,18 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 		prevContentItem?.meta?.status !== ContentStatus.UNPUBLISHED
 	);
 	const siteStructures = await siteStructuresApiService.getSiteStructures(site.uuid, {});
+	console.log({ siteStructures });
 	const siteStructureForLang = siteStructures._embedded.resourceList.find(i =>
 		i.category.label.endsWith(`_${contentItem.meta.lang}`)
 	);
 
-	await siteStructureItemsFacade.createSiteStructureItem(
-		site?.uuid!,
-		`${siteStructureForLang?.id}`,
+	siteStructureItemsFacade.setPendingSiteStructureItem(
 		generateEmptyNavItem(NavItemType.primary, {
 			label: contentItem?.fields?.titel?.text,
 			description: contentItem?.fields?.teaser?.text,
 			parentId: position,
+			treeId: siteStructureForLang?.id,
 			slug: contentItem.meta.slug[contentItem.meta.lang],
-			externalReference: contentItem.uuid,
 			externalUrl: (site?.data.url as any)[contentItem.meta.lang],
 			...(contentIsPublished && {
 				publishStatus: NAV_STATUSES.PUBLISHED,
@@ -91,7 +88,7 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 				publishStatus: NAV_STATUSES.ARCHIVED,
 			}),
 		}),
-		ALERT_CONTAINER_IDS.siteStructureItemsOverview
+		contentItem.uuid
 	);
 };
 
