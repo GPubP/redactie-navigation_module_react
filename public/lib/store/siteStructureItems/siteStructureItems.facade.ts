@@ -242,8 +242,9 @@ export class SiteStructureItemsFacade extends BaseMultiEntityFacade<
 		siteStructureId: string,
 		body: SiteStructureItem,
 		alertId: string,
-		key = ''
+		inputKey = ''
 	): Promise<SiteStructureItem | undefined> {
+		const key = inputKey || body.externalReference || 'new';
 		const isCreating = this.query.getItemIsCreating(key);
 
 		if (isCreating) {
@@ -481,7 +482,7 @@ export class SiteStructureItemsFacade extends BaseMultiEntityFacade<
 	}
 
 	public unsetPendingSiteStructureItem(key: string): void {
-		this.store.setItemValue(key, undefined);
+		this.store.remove(key.includes('.pending') ? key : `${key}.pending`);
 	}
 }
 

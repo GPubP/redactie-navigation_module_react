@@ -3,9 +3,8 @@ import { CascaderOption } from '../navigation.types';
 export const findPosition = (treeOptions: CascaderOption[], treeItemId?: number): number[] => {
 	const reduceTreeOptions = (options: CascaderOption[]): number[] => {
 		return options.reduce((acc, option) => {
-			if (option.value == treeItemId) {
-				acc.push(option.value);
-				return acc;
+			if (option.value === treeItemId) {
+				return [...acc, option.value];
 			}
 
 			if (option.children && option.children.length > 0) {
