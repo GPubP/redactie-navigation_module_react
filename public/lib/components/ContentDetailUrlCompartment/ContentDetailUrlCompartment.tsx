@@ -138,7 +138,6 @@ const ContentTypeDetailUrl: FC<CompartmentProps> = ({
 											<Field
 												as={TextField}
 												id="slug"
-												disabled={!navigationRights.updateUrl}
 												name={`meta.slug.${activeLanguage}`}
 												label="Slug"
 												required={true}
