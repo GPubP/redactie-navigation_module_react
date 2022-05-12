@@ -37,6 +37,7 @@ import {
 	beforeSubmitNavigation,
 } from './lib/helpers/contentCompartmentHooks';
 import { SITE_STRUCTURE_VALIDATION_SCHEMA } from './lib/helpers/contentCompartmentHooks/beforeAfterSubmit.const';
+import beforeSubmitSiteStructure from './lib/helpers/contentCompartmentHooks/beforeSubmitSiteStructure';
 import { registerTranslations } from './lib/i18next';
 import { CONFIG, CtTypes, MODULE_PATHS, PositionValues } from './lib/navigation.const';
 import { NavigationModuleProps } from './lib/navigation.types';
@@ -454,6 +455,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 	component: ContentDetailSiteStructureCompartment,
 	isValid: true,
 	afterSubmit: afterSubmitSiteStructure,
+	beforeSubmit: beforeSubmitSiteStructure,
 	// TODO: fix validation
 	validate: values => {
 		const pendingSiteStructureItem = siteStructureItemsFacade.pendingSiteStructureItemSync(

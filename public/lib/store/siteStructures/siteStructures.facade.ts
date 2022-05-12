@@ -21,12 +21,12 @@ export class SiteStructuresFacade extends BaseMultiEntityFacade<
 > {
 	public readonly meta$ = this.query.meta$;
 
-	public getSiteStructures(
+	public async getSiteStructures(
 		siteId: string,
 		searchParams: SearchParams,
 		reload = false,
 		key = ''
-	): void {
+	): Promise<void> {
 		if (!key) {
 			key = siteId;
 		}
@@ -44,7 +44,7 @@ export class SiteStructuresFacade extends BaseMultiEntityFacade<
 
 		this.store.setItemIsFetching(key, true);
 
-		this.service
+		await this.service
 			.getSiteStructures(siteId, searchParams)
 			.then((response: SiteStructuresResponse) => {
 				if (!response) {

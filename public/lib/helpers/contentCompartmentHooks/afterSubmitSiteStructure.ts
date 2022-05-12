@@ -8,8 +8,8 @@ import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 
 /**
  *
- * The beforeSubmit hook
- * This function is called before submitting a content item.
+ * The afterSubmit hook
+ * This function is called after submitting a content item.
  */
 const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	error,
@@ -43,6 +43,7 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	const pendingSiteStructureItem = siteStructureItemsFacade.getItemValue(
 		`${contentItem.uuid}.pending`
 	) as NavItem;
+	console.log('got pending', pendingSiteStructureItem, contentItem.uuid);
 
 	if (isEmpty(pendingSiteStructureItem)) {
 		return Promise.resolve();
