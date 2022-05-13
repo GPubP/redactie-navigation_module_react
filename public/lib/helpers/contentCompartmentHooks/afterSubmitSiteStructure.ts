@@ -70,7 +70,8 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 						(contentItem?.meta?.urlPath || {})[contentItem.meta.lang]?.value
 					}`,
 				},
-				ALERT_CONTAINER_IDS.siteStructureItemsOverview
+				ALERT_CONTAINER_IDS.siteStructureItemsOverview,
+				contentItem.uuid
 			);
 
 			await sitestructureBreadcrumbsFacade.getBreadcrumbs(
@@ -102,7 +103,8 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 					type: NavItemType.primary,
 				},
 			},
-			ALERT_CONTAINER_IDS.siteStructureItemsOverview
+			ALERT_CONTAINER_IDS.siteStructureItemsOverview,
+			contentItem.uuid
 		);
 
 		siteStructureItemsFacade.unsetPendingSiteStructureItem(`${contentItem.uuid}`);
