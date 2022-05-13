@@ -2,7 +2,7 @@ import { Alert, Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { difference, isNil, pathOr, propOr } from 'ramda';
+import { difference, isNil, pathOr, propOr, startsWith } from 'ramda';
 import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -90,9 +90,8 @@ const StructureCascader = ({
 
 	useEffect(() => {
 		const position = getPosition();
-		const parentPathMatches = position.reduce((_, pos, index) => value[index] === pos, true);
 
-		if (!parentPathMatches && type !== CTStructureTypes.unlimited) {
+		if (!startsWith(position, value) && type !== CTStructureTypes.unlimited) {
 			setIsInvalidPosition(true);
 			return;
 		}

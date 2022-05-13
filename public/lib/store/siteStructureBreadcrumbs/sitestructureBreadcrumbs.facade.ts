@@ -22,11 +22,11 @@ export class SitestructureBreadcrumbsFacade extends BaseMultiEntityFacade<
 		contentItemId: string,
 		reload = false
 	): Promise<void> {
-		// Check if there is already a greeting
+		// Check if there is already a breadcrumb for this content item
 		const oldBreadcrumbs = this.query.getItem(contentItemId);
 		const oldBreadcrumbsValue = this.query.getItemValue(contentItemId);
 
-		// Do nothing when greeting is already present and reload is set to false
+		// Do nothing when the breadcrumb is already present and reload is set to false
 		if ((!reload && oldBreadcrumbsValue) || (!reload && oldBreadcrumbs?.error)) {
 			return;
 		}
