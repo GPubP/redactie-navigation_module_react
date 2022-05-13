@@ -75,7 +75,7 @@ const SiteStructureItemsOverview: FC<SiteStructureDetailRouteProps<NavigationMat
 			return {
 				id: siteStructureItem.id as number,
 				label: siteStructureItem.label,
-				url: `${url}/${siteStructureItem.slug}`,
+				url: url,
 				siteUrl: url,
 				externalReference: siteStructureItem.externalReference,
 				type: siteStructureItemType,

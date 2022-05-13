@@ -110,7 +110,7 @@ export const MENU_ITEMS_COLUMNS = (
 		width: '15%',
 		disableSorting: true,
 		component(value: string, { type, slug }: MenuItemsTableRow) {
-			return type === NavItemType.internal ? (
+			return [NavItemType.internal, NavItemType.primary].includes(type) ? (
 				<div>
 					<ContentInfoTooltip slug={slug} />
 				</div>

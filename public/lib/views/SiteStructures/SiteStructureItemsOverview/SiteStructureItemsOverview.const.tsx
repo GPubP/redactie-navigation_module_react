@@ -124,7 +124,7 @@ export const SITE_STRUCTURE_ITEMS_COLUMNS = (
 		width: '15%',
 		disableSorting: true,
 		component(_: string, { type, slug, externalReference }: SiteStructureItemsTableRow) {
-			if (type === NavItemType.internal) {
+			if ([NavItemType.internal, NavItemType.primary].includes(type)) {
 				return (
 					<div>
 						<ContentInfoTooltip slug={slug} />
