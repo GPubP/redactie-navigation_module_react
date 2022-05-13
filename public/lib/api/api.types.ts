@@ -1,3 +1,4 @@
+import { NavItem } from '../navigation.types';
 import { SitestructureBreadcrumbsFacade } from '../store/siteStructureBreadcrumbs/sitestructureBreadcrumbs.facade';
 
 export interface NavigationAPI {
@@ -5,3 +6,5 @@ export interface NavigationAPI {
 		sitestructureBreadcrumbsFacade: SitestructureBreadcrumbsFacade;
 	};
 }
+
+export { NavItem };

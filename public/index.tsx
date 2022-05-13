@@ -569,4 +569,3 @@ sitesConnector.registerSiteUpdateTab(CONFIG.name, {
 registerNavigationAPI();
 
 export * from './lib/api/api.types';
-export * from './lib/navigation.types';
