@@ -230,7 +230,8 @@ const StructureCascader = ({
 									fieldPositionArray
 								)}
 							/>
-							{type === CTStructureTypes.isLimitedAndEditable &&
+							{(type === CTStructureTypes.isLimitedAndEditable ||
+								type === CTStructureTypes.unlimited) &&
 								fieldPositionArray &&
 								fieldPositionArray.length > 0 &&
 								!disabled &&
@@ -253,7 +254,17 @@ const StructureCascader = ({
 											onClick={(e: React.SyntheticEvent) => {
 												e.preventDefault();
 												e.stopPropagation();
-												setFieldValue('position', standardPosition);
+
+												if (
+													type === CTStructureTypes.isLimitedAndEditable
+												) {
+													return setFieldValue(
+														'position',
+														standardPosition
+													);
+												}
+
+												setFieldValue('position', []);
 											}}
 										/>
 									</span>
