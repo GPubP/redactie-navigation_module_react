@@ -2,8 +2,8 @@ import { Alert, Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { difference, isNil, pathOr, propOr } from 'ramda';
-import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { difference, isNil, pathOr, propOr, startsWith } from 'ramda';
+import React, { ReactElement, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import translationsConnector from '../../connectors/translations';
@@ -75,7 +75,7 @@ const StructureCascader = ({
 		return CTStructureTypes.isLimitedAndNotEditable;
 	}, [CTStructureConfig]);
 
-	const getPosition = useCallback(() => {
+	const getPosition = (): number[] => {
 		let itemId = CTStructureConfig?.position[activeLanguage];
 
 		// Prevent item pointing to itself
@@ -86,20 +86,28 @@ const StructureCascader = ({
 		return !isNil(itemId) && treeConfig.options.length > 0
 			? findPosition(treeConfig.options, itemId)
 			: [];
-	}, [CTStructureConfig.position, activeLanguage, treeConfig]);
+	};
 
 	useEffect(() => {
 		const position = getPosition();
 
-		if (siteStructureItem?.parentId && !position.includes(siteStructureItem?.parentId)) {
+		if (!startsWith(position, value) && type !== CTStructureTypes.unlimited) {
 			setIsInvalidPosition(true);
 			return;
 		}
 
-		setFieldValue('position', position);
 		setStandardPosition(position);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setFieldValue, siteStructureItem]);
+	}, [setFieldValue, siteStructureItem, type]);
+
+	useEffect(() => {
+		if (type === CTStructureTypes.isLimitedAndEditable) {
+			setFieldPositionArray(difference(value, standardPosition));
+			return;
+		}
+
+		setFieldPositionArray(value);
+	}, [standardPosition, type, value]);
 
 	const availableLimitedSiteStructure = useMemo(() => {
 		return getAvailableSiteStructureOptions(standardPosition, siteStructure);
@@ -115,15 +123,6 @@ const StructureCascader = ({
 	const pathPrefix = useMemo(() => {
 		return getPositionInputValue(treeConfig.options as any, standardPosition);
 	}, [standardPosition, treeConfig.options]);
-
-	useEffect(() => {
-		if (type === CTStructureTypes.isLimitedAndEditable) {
-			setFieldPositionArray(difference(value, standardPosition));
-			return;
-		}
-
-		setFieldPositionArray(value);
-	}, [standardPosition, type, value]);
 
 	const disabled = useMemo(() => {
 		return (

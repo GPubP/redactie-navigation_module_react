@@ -1,6 +1,6 @@
 {
   "name": "@redactie/navigation-module",
-  "version": "2.5.1",
+  "version": "2.6.1",
   "description": "redactie navigation module",
   "main": "dist/redactie-navigation-module.umd.js",
   "types": "dist/index.d.ts",
@@ -18,7 +18,7 @@
     "test": "jest ./public",
     "trans:extract": "./node_modules/.bin/i18next-scanner --config i18next-scanner.config.js",
     "docs": "npm run docs:html && npm run docs:markdown",
-    "docs:html": "typedoc --plugin none --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate --out docs",
+    "docs:html": "typedoc --plugin none --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate --out docs/html",
     "docs:markdown": "typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/index.ts --excludePrivate --theme github-wiki --out docs/markdown"
   },
   "repository": {

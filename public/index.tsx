@@ -8,6 +8,7 @@ import { RenderChildRoutes, SiteContext, TenantContext } from '@redactie/utils';
 import React, { FC, useMemo } from 'react';
 import { take } from 'rxjs/operators';
 
+import { registerNavigationAPI } from './lib/api/index';
 import { menuCanShown, siteStructureCanShown } from './lib/canShowns';
 import {
 	ContentDetailCompartment,
@@ -564,3 +565,7 @@ sitesConnector.registerSiteUpdateTab(CONFIG.name, {
 	component: SiteNavigationTab,
 	containerId: 'update' as any,
 });
+
+registerNavigationAPI();
+
+export * from './lib/api/api.types';
