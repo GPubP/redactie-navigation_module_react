@@ -9,6 +9,10 @@ const useNavigationRights = (siteId: string): NavigationSecurityRights => {
 		onlyKeys: true,
 	});
 
+	const [, myTenantSecurityrights] = rolesRightsConnector.api.hooks.useMySecurityRightsForTenant(
+		true
+	);
+
 	const navigationRights = useMemo(
 		() => ({
 			delete: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
@@ -44,8 +48,16 @@ const useNavigationRights = (siteId: string): NavigationSecurityRights => {
 				mySecurityrights,
 				[rolesRightsConnector.securityRights.updateUrlPattern]
 			),
+			readTenantUrlPattern: rolesRightsConnector.api.helpers.checkSecurityRights(
+				myTenantSecurityrights,
+				[rolesRightsConnector.securityRights.readUrlPattern]
+			),
+			updateTenantUrlPattern: rolesRightsConnector.api.helpers.checkSecurityRights(
+				myTenantSecurityrights,
+				[rolesRightsConnector.securityRights.updateUrlPattern]
+			),
 		}),
-		[mySecurityrights]
+		[mySecurityrights, myTenantSecurityrights]
 	);
 
 	return navigationRights;

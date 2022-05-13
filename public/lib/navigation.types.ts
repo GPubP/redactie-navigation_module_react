@@ -53,6 +53,8 @@ export interface NavigationSecurityRights {
 	updateUrl?: boolean;
 	readUrlPattern?: boolean;
 	updateUrlPattern?: boolean;
+	readTenantUrlPattern?: boolean;
+	updateTenantUrlPattern?: boolean;
 }
 
 export interface NavigationModuleProps<
