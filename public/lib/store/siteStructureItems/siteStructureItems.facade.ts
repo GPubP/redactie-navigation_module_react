@@ -181,11 +181,13 @@ export class SiteStructureItemsFacade extends BaseMultiEntityFacade<
 						startitem === 0
 							? response?._embedded.resourceList
 							: response?._embedded.resourceList[0].items,
-						pathOr(
-							0,
-							['_embedded', 'resourceList', 0, 'items', 0, 'parentId'],
-							response
-						)
+						startitem === 0
+							? 0
+							: pathOr(
+									0,
+									['_embedded', 'resourceList', 0, 'items', 0, 'parentId'],
+									response
+							  )
 					)
 				);
 
