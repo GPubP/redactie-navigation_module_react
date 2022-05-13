@@ -1,20 +1,15 @@
-import { Button, Checkbox, RadioGroup } from '@acpaas-ui/react-components';
-import { Cascader, LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
+import { Checkbox, RadioGroup } from '@acpaas-ui/react-components';
+import { LanguageHeaderContext } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-module';
-import {
-	FormikMultilanguageField,
-	FormikMultilanguageFieldProps,
-	LoadingState,
-} from '@redactie/utils';
-import classNames from 'classnames';
+import { FormikMultilanguageField, LoadingState } from '@redactie/utils';
 import { Field, FormikValues, useFormikContext } from 'formik';
-import { isEmpty, isNil, pathOr } from 'ramda';
+import { isEmpty, isNil } from 'ramda';
 import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 import languagesConnector from '../../connectors/languages';
 import sitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
-import { findPosition, getPositionInputValue, getTreeConfig } from '../../helpers';
+import { findPosition, getTreeConfig } from '../../helpers';
 import {
 	useContentTypeSiteStructureItems,
 	useSiteStructure,
@@ -27,6 +22,7 @@ import { CascaderOption, NavItem, NavTree } from '../../navigation.types';
 import { siteStructureItemsFacade } from '../../store/siteStructureItems';
 import { siteStructuresFacade } from '../../store/siteStructures';
 import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
+import ContentTypeStructureCascader from '../ContentTypeStructureCascader/ContentTypeScructureCascader';
 
 const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
@@ -34,7 +30,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const { values, setFieldValue, touched } = useFormikContext<FormikValues>();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
-	const [loadingState, siteStructures] = useSiteStructures(siteId);
+	const [, siteStructures] = useSiteStructures(siteId);
 	const [
 		contentTypeSiteStructureItemsLoading,
 		contentTypeSiteStructureItems,
@@ -46,7 +42,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 	const [langSiteStructureId, setLangSiteStructureId] = useState<number | undefined>(
 		prevLangSiteStructure.current
 	);
-	const { fetchingState, siteStructure } = useSiteStructure(`${langSiteStructureId}`);
+	const { siteStructure } = useSiteStructure(`${langSiteStructureId}`);
 	const siteStructureItem = useMemo(() => {
 		return contentTypeSiteStructureItems?.find(item => item.treeId === siteStructure?.id);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
@@ -171,7 +167,7 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 		setFieldValue('siteStructure.editablePosition', e.target.checked);
 	};
 
-	const onClearInput = (e: React.SyntheticEvent): void => {
+	const handleClearInput = (e: React.SyntheticEvent): void => {
 		e.preventDefault();
 		e.stopPropagation();
 
@@ -181,72 +177,6 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 		});
 		setFieldValue(`pendingCTSiteStructure.${activeLanguage.key}.position`, '');
 		setFieldValue(`siteStructure.position.${activeLanguage.key}`, '');
-	};
-
-	const renderCascader = (props: FormikMultilanguageFieldProps): React.ReactElement => {
-		const value = siteStructurePosition[activeLanguage.key] || [];
-
-		const disabled =
-			!treeConfig.options.length ||
-			!siteStructuresRights.update ||
-			loadingState === LoadingState.Loading ||
-			fetchingState === LoadingState.Loading;
-
-		return (
-			<div
-				className={classNames('a-input has-icon-right', {
-					'is-required': props.required,
-					'has-error': pathOr(false, ['state', 'error'])(props),
-				})}
-				style={{ flexGrow: 1 }}
-			>
-				<label className="a-input__label" htmlFor="text-field">
-					{props.label as string}
-				</label>
-				<small>{tModule(MODULE_TRANSLATIONS.CT_SITE_STRUCTURE_POSITION_DESCRIPTION)}</small>
-				<Cascader
-					changeOnSelect
-					value={value}
-					options={treeConfig.options}
-					disabled={disabled}
-					onChange={(value: number[]) => handlePositionOnChange(value)}
-				>
-					<div className="a-input__wrapper">
-						<input
-							onChange={() => null}
-							disabled={disabled}
-							placeholder={
-								!treeConfig.options.length
-									? tModule(MODULE_TRANSLATIONS.NO_OPTIONS_AVAILABLE)
-									: tModule(MODULE_TRANSLATIONS.SELECT_TREE_POSITION)
-							}
-							value={getPositionInputValue(treeConfig.options, value)}
-						/>
-
-						{value.length > 0 && (
-							<span
-								className="fa"
-								style={{
-									pointerEvents: 'initial',
-									cursor: 'pointer',
-								}}
-							>
-								<Button
-									icon="close"
-									ariaLabel="Close"
-									size="small"
-									transparent
-									style={{
-										top: '-2px',
-									}}
-									onClick={onClearInput}
-								/>
-							</span>
-						)}
-					</div>
-				</Cascader>
-			</div>
-		);
 	};
 
 	return (
@@ -277,7 +207,12 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 					<div className="row u-margin-top">
 						<div className="col-xs-12">
 							<FormikMultilanguageField
-								asComponent={renderCascader}
+								siteStructurePosition={siteStructurePosition}
+								handleClearInput={handleClearInput}
+								handlePositionOnChange={handlePositionOnChange}
+								siteId={siteId}
+								treeConfig={treeConfig}
+								asComponent={ContentTypeStructureCascader}
 								label={tModule(MODULE_TRANSLATIONS.DEFAULT_POSITION)}
 								name="siteStructure.position"
 								placeholder={tModule(MODULE_TRANSLATIONS.SELECT_POSITION)}
