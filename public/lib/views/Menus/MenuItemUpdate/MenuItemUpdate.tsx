@@ -172,6 +172,11 @@ const MenuItemUpdate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({ route, 
 				extraOptions={{
 					onSubmit: update,
 					onDelete: deleteMenuItem,
+					onCancel: () =>
+						navigate(MODULE_PATHS.site.menuItems, {
+							siteId,
+							menuId,
+						}),
 					loading: isLoading,
 					removing: isRemoving,
 					rights,

@@ -112,7 +112,11 @@ const MenuItemCreate: FC<NavigationModuleProps<MenuItemMatchProps>> = ({
 			routes={route.routes}
 			extraOptions={{
 				loading: isLoading,
-				onCancel: () => navigate(MODULE_PATHS.overview),
+				onCancel: () =>
+					navigate(MODULE_PATHS.site.menuItems, {
+						siteId,
+						menuId,
+					}),
 				onSubmit: createItem,
 				menu,
 				menuItem,

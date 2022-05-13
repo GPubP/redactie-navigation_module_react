@@ -195,6 +195,11 @@ const SiteStructureItemUpdate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 				extraOptions={{
 					onSubmit: update,
 					onDelete: deleteSiteStructureItem,
+					onCancel: () =>
+						navigate(MODULE_PATHS.site.siteStructureItems, {
+							siteId,
+							siteStructureId,
+						}),
 					loading: isLoading,
 					removing: isRemoving,
 					rights,
