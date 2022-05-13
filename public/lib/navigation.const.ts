@@ -21,8 +21,6 @@ export const MODULE_PATHS = {
 	admin: `/content/overzicht`,
 
 	root: MENUS_BASE_PATH,
-	overview: `${MENUS_BASE_PATH}/overzicht`,
-
 	create: `${MENUS_BASE_PATH}/aanmaken`,
 
 	tenantContentTypeDetailExternal: `${CONTENT_TYPE_DETAIL_BASE_PATH}/:tab`,

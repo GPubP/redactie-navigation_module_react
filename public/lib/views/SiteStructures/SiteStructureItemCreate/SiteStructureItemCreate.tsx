@@ -125,7 +125,11 @@ const SiteStructureItemCreate: FC<NavigationModuleProps<SiteStructureItemMatchPr
 			routes={route.routes}
 			extraOptions={{
 				loading: isLoading,
-				onCancel: () => navigate(MODULE_PATHS.overview),
+				onCancel: () =>
+					navigate(MODULE_PATHS.site.siteStructureItems, {
+						siteId,
+						siteStructureId,
+					}),
 				onSubmit: createItem,
 				siteStructure,
 				siteStructureItem,
