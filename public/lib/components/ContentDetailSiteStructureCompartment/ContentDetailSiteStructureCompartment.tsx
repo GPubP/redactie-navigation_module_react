@@ -104,6 +104,19 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 					: [],
 		};
 
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			{
+				...(pendingSiteStructureItem as NavItem),
+				...(!pendingSiteStructureItem?.treeId && {
+					treeId: siteStructureForLang?.id,
+				}),
+				label: formValue.label,
+				description: formValue.description,
+				parentId: formValue.position?.slice(-1)[0],
+			},
+			`${contentItem?.uuid}`
+		);
+
 		return formValue;
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [siteStructureItem, treeConfig.options, siteStructureForLang, initialLoading]);
@@ -150,27 +163,16 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	}, [siteId]);
 
 	useEffect(() => {
-		if (
-			siteStructureItemLoadingState !== LoadingState.Loaded ||
-			pendingSiteStructureItem ||
-			!initialFormValue
-		) {
+		if (siteStructureItemLoadingState !== LoadingState.Loaded || pendingSiteStructureItem) {
 			return;
 		}
 
 		siteStructureItemsFacade.setPendingSiteStructureItem(
-			siteStructureItem
-				? siteStructureItem
-				: generateEmptyNavItem(NavItemType.primary, {
-						treeId: siteStructureForLang?.id,
-						label: initialFormValue?.label,
-						description: initialFormValue?.description,
-						parentId: initialFormValue?.position?.slice(-1)[0],
-				  }),
+			siteStructureItem ? siteStructureItem : generateEmptyNavItem(NavItemType.primary),
 			`${contentItem?.uuid}`
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [siteStructureItem, siteStructureItemLoadingState, initialFormValue]);
+	}, [siteStructureItem, siteStructureItemLoadingState]);
 
 	/**
 	 * Functions
