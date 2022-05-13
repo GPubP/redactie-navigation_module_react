@@ -109,7 +109,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 			<Table
 				fixed
 				className="u-margin-top"
-				columns={PATTERN_COLUMNS(t, tModule, importPattern)}
+				columns={PATTERN_COLUMNS(t, tModule, importPattern, navigationRights, siteId)}
 				rows={placeholders}
 			/>
 		</div>

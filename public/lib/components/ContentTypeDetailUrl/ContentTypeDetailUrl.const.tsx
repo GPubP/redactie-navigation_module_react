@@ -3,11 +3,10 @@ import { TranslateFunc } from '@redactie/translations-module';
 import { TableColumn } from '@redactie/utils';
 import classNames from 'classnames/bind';
 import React from 'react';
-import { useParams } from 'react-router-dom';
 
 import { CORE_TRANSLATIONS } from '../../connectors/translations';
-import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
+import { NavigationSecurityRights } from '../../navigation.types';
 
 import styles from './ContentTypeDetailUrl.module.scss';
 import { PatternRowData } from './ContentTypeDetailUrl.types';
@@ -72,11 +71,10 @@ export const PATTERN_PLACEHOLDERS = (
 export const PATTERN_COLUMNS = (
 	t: TranslateFunc,
 	tModule: TranslateFunc,
-	importPlaceholder: (key: string) => void
+	importPlaceholder: (key: string) => void,
+	navigationRights: NavigationSecurityRights,
+	siteId?: string
 ): TableColumn<PatternRowData>[] => {
-	const { siteId } = useParams<{ siteId: string }>();
-	const navigationRights = useNavigationRights(siteId);
-
 	const defaultColumns: TableColumn<PatternRowData>[] = [
 		{
 			label: tModule(MODULE_TRANSLATIONS.VARIABLE),
@@ -100,7 +98,12 @@ export const PATTERN_COLUMNS = (
 			width: '25%',
 		},
 	];
-	if (!navigationRights.updateUrlPattern) {
+
+	if (!navigationRights.updateUrlPattern && siteId) {
+		return defaultColumns;
+	}
+
+	if (!navigationRights.updateTenantUrlPattern && !siteId) {
 		return defaultColumns;
 	}
 
