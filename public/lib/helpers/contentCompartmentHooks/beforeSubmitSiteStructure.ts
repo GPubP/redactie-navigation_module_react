@@ -37,7 +37,8 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 		modulesConfig
 	);
 
-	const isEditable = structurePosition === PositionValues.limited && position;
+	const isEditable =
+		[PositionValues.limited, PositionValues.unlimited].includes(structurePosition) && position;
 
 	if (!isEditable) {
 		return Promise.resolve();
@@ -84,13 +85,14 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 			parentId: position,
 			treeId: siteStructureForLang?.id,
 			slug: contentItem.meta.slug[contentItem.meta.lang],
-			externalUrl: (site?.data.url as any)[contentItem.meta.lang],
-			...(contentIsPublished && {
-				publishStatus: NAV_STATUSES.PUBLISHED,
-			}),
-			...(contentIsArchived && {
-				publishStatus: NAV_STATUSES.ARCHIVED,
-			}),
+			externalUrl: `${(site?.data.url as any)[contentItem.meta.lang]}${
+				(contentItem?.meta?.urlPath || {})[contentItem.meta.lang]?.value
+			}`,
+			publishStatus: contentIsPublished
+				? NAV_STATUSES.PUBLISHED
+				: contentIsArchived
+				? NAV_STATUSES.ARCHIVED
+				: NAV_STATUSES.DRAFT,
 		}),
 		contentItem.uuid
 	);

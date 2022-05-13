@@ -49,8 +49,12 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	const [siteStructuresLoadingState, siteStructures] = useSiteStructures(siteId);
 	const internalFormRef = useRef<FormikBag<any, any>>(null);
 	const [initialLoading, setInitialLoading] = useState(LoadingState.Loading);
-
 	const [siteStructuresRights] = useSiteStructureRights(siteId);
+	const {
+		siteStructureItem,
+		fetchingState: siteStructureItemLoadingState,
+	} = useSiteStructureItem(`${contentItem?.uuid}`);
+	const [pendingSiteStructureItem] = usePendingSiteStructureItem(`${contentItem?.uuid}`);
 
 	const siteStructureForLang = useMemo(() => {
 		if (!siteStructures || !siteId || !activeLanguage) {
@@ -59,13 +63,6 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 
 		return siteStructures.find(i => i.lang === activeLanguage) || null;
 	}, [activeLanguage, siteId, siteStructures]);
-
-	const {
-		siteStructureItem,
-		fetchingState: siteStructureItemLoadingState,
-	} = useSiteStructureItem(`${contentItem?.uuid}`);
-
-	const [pendingSiteStructureItem] = usePendingSiteStructureItem(`${contentItem?.uuid}`);
 
 	const { siteStructure, fetchingState: siteStructureLoadingState } = useSiteStructure(
 		`${siteStructureForLang?.id}`
@@ -91,12 +88,12 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			label:
 				pendingSiteStructureItem?.label ||
 				siteStructureItem?.label ||
-				contentValue?.fields.titel?.text ||
+				contentValue?.fields?.titel?.text ||
 				'',
 			description:
 				pendingSiteStructureItem?.description ||
 				siteStructureItem?.description ||
-				contentValue?.fields.teaser?.text ||
+				contentValue?.fields?.teaser?.text ||
 				'',
 			position:
 				!isNil(siteStructureItem?.parentId) && treeConfig.options.length > 0
@@ -163,7 +160,11 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 	}, [siteId]);
 
 	useEffect(() => {
-		if (siteStructureItemLoadingState !== LoadingState.Loaded || pendingSiteStructureItem) {
+		if (
+			siteStructureItemLoadingState !== LoadingState.Loaded ||
+			!siteStructureItem ||
+			pendingSiteStructureItem
+		) {
 			return;
 		}
 
@@ -190,6 +191,7 @@ const ContentDetailNavigationStructureCompartment: FC<CompartmentProps> = ({
 			},
 			`${contentItem?.uuid}`
 		);
+
 		onChange(values);
 	};
 
