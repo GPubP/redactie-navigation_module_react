@@ -188,6 +188,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 							className="u-margin-top"
 							type="danger"
 							iconLeft="trash-o"
+							disabled={values.itemCount || occurrences?.length}
 						>
 							{t(CORE_TRANSLATIONS['BUTTON_REMOVE'])}
 						</Button>
