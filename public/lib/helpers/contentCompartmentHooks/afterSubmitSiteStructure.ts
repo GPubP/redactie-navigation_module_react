@@ -43,7 +43,6 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 	const pendingSiteStructureItem = siteStructureItemsFacade.getItemValue(
 		`${contentItem.uuid}.pending`
 	) as NavItem;
-	console.log('got pending', pendingSiteStructureItem, contentItem.uuid);
 
 	if (isEmpty(pendingSiteStructureItem)) {
 		return Promise.resolve();
@@ -64,7 +63,8 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 			site?.uuid!,
 			`${pendingSiteStructureItem?.treeId}`,
 			omit(['weight', 'parents'], pendingSiteStructureItem) as NavItem,
-			ALERT_CONTAINER_IDS.siteStructureItemsOverview
+			ALERT_CONTAINER_IDS.siteStructureItemsOverview,
+			contentItem.uuid
 		);
 		return Promise.resolve();
 	}
@@ -85,7 +85,8 @@ const afterSubmitSiteStructure: ExternalCompartmentAfterSubmitFn = async (
 				publishStatus: NAV_STATUSES.ARCHIVED,
 			}),
 		},
-		ALERT_CONTAINER_IDS.siteStructureItemsOverview
+		ALERT_CONTAINER_IDS.siteStructureItemsOverview,
+		contentItem.uuid
 	);
 };
 

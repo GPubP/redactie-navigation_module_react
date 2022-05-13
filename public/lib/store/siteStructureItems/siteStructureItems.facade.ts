@@ -317,6 +317,7 @@ export class SiteStructureItemsFacade extends BaseMultiEntityFacade<
 					throw new Error(`Updating siteStructureItem '${body.id}' failed!`);
 				}
 
+				this.store.setItemValue(key, response);
 				this.store.setItemIsUpdating(key, false);
 
 				alertService.success(getAlertMessages(response).update.success, {

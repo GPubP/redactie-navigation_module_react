@@ -2,7 +2,7 @@ import { Alert, Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
-import { difference, isNil, pathOr, propOr } from 'ramda';
+import { difference, isNil, pathOr, propOr, startsWith } from 'ramda';
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -89,17 +89,17 @@ const StructureCascader = ({
 	}, [CTStructureConfig.position, activeLanguage, treeConfig]);
 
 	useEffect(() => {
+		setIsInvalidPosition(false);
 		const position = getPosition();
 
-		if (siteStructureItem?.parentId && !position.includes(siteStructureItem?.parentId)) {
+		if (!startsWith(position, value)) {
 			setIsInvalidPosition(true);
 			return;
 		}
 
-		setFieldValue('position', position);
 		setStandardPosition(position);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setFieldValue, siteStructureItem]);
+	}, [siteStructureItem]);
 
 	const availableLimitedSiteStructure = useMemo(() => {
 		return getAvailableSiteStructureOptions(standardPosition, siteStructure);
