@@ -14,3 +14,4 @@ export * from './getCompartmentErrors';
 export * from './getNavItemType';
 export * from './getCTStructureConfig';
 export * from './getAvailableSiteStructureOptions';
+export * from './filterSiteNavCompartments';
