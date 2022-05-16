@@ -501,6 +501,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				isPublishedContentItem={!!contentItem?.meta.published}
 				onSave={() => onSave()}
 				onChange={onChangeForm}
+				contentType={contentType}
+				activeLanguage={activeLanguage}
 			/>
 		</>
 	);
