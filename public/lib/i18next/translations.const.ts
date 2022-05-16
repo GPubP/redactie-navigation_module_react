@@ -141,6 +141,10 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 		"Er zijn geen menu's geconfigureerd voor deze site."
 	),
 	TABLE_MENU_FETCH_MESSAGE: tKey('TABLE_MENU_FETCH_MESSAGE', "Menu's ophalen"),
+	CONTENT_MENU_NOT_AVAILABLE: tKey(
+		'CONTENT_MENU_NOT_AVAILABLE',
+		"Dit content item kan niet in deze menu geplaatst worden."
+	),
 	CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE: tKey(
 		'CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE',
 		'Opgelet, dit content item staat niet op de voorziene positie'
