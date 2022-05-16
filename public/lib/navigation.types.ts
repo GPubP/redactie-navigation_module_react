@@ -154,6 +154,7 @@ export interface SiteStructureItemDetailRouteProps<Params = MenuRouteParams>
 }
 
 export interface NavRights {
+	canRead: boolean;
 	canUpdate: boolean;
 	canDelete: boolean;
 }
