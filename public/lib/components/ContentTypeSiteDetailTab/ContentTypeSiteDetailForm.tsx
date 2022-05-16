@@ -57,7 +57,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	const validateCompartments = (errors: FormikErrors<FormikValues>): void => {
 		const invalidCompartments = Object.values(NavSiteCompartments).filter(compartment => {
 			const compartmentErrors = getCompartmentErrors(errors, formValue, compartment);
-
+			
 			return !!Object.values(compartmentErrors).find(langErrors => !isEmpty(langErrors));
 		});
 		onValidateCompartments(invalidCompartments);
@@ -117,7 +117,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
 										disabled={isLoading || !hasChanges}
 										onClick={
-											invalidCompartment && invalidCompartment.length > 0 || errors
+											(invalidCompartment && invalidCompartment.length > 0) ||
+											Object.entries(errors).length !== 0
 												? alert
 												: submitForm
 										}
