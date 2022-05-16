@@ -57,7 +57,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 	const validateCompartments = (errors: FormikErrors<FormikValues>): void => {
 		const invalidCompartments = Object.values(NavSiteCompartments).filter(compartment => {
 			const compartmentErrors = getCompartmentErrors(errors, formValue, compartment);
-			
+
 			return !!Object.values(compartmentErrors).find(langErrors => !isEmpty(langErrors));
 		});
 		onValidateCompartments(invalidCompartments);
