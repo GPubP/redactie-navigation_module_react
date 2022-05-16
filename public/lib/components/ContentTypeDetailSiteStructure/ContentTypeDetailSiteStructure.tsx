@@ -44,6 +44,10 @@ const ContentTypeDetailSiteStructure: FC<ExternalTabProps & {
 	);
 	const { siteStructure } = useSiteStructure(`${langSiteStructureId}`);
 	const siteStructureItem = useMemo(() => {
+		if (!contentTypeSiteStructureItems || !Array.isArray(contentTypeSiteStructureItems)) {
+			return;
+		}
+
 		return contentTypeSiteStructureItems?.find(item => item.treeId === siteStructure?.id);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contentTypeSiteStructureItems, siteStructure]);
