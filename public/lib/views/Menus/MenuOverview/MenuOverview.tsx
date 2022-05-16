@@ -64,6 +64,9 @@ const MenuOverview: FC<NavigationRouteProps<NavigationMatchProps>> = ({ match })
 	});
 	const rights = useMemo(
 		() => ({
+			canRead: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
+				rolesRightsConnector.menuSecurityRights.read,
+			]),
 			canUpdate: rolesRightsConnector.api.helpers.checkSecurityRights(mySecurityrights, [
 				rolesRightsConnector.menuSecurityRights.update,
 			]),

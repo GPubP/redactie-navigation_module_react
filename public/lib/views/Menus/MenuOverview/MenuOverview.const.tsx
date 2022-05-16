@@ -60,7 +60,7 @@ export const OVERVIEW_COLUMNS = (
 		component(value: string, { description, id }) {
 			return (
 				<>
-					{rights.canUpdate ? (
+					{rights.canRead ? (
 						<Link to={`${id}/instellingen`}>
 							<EllipsisWithTooltip>{value}</EllipsisWithTooltip>
 						</Link>
