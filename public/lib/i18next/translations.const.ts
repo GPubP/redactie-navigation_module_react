@@ -143,7 +143,7 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	TABLE_MENU_FETCH_MESSAGE: tKey('TABLE_MENU_FETCH_MESSAGE', "Menu's ophalen"),
 	CONTENT_MENU_NOT_AVAILABLE: tKey(
 		'CONTENT_MENU_NOT_AVAILABLE',
-		"Dit content item kan niet in deze menu geplaatst worden."
+		'Dit content item kan niet in deze menu geplaatst worden.'
 	),
 	CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE: tKey(
 		'CONTENT_SITE_STRUCTURE_INVALID_POSITION_TITLE',
@@ -152,6 +152,14 @@ const MODULE_TRANSLATIONS = Object.freeze<I18NextTranslations>({
 	CONTENT_SITE_STRUCTURE_INVALID_POSITION_DESCRIPTION: tKey(
 		'CONTENT_SITE_STRUCTURE_INVALID_POSITION_DESCRIPTION',
 		'De contentbeheerder heeft de positie anders ingesteld voor dit content type. \n Wil je de positie van dit content item bijwerken?'
+	),
+	CONTENT_MENU_ITEM_POSITION_CHANGE_TITLE: tKey(
+		'CONTENT_MENU_ITEM_POSITION_CHANGE_TITLE',
+		'Menu item verplaatsen'
+	),
+	CONTENT_MENU_ITEM_POSITION_CHANGE_DESCRIPTION: tKey(
+		'CONTENT_MENU_ITEM_POSITION_CHANGE_DESCRIPTION',
+		'Je staat op het punt om dit menu item te verplaatsen, hierdoor gaan alle onderliggende menu items mee verplaatst worden. Je kan dit niet ongedaan maken.'
 	),
 });
 
