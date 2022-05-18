@@ -8,6 +8,7 @@ import { useParams } from 'react-router-dom';
 import formRendererConnector from '../../connectors/formRenderer';
 import sitesConnector from '../../connectors/sites';
 import { getLangSiteUrl } from '../../helpers';
+import { CtTypes } from '../../navigation.const';
 import { NavItemType } from '../../navigation.types';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
 
@@ -104,6 +105,7 @@ const MenuItemTypeField: FC<MenuItemTypeFieldProps> = ({
 												disabled: !canEdit,
 												bySlug: true,
 												required: true,
+												ctType: 'page',
 											},
 										} as any
 									}
