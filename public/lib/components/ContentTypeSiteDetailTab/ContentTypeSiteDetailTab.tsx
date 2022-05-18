@@ -8,6 +8,7 @@ import {
 	NavList,
 } from '@acpaas-ui/react-editorial-components';
 import { ExternalTabProps } from '@redactie/content-types-module';
+import { ModuleSettings } from '@redactie/sites-module';
 import {
 	AlertContainer,
 	DataLoader,
@@ -23,7 +24,9 @@ import { NavLink, useHistory, useParams } from 'react-router-dom';
 import contentTypeConnector from '../../connectors/contentTypes';
 import languagesConnector from '../../connectors/languages';
 import rolesRightsConnector from '../../connectors/rolesRights';
+import sitesConnector from '../../connectors/sites';
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
+import { filterSiteNavCompartments } from '../../helpers';
 import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import {
@@ -52,6 +55,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 	);
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
+	const [site] = sitesConnector.hooks.useSite(siteId);
 	const [activeLanguage, setActiveLanguage] = useState<Language>();
 	const [languagesLoading, languages] = languagesConnector.hooks.useActiveLanguagesForSite(
 		siteId
@@ -110,8 +114,17 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			: navList;
 
 	useEffect(() => {
+		if (!site) {
+			return;
+		}
+		const siteNavigationConfig = (site?.data?.modulesConfig || []).find(
+			(siteNavigationConfig: ModuleSettings) => siteNavigationConfig?.name === 'navigation'
+		);
+
 		setNavlist(
-			NAV_SITE_COMPARTMENTS.map(compartment => ({
+			NAV_SITE_COMPARTMENTS.filter(c =>
+				filterSiteNavCompartments(c, siteNavigationConfig)
+			).map(compartment => ({
 				...compartment,
 				activeClassName: 'is-active',
 				to: generatePath(`${MODULE_PATHS.site.contentTypeDetailExternalChild}`, {
@@ -124,7 +137,7 @@ const ContentTypeSiteDetailTab: FC<ExternalTabProps & { siteId: string }> = ({
 			}))
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [contentTypeUuid, siteId]);
+	}, [contentTypeUuid, siteId, site]);
 
 	useEffect(() => {
 		if (!child) {
