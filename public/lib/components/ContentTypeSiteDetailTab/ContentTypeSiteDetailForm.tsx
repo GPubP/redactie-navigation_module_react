@@ -117,7 +117,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
 										disabled={isLoading || !hasChanges}
 										onClick={
-											invalidCompartment && invalidCompartment.length > 0 || errors
+											(invalidCompartment && invalidCompartment.length > 0) ||
+											Object.entries(errors).length !== 0
 												? alert
 												: submitForm
 										}
