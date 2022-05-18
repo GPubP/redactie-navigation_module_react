@@ -37,6 +37,7 @@ import { menuItemsFacade } from '../../store/menuItems';
 import { menusFacade } from '../../store/menus';
 import { NAV_STATUSES } from '../ContentDetailCompartment';
 import { MenuItemModal } from '../MenuItemModal';
+import { MoveConfirmModal } from '../MoveConfirmModal';
 import { NavItemDetailForm } from '../NavItemDetailForm';
 import { NewMenuItemForm } from '../NewMenuItemForm';
 
@@ -53,7 +54,8 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 }) => {
 	const [t] = translationsConnector.useCoreTranslation();
 	const [tModule] = translationsConnector.useModuleTranslation();
-	const [showModal, setShowModal] = useState(false);
+	const [showMenuItemModal, setShowMenuItemModal] = useState(false);
+	const [showMoveModal, setShowMoveModal] = useState(false);
 	const [rows, setRows] = useState<MenuItemRowData[]>([]);
 	const [selectedMenuId, setSelectedMenuId] = useState<string | undefined>();
 	const [menusLoading, menus] = useMenus(activeLanguage);
@@ -231,6 +233,17 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	};
 
 	const onSave = async (menuItemId?: string): Promise<void> => {
+		// if position changed and menuItemModal is closed
+		if (menuItemDraft?.parentId !== menuItem?.parentId && !showMenuItemModal) {
+			// show move confirm modal
+			setShowMoveModal(true);
+		} else {
+			// save item
+			await saveItem(menuItemId);
+		}
+	};
+
+	const saveItem = async (menuItemId?: string): Promise<void> => {
 		if (!formikRef.current || !menuItemDraft) {
 			return;
 		}
@@ -303,7 +316,9 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		menuItemsFacade.setPendingMenuItems(pending);
 		onContentChange(pending);
 		resetMenuItem();
-		setShowModal(false);
+		setShowMenuItemModal(false);
+		setShowMoveModal(false);
+		setExpandedRows({});
 	};
 
 	const onChangeForm = (formValue: FormikValues): void => {
@@ -330,7 +345,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	};
 
 	const onClose = (): void => {
-		setShowModal(false);
+		setShowMenuItemModal(false);
 		resetMenuItem();
 	};
 
@@ -375,7 +390,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				options={menuOptions}
 				onSubmit={({ menu }) => {
 					resetMenuItem();
-					setShowModal(true);
+					setShowMenuItemModal(true);
 					setSelectedMenuId(menu);
 				}}
 			/>
@@ -415,10 +430,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 					<Button
 						className="u-margin-right-xs"
 						size="small"
-						onClick={() => {
-							onSave(menuItemDraft?.id?.toString());
-							setExpandedRows({});
-						}}
+						onClick={() => onSave(menuItemDraft?.id?.toString())}
 					>
 						{t(CORE_TRANSLATIONS.BUTTON_UPDATE)}
 					</Button>
@@ -492,7 +504,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 			</CardBody>
 			<MenuItemModal
 				formikRef={instance => (formikRef.current = instance || undefined)}
-				show={showModal}
+				show={showMenuItemModal}
 				onClose={onClose}
 				menu={(menu as unknown) as NavTree}
 				menuItemDraft={menuItemDraft || ({} as NavItem)}
@@ -503,6 +515,11 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 				onChange={onChangeForm}
 				contentType={contentType}
 				activeLanguage={activeLanguage}
+			/>
+			<MoveConfirmModal
+				show={showMoveModal}
+				onConfirm={() => saveItem(menuItemDraft?.id?.toString())}
+				onCancel={() => setShowMoveModal(false)}
 			/>
 		</>
 	);
