@@ -4,7 +4,7 @@ import { ErrorMessage, FormikOnChangeHandler, LoadingState } from '@redactie/uti
 import classNames from 'classnames/bind';
 import { Field, Formik, FormikProps, FormikValues, isFunction } from 'formik';
 import { isEmpty } from 'ramda';
-import React, { ChangeEvent, FC, useMemo, useState } from 'react';
+import React, { ChangeEvent, FC, useEffect, useMemo, useState } from 'react';
 
 import translationsConnector from '../../connectors/translations';
 import { getInitialNavItemsFormValues, getPositionInputValue, getTreeConfig } from '../../helpers';
@@ -46,6 +46,7 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 	const [showRearrange, setShowRearrange] = useState(false);
 	const [sortRows, setSortRows] = useState<NavItem[]>([]);
 	const [tModule] = translationsConnector.useModuleTranslation();
+	const [initialValues, setInitialValues] = useState<NavItemDetailForm | undefined>(undefined);
 
 	const isUpdate = useMemo(() => {
 		return !!navItem?.id;
@@ -56,13 +57,14 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 		activeItem: NavItem | undefined;
 	}>(() => getTreeConfig<NavTree, NavItem>(navTree, navItem?.id as number), [navItem, navTree]);
 
-	const initialValues: NavItemDetailForm | undefined = useMemo(() => {
-		if (!navItem || isEmpty(navItem) || !treeConfig.options) {
+	useEffect(() => {
+		if (!navItem || isEmpty(navItem) || !treeConfig.options || initialValues) {
 			return undefined;
 		}
 
-		return getInitialNavItemsFormValues(navItem, treeConfig.options);
-	}, [navItem, treeConfig]);
+		const initValues = getInitialNavItemsFormValues(navItem, treeConfig.options);
+		setInitialValues(initValues);
+	}, [initialValues, navItem, treeConfig.options]);
 
 	const handlePositionOnChange = (
 		value: number[],
@@ -226,7 +228,6 @@ const NavItemDetailForm: FC<NavItemDetailFormProps> = ({
 									disabled={!canEdit}
 									label="Beschrijving"
 									name="description"
-									state={touched.description && errors.description && 'error'}
 								/>
 								<ErrorMessage name="description" />
 								<small className="u-block u-margin-top-xs">
