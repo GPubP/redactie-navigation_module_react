@@ -56,7 +56,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [showMenuItemModal, setShowMenuItemModal] = useState(false);
 	const [showMoveModal, setShowMoveModal] = useState(false);
-	const [rows, setRows] = useState<MenuItemRowData[]>([]);
+	const [rows, setRows] = useState<(MenuItemRowData | null)[]>([]);
 	const [selectedMenuId, setSelectedMenuId] = useState<string | undefined>();
 	const [menusLoading, menus] = useMenus(activeLanguage);
 	const { menu } = useMenu();
@@ -211,6 +211,10 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 			contentMenuItems?.map(item => {
 				const menu = menus?.find(menu => menu.id === item?.treeId);
 
+				if (!menu) {
+					return null;
+				}
+
 				return {
 					id: item.id?.toString() || uuid(),
 					label: item?.label || '',
@@ -272,7 +276,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		menuItemId
 			? setRows([
 					...rows.map(row => {
-						if (row.id !== menuItemId) {
+						if (row?.id !== menuItemId) {
 							return row;
 						}
 
@@ -350,7 +354,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	};
 
 	const deleteMenuItem = (rowData: MenuItemRowData): void => {
-		setRows(rows.filter(row => row.id !== rowData.id));
+		setRows(rows.filter(row => row?.id !== rowData.id));
 		const pending = {
 			upsertItems: pendingMenuItems?.upsertItems || [],
 			deleteItems: [
@@ -457,14 +461,14 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		);
 	};
 
-	const renderTable = (): ReactElement => {
+	const renderTable = (): ReactElement | undefined => {
 		return (
 			<Table
 				fixed
 				dataKey="id"
 				className="u-margin-top"
 				columns={MENU_COLUMNS(tModule)}
-				rows={rows}
+				rows={rows.filter(i => !!i)}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
 				expandedRows={expandedRows}
 				rowExpansionTemplate={renderEditForm}
