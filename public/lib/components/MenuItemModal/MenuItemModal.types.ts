@@ -1,3 +1,4 @@
+import { ContentTypeSchema } from '@redactie/content-module';
 import { FormikProps, FormikValues } from 'formik';
 import { Ref } from 'react';
 
@@ -14,4 +15,6 @@ export interface MenuItemModalProps {
 	onChange: (values: NavItemDetailForm) => void;
 	onSave: () => void;
 	onClose: () => void;
+	contentType?: ContentTypeSchema;
+	activeLanguage?: string;
 }

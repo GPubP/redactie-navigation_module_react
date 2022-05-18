@@ -4,11 +4,14 @@ import {
 	ActionBarContentSection,
 	ControlledModal,
 } from '@acpaas-ui/react-editorial-components';
+import { AlertContainer, alertService } from '@redactie/utils';
 import classNames from 'classnames/bind';
 import React, { FC, ReactElement } from 'react';
+import { useParams } from 'react-router-dom';
 
 import translationsConnector, { CORE_TRANSLATIONS } from '../../connectors/translations';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
+import { ALERT_CONTAINER_IDS } from '../../navigation.const';
 import { NavItemType } from '../../navigation.types';
 import { NavItemDetailForm } from '../NavItemDetailForm';
 
@@ -28,9 +31,37 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 	onClose,
 	onChange,
 	onSave,
+	contentType,
+	activeLanguage,
 }): ReactElement => {
+	const { siteId } = useParams<{ siteId: string }>();
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [t] = translationsConnector.useCoreTranslation();
+
+	const modulesConfig = contentType?.modulesConfig?.find(module => {
+		return module.site === siteId && module.name === 'navigation';
+	});
+
+	const onSubmit = ({
+		title = 'Foutmelding',
+		message = tModule(MODULE_TRANSLATIONS.CONTENT_MENU_NOT_AVAILABLE),
+	} = {}): void => {
+		if (
+			activeLanguage &&
+			!modulesConfig?.config.menu.allowedMenus[activeLanguage].includes(menu.id)
+		) {
+			alertService.danger(
+				{
+					title,
+					message,
+				},
+				{
+					containerId: ALERT_CONTAINER_IDS.menuItemModal,
+				}
+			);
+		}
+		onSave();
+	};
 
 	return (
 		<>
@@ -40,6 +71,10 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 				size="large"
 				className={cx('o-menu-item-modal')}
 			>
+				<AlertContainer
+					toastClassName="u-margin-bottom"
+					containerId={ALERT_CONTAINER_IDS.menuItemModal}
+				/>
 				<div className={cx('o-menu-item-modal__body')}>
 					<h4 className="u-margin-bottom">Menu-item toevoegen</h4>
 					<NavItemDetailForm
@@ -68,7 +103,7 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 							<Button
 								iconLeft={loading ? 'circle-o-notch fa-spin' : null}
 								disabled={loading}
-								onClick={onSave}
+								onClick={onSubmit}
 								type="success"
 							>
 								{t(CORE_TRANSLATIONS['BUTTON_SAVE'])}

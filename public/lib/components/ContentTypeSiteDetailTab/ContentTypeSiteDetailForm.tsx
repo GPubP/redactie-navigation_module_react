@@ -89,7 +89,7 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 			enableReinitialize={true}
 			validationSchema={() => FORM_VALIDATION_SCHEMA(languages || [])}
 		>
-			{({ submitForm }) => {
+			{({ submitForm, errors }) => {
 				return (
 					<div className="u-margin-top">
 						<FormikOnChangeHandler onChange={onChange} onError={handleOnError} />
@@ -117,7 +117,8 @@ const ContentTypeSiteDetailForm: FC<ContentTypeSiteDetailFormProps> = ({
 										iconLeft={isLoading ? 'circle-o-notch fa-spin' : null}
 										disabled={isLoading || !hasChanges}
 										onClick={
-											invalidCompartment && invalidCompartment.length > 0
+											(invalidCompartment && invalidCompartment.length > 0) ||
+											Object.entries(errors).length !== 0
 												? alert
 												: submitForm
 										}

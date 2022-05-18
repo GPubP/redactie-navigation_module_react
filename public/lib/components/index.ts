@@ -12,3 +12,4 @@ export * from './NewMenuItemForm';
 export * from './MenuItemModal';
 export * from './ContentTypeMenusTable';
 export * from './StructureCascader';
+export * from './MoveConfirmModal';

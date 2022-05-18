@@ -1,5 +1,6 @@
 import { Alert, Button } from '@acpaas-ui/react-components';
 import { Cascader } from '@acpaas-ui/react-editorial-components';
+import { ContentSchema } from '@redactie/content-module';
 import classNames from 'classnames';
 import { FormikValues, useFormikContext } from 'formik';
 import { difference, isNil, pathOr, propOr, startsWith } from 'ramda';
@@ -26,6 +27,7 @@ const StructureCascader = ({
 	label,
 	state,
 	required,
+	contentItem,
 	activeLanguage,
 	value,
 	CTStructureConfig,
@@ -39,6 +41,7 @@ const StructureCascader = ({
 	required: boolean;
 	activeLanguage: string;
 	value: number[];
+	contentItem: ContentSchema;
 	CTStructureConfig: { [key: string]: any };
 	treeConfig: {
 		options: CascaderOption[];
@@ -91,7 +94,7 @@ const StructureCascader = ({
 	useEffect(() => {
 		const position = getPosition();
 
-		if (!startsWith(position, value) && type !== CTStructureTypes.unlimited) {
+		if (!startsWith(position, value) && type !== CTStructureTypes.unlimited && contentItem) {
 			setIsInvalidPosition(true);
 			return;
 		}
@@ -227,7 +230,9 @@ const StructureCascader = ({
 										!isInvalidPosition
 										? availableLimitedTreeConfig.options
 										: treeConfig.options,
-									fieldPositionArray
+									type === CTStructureTypes.isLimitedAndNotEditable
+										? standardPosition
+										: fieldPositionArray
 								)}
 							/>
 							{(type === CTStructureTypes.isLimitedAndEditable ||

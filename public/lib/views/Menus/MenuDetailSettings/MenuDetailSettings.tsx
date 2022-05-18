@@ -70,7 +70,7 @@ const MenuSettings: FC<MenuDetailRouteProps<NavigationMatchProps>> = ({
 		return [
 			...LANG_OPTIONS,
 			...(site.data.languages as string[]).map((lang: string) => {
-				const currentLang = languages?.find(language => language.uuid === lang);
+				const currentLang = languages?.find(language => language.key === lang);
 
 				return {
 					key: currentLang?.key,
