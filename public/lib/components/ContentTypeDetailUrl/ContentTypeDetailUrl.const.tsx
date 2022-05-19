@@ -116,11 +116,8 @@ export const PATTERN_COLUMNS = (
 			width: '5%',
 			component(value, { key }) {
 				return (
-					// Button does not support onMouseDown. Needed to run before handleBlur fn from field.
-					<div
-						onMouseDown={() => importPlaceholder(key)}
-						className={cx('u-inline-block')}
-					>
+					// Button does not support onMouseUp. Needed to run before handleBlur fn from field.
+					<div onMouseUp={() => importPlaceholder(key)} className={cx('u-inline-block')}>
 						<Button
 							ariaLabel="Import"
 							icon="plus"
