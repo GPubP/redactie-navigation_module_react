@@ -108,7 +108,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 		if (!(await isFormValid())) {
 			return;
 		}
-
+		alertService.dismiss();
 		onSubmit(omit(['weight'], siteStructureItemDraft) as SiteStructureItem);
 		resetIsChanged();
 	};

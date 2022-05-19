@@ -103,7 +103,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		if (!(await isFormValid())) {
 			return;
 		}
-
+		alertService.dismiss();
 		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
