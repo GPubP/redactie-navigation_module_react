@@ -96,9 +96,6 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 
 		const errors = await formikRef.current.validateForm();
 		if (errors) {
-			alertService.invalidForm({
-				containerId: ALERT_CONTAINER_IDS.settings,
-			});
 			formikRef.current.setTouched(setNestedObjectValues(errors, true));
 		}
 		return isEmpty(errors);
@@ -106,6 +103,9 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 
 	const onSave = async (): Promise<void> => {
 		if (!(await isFormValid())) {
+			alertService.invalidForm({
+				containerId: ALERT_CONTAINER_IDS.settings,
+			});
 			return;
 		}
 

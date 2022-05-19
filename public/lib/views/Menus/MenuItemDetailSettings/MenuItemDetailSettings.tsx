@@ -90,9 +90,6 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 		const errors = await formikRef.current.validateForm();
 
 		if (errors) {
-			alertService.invalidForm({
-				containerId: ALERT_CONTAINER_IDS.settings,
-			});
 			formikRef.current.setTouched(setNestedObjectValues(errors, true));
 		}
 
@@ -101,6 +98,9 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 
 	const onSave = async (): Promise<void> => {
 		if (!(await isFormValid())) {
+			alertService.invalidForm({
+				containerId: ALERT_CONTAINER_IDS.settings,
+			});
 			return;
 		}
 
