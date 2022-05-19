@@ -1,7 +1,13 @@
 import { Button, Card, CardBody, CardDescription, CardTitle } from '@acpaas-ui/react-components';
 import { ActionBar, ActionBarContentSection } from '@acpaas-ui/react-editorial-components';
-import { AlertContainer, DeletePrompt, LeavePrompt, useDetectValueChanges } from '@redactie/utils';
-import { FormikProps, FormikValues } from 'formik';
+import {
+	AlertContainer,
+	alertService,
+	DeletePrompt,
+	LeavePrompt,
+	useDetectValueChanges,
+} from '@redactie/utils';
+import { FormikProps, FormikValues, setNestedObjectValues } from 'formik';
 import { isEmpty, omit } from 'ramda';
 import React, { FC, ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { useParams } from 'react-router-dom';
@@ -89,7 +95,12 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 		}
 
 		const errors = await formikRef.current.validateForm();
-
+		if (errors) {
+			alertService.invalidForm({
+				containerId: ALERT_CONTAINER_IDS.settings,
+			});
+			formikRef.current.setTouched(setNestedObjectValues(errors, true));
+		}
 		return isEmpty(errors);
 	};
 
@@ -115,6 +126,8 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			} as SiteStructureItem,
 			siteStructureItem?.id ? `${siteStructureItem?.id}` : 'new'
 		);
+
+		alertService.dismiss();
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
