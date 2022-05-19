@@ -108,6 +108,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			});
 			return;
 		}
+
 		onSubmit(omit(['weight'], siteStructureItemDraft) as SiteStructureItem);
 		resetIsChanged();
 	};
@@ -116,7 +117,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 		const parentId = formValue.position
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
-		alertService.dismiss();
+
 		siteStructureItemsFacade.setSiteStructureItemDraft(
 			{
 				...omit(['parentId'], siteStructureItemDraft),
@@ -125,6 +126,8 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			} as SiteStructureItem,
 			siteStructureItem?.id ? `${siteStructureItem?.id}` : 'new'
 		);
+
+		alertService.dismiss();
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
@@ -215,13 +218,6 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 					),
 				}}
 			/>
-			{console.info(
-				siteStructureItems,
-				'draft',
-				siteStructureItemDraft,
-				'type',
-				siteStructureItemType
-			)}
 			{siteStructureItem?.id && canDelete && renderDelete()}
 			<LeavePrompt when={isChanged} shouldBlockNavigationOnConfirm onConfirm={onSave} />
 			<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>

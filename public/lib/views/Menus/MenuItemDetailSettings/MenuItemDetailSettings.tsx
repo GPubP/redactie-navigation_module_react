@@ -103,6 +103,7 @@ const MenuItemDetailSettings: FC<MenuItemDetailRouteProps> = ({
 			});
 			return;
 		}
+		
 		onSubmit(omit(['weight'], menuItemDraft) as MenuItem);
 		resetIsChanged();
 	};
