@@ -96,9 +96,6 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 
 		const errors = await formikRef.current.validateForm();
 		if (errors) {
-			alertService.invalidForm({
-				containerId: ALERT_CONTAINER_IDS.settings,
-			});
 			formikRef.current.setTouched(setNestedObjectValues(errors, true));
 		}
 		return isEmpty(errors);
@@ -106,9 +103,11 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 
 	const onSave = async (): Promise<void> => {
 		if (!(await isFormValid())) {
+			alertService.invalidForm({
+				containerId: ALERT_CONTAINER_IDS.settings,
+			});
 			return;
 		}
-		alertService.dismiss();
 		onSubmit(omit(['weight'], siteStructureItemDraft) as SiteStructureItem);
 		resetIsChanged();
 	};
@@ -117,7 +116,7 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 		const parentId = formValue.position
 			? formValue.position[formValue.position.length - 1]
 			: undefined;
-
+		alertService.dismiss();
 		siteStructureItemsFacade.setSiteStructureItemDraft(
 			{
 				...omit(['parentId'], siteStructureItemDraft),
@@ -126,8 +125,6 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 			} as SiteStructureItem,
 			siteStructureItem?.id ? `${siteStructureItem?.id}` : 'new'
 		);
-
-		alertService.dismiss();
 	};
 
 	const onDeletePromptConfirm = async (): Promise<void> => {
@@ -218,6 +215,13 @@ const SiteStructureItemDetailSettings: FC<SiteStructureItemDetailRouteProps> = (
 					),
 				}}
 			/>
+			{console.info(
+				siteStructureItems,
+				'draft',
+				siteStructureItemDraft,
+				'type',
+				siteStructureItemType
+			)}
 			{siteStructureItem?.id && canDelete && renderDelete()}
 			<LeavePrompt when={isChanged} shouldBlockNavigationOnConfirm onConfirm={onSave} />
 			<ActionBar className="o-action-bar--fixed" isOpen={canEdit}>
