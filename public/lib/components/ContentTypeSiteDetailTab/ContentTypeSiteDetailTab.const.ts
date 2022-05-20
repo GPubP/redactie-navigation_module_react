@@ -47,6 +47,24 @@ export const FORM_VALIDATION_SCHEMA = (languages: any[]): any =>
 							// eslint-disable-next-line no-useless-escape
 							/^([^\[\]]*|\[[^\[\]]*\])*$/.test(value)
 					)
+					.test({
+						name: 'endsWithoutSlug',
+						test: function(value) {
+							if (value) {
+								// eslint-disable-next-line no-useless-escape
+								const keysInUrl = value.match(/(?=\[)[^\]]+./g) || [];
+
+								return keysInUrl[keysInUrl.length - 1] !== '[item:slug]'
+									? this.createError({
+											message:
+												'Opgelet, het patroon moet eidigen met /[item:slug].',
+											path: this.path,
+									  })
+									: true;
+							}
+							return true;
+						},
+					})
 					.test(
 						'invalidCharacters',
 						"Er zijn ongeldige tekens gebruikt. Je kan enkel letters, cijfers en volgende tekens gebruiken: $ – _ . + ! * ‘ ( ) , ? ' .",
