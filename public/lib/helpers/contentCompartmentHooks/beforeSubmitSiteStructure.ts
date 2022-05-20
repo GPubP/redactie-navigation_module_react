@@ -57,6 +57,15 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 		.catch(() => null);
 
 	if (existingSiteStructure) {
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			{
+				...existingSiteStructure,
+				externalUrl: `${(site?.data.url as any)[contentItem.meta.lang]}${
+					(contentItem?.meta?.urlPath || {})[contentItem.meta.lang]?.value
+				}`,
+			},
+			contentItem.uuid
+		);
 		return Promise.resolve();
 	}
 
