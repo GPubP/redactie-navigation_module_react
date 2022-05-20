@@ -35,7 +35,9 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	let preUrl = 'https://www.antwerpen.be';
 
 	if (site) {
-		preUrl = site.data.url[activeLanguage.key] || site.data.url;
+		preUrl = pathOr(null, ['data', 'url', 'multiLanguage'], site)
+			? site.data.url[activeLanguage.key]
+			: site.data.url;
 	}
 
 	useEffect(() => {
