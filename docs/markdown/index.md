@@ -2,10 +2,15 @@
 
 ## Table of contents
 
+### Interfaces
+
+- [NavItem](../wiki/index.NavItem)
+- [NavigationAPI](../wiki/index.NavigationAPI)
+
 ### Variables
 
-- [siteContentTypeDetailTabRoutes](../wiki/index#sitecontenttypedetailtabroutes-1)
-- [tenantContentTypeDetailTabRoutes](../wiki/index#tenantcontenttypedetailtabroutes-1)
+- [siteContentTypeDetailTabRoutes](../wiki/index#sitecontenttypedetailtabroutes)
+- [tenantContentTypeDetailTabRoutes](../wiki/index#tenantcontenttypedetailtabroutes)
 
 ## Variables
 
