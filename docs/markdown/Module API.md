@@ -10,7 +10,7 @@
 
 ### store
 
-• `Const` **store**: [`NavigationAPI`](../wiki/index.NavigationAPI)[``"store"``]
+• `Const` **store**: [`NavigationStoreAPI`](../wiki/index.NavigationStoreAPI)
 
 #### Defined in
 

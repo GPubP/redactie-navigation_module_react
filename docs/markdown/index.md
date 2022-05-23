@@ -6,6 +6,7 @@
 
 - [NavItem](../wiki/index.NavItem)
 - [NavigationAPI](../wiki/index.NavigationAPI)
+- [NavigationStoreAPI](../wiki/index.NavigationStoreAPI)
 
 ### Variables
 

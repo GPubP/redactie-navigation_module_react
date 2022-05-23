@@ -12,14 +12,8 @@
 
 ### store
 
-• **store**: `Object`
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `sitestructureBreadcrumbsFacade` | `SitestructureBreadcrumbsFacade` |
+• **store**: [`NavigationStoreAPI`](../wiki/index.NavigationStoreAPI)
 
 #### Defined in
 
-lib/api/api.types.ts:5
+lib/api/api.types.ts:9

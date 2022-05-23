@@ -1,7 +1,7 @@
 import { sitestructureBreadcrumbsFacade } from '../store/siteStructureBreadcrumbs/sitestructureBreadcrumbs.facade';
 
-import { NavigationAPI } from './api.types';
+import { NavigationStoreAPI } from './api.types';
 
-export const store: NavigationAPI['store'] = {
+export const store: NavigationStoreAPI = {
 	sitestructureBreadcrumbsFacade,
 };
