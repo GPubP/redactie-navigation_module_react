@@ -65,7 +65,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	const importPattern = (key: string): void => {
 		const urlPattern = pathOr('', ['url', 'urlPattern', activeLanguage.key], values);
 
-		if (!cursorPosition) {
+		if (!cursorPosition && cursorPosition !== 0) {
 			return setFieldValue(
 				`url.urlPattern.${activeLanguage.key}`,
 				`${urlPattern.replace(/\/*$/, '')}/${key}`
