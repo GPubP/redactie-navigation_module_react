@@ -483,6 +483,7 @@ contentConnector.registerContentDetailCompartment(`${CONFIG.name}-siteStructure`
 		);
 
 		return (
+			contentType.meta.canBeFiltered &&
 			ctSiteNavigationConfig?.config?.siteStructure &&
 			ctSiteNavigationConfig?.config?.siteStructure?.structurePosition !==
 				PositionValues.none &&
