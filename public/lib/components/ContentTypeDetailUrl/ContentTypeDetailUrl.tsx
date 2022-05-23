@@ -26,8 +26,13 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	const { siteId } = useSiteContext();
 	const { activeLanguage } = useContext(LanguageHeaderContext);
 	const [resolvedPattern, setResolvedPattern] = useState<string>('');
-	const placeholders = PATTERN_PLACEHOLDERS(tModule, !!siteId);
 	const [site] = SitesConnector.hooks.useSite(siteId);
+
+	const placeholders = PATTERN_PLACEHOLDERS(
+		tModule,
+		!!siteId,
+		site?.data?.url?.[activeLanguage.key] || site?.data?.url
+	);
 
 	const urlResolver = placeholderToKeyValue(placeholders);
 	const navigationRights = useNavigationRights(siteId);
@@ -35,9 +40,7 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	let preUrl = 'https://www.antwerpen.be';
 
 	if (site) {
-		preUrl = pathOr(null, ['data', 'url', 'multiLanguage'], site)
-			? site.data.url[activeLanguage.key]
-			: site.data.url;
+		preUrl = site?.data?.url?.[activeLanguage.key] || site?.data?.url;
 	}
 
 	useEffect(() => {
