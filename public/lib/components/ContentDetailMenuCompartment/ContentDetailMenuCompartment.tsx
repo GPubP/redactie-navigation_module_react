@@ -56,7 +56,7 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 	const [tModule] = translationsConnector.useModuleTranslation();
 	const [showMenuItemModal, setShowMenuItemModal] = useState(false);
 	const [showMoveModal, setShowMoveModal] = useState(false);
-	const [rows, setRows] = useState<(MenuItemRowData | null)[]>([]);
+	const [rows, setRows] = useState<MenuItemRowData[]>([]);
 	const [selectedMenuId, setSelectedMenuId] = useState<string | undefined>();
 	const [menusLoading, menus] = useMenus(activeLanguage);
 	const { menu } = useMenu();
@@ -208,23 +208,28 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		}
 
 		setRows(
-			contentMenuItems?.map(item => {
+			contentMenuItems?.reduce((acc: MenuItemRowData[], item) => {
 				const menu = menus?.find(menu => menu.id === item?.treeId);
 
 				if (!menu) {
-					return null;
+					return acc;
 				}
 
-				return {
-					id: item.id?.toString() || uuid(),
-					label: item?.label || '',
-					menu: menu?.label || '',
-					menuId: menu?.id.toString() || '',
-					position: item?.parents?.length ? buildParentPath(item.parents) : 'Hoofdniveau',
-					newItem: false,
-					editMenuItem: () => onShowEdit(item, menu?.id.toString() || '', false),
-				};
-			})
+				return [
+					...acc,
+					{
+						id: item.id?.toString() || uuid(),
+						label: item?.label || '',
+						menu: menu?.label || '',
+						menuId: menu?.id.toString() || '',
+						position: item?.parents?.length
+							? buildParentPath(item.parents)
+							: 'Hoofdniveau',
+						newItem: false,
+						editMenuItem: () => onShowEdit(item, menu?.id.toString() || '', false),
+					},
+				];
+			}, [])
 		);
 		// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [contentMenuItems, menus]);
@@ -461,14 +466,14 @@ const ContentDetailMenuCompartment: FC<CompartmentProps> = ({
 		);
 	};
 
-	const renderTable = (): ReactElement | undefined => {
+	const renderTable = (): ReactElement => {
 		return (
 			<Table
 				fixed
 				dataKey="id"
 				className="u-margin-top"
 				columns={MENU_COLUMNS(tModule)}
-				rows={rows.filter(i => !!i)}
+				rows={rows}
 				noDataMessage={t(CORE_TRANSLATIONS['TABLE_NO-ITEMS'])}
 				expandedRows={expandedRows}
 				rowExpansionTemplate={renderEditForm}
