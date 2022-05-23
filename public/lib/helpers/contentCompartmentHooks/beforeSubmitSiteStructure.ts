@@ -56,7 +56,22 @@ const beforeSubmitSiteStructure: ExternalCompartmentBeforeSubmitFn = async (
 		.getContentSiteStructurePrimaryItem(site.uuid, contentItem.uuid!)
 		.catch(() => null);
 
-	if (existingSiteStructure) {
+	if (
+		existingSiteStructure &&
+		existingSiteStructure.externalUrl !==
+			`${(site?.data.url as any)[contentItem.meta.lang]}${
+				(contentItem?.meta?.urlPath || {})[contentItem.meta.lang]?.value
+			}`
+	) {
+		siteStructureItemsFacade.setPendingSiteStructureItem(
+			{
+				...existingSiteStructure,
+				externalUrl: `${(site?.data.url as any)[contentItem.meta.lang]}${
+					(contentItem?.meta?.urlPath || {})[contentItem.meta.lang]?.value
+				}`,
+			},
+			contentItem.uuid
+		);
 		return Promise.resolve();
 	}
 
