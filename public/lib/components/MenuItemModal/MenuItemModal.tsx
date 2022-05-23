@@ -48,7 +48,7 @@ const MenuItemModal: FC<MenuItemModalProps> = ({
 	} = {}): void => {
 		if (
 			activeLanguage &&
-			!modulesConfig?.config.menu.allowedMenus[activeLanguage].includes(menu.id)
+			!modulesConfig?.config.menu.allowedMenus[activeLanguage].includes(menu?.id)
 		) {
 			alertService.danger(
 				{
