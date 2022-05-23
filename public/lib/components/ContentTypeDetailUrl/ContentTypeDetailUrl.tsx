@@ -5,7 +5,7 @@ import { FormikMultilanguageField, useSiteContext } from '@redactie/utils';
 import { resolveUrl } from '@wcm/pattern-resolver';
 import { FormikValues, useFormikContext } from 'formik';
 import { pathOr } from 'ramda';
-import React, { ChangeEvent, FC, useContext, useEffect, useState } from 'react';
+import React, { ChangeEvent, FC, useContext, useEffect, useMemo, useState } from 'react';
 
 import SitesConnector from '../../connectors/sites';
 import translationsConnector from '../../connectors/translations';
@@ -14,7 +14,11 @@ import { useNavigationRights } from '../../hooks';
 import { MODULE_TRANSLATIONS } from '../../i18next/translations.const';
 import { NavSiteCompartments } from '../ContentTypeSiteDetailTab/ContentTypeSiteDetailTab.const';
 
-import { PATTERN_COLUMNS, PATTERN_PLACEHOLDERS } from './ContentTypeDetailUrl.const';
+import {
+	DEFAULT_BASE_URL,
+	PATTERN_COLUMNS,
+	PATTERN_PLACEHOLDERS,
+} from './ContentTypeDetailUrl.const';
 
 const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	setActiveCompartment: React.Dispatch<React.SetStateAction<NavSiteCompartments>>;
@@ -32,13 +36,15 @@ const ContentTypeDetailUrl: FC<ExternalTabProps & {
 	const urlResolver = placeholderToKeyValue(placeholders);
 	const navigationRights = useNavigationRights(siteId);
 
-	let preUrl = 'https://www.antwerpen.be';
-
-	if (site) {
-		preUrl = pathOr(null, ['data', 'url', 'multiLanguage'], site)
-			? site.data.url[activeLanguage.key]
-			: site.data.url;
-	}
+	const preUrl = useMemo(() => {
+		return site
+			? pathOr(null, ['data', 'url', 'multiLanguage'], site)
+				? site.data.url[activeLanguage.key]
+				: typeof site.data.url === 'string'
+				? site.data.url
+				: DEFAULT_BASE_URL
+			: DEFAULT_BASE_URL;
+	}, [activeLanguage, site]);
 
 	useEffect(() => {
 		async function getResolvedPattern(): Promise<void> {

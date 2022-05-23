@@ -131,3 +131,5 @@ export const PATTERN_COLUMNS = (
 		},
 	];
 };
+
+export const DEFAULT_BASE_URL = 'https://www.antwerpen.be';
