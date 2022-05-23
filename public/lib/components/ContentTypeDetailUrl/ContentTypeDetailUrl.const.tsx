@@ -15,7 +15,8 @@ const cx = classNames.bind(styles);
 
 export const PATTERN_PLACEHOLDERS = (
 	tModule: TranslateFunc,
-	includeSitePatterns = false
+	includeSitePatterns = false,
+	siteUrl?: string
 ): PatternRowData[] => [
 	{
 		key: '[item:slug]',
@@ -25,22 +26,22 @@ export const PATTERN_PLACEHOLDERS = (
 	{
 		key: '[item:id]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_ID_DESCRIPTION),
-		example: '17389b47-8870-4ac5-91d7-292d9998b650',
+		example: 'd73ec048-42d3-458f-98f4-5e47ad4e45c1',
 	},
 	{
 		key: '[item:label]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_LABEL_DESCRIPTION),
-		example: 'nl',
-	},
-	{
-		key: '[item:lang]',
-		description: tModule(MODULE_TRANSLATIONS.PATTERN_LANG_DESCRIPTION),
-		example: 'nl',
+		example: 'een-artikel',
 	},
 	{
 		key: '[item:created]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_CREATED_DESCRIPTION),
 		example: '2022-01-01',
+	},
+	{
+		key: '[item:lang]',
+		description: tModule(MODULE_TRANSLATIONS.PATTERN_LANG_DESCRIPTION),
+		example: 'nl',
 	},
 	...(includeSitePatterns
 		? [
@@ -49,22 +50,17 @@ export const PATTERN_PLACEHOLDERS = (
 					description: tModule(MODULE_TRANSLATIONS.PATTERN_NAV_DESCRIPTION),
 					example: 'een-grootouder/een-ouder',
 				},
-				{
-					key: '[item:menu:parents]',
-					description: tModule(MODULE_TRANSLATIONS.PATTERN_MENU_DESCRIPTION),
-					example: 'een-grootouder/een-ouder',
-				},
 		  ]
 		: []),
 	{
 		key: '[site:url]',
 		description: tModule(MODULE_TRANSLATIONS.PATTERN_URL_DESCRIPTION),
-		example: '2022-01-01',
+		example: siteUrl || 'https://www.antwerpen.be',
 	},
 	{
 		key: '[content-type:label]',
 		description: tModule(MODULE_TRANSLATIONS['PATTERN_CONTENT-TYPE_DESCRIPTION']),
-		example: '2022-01-01',
+		example: 'content-type',
 	},
 ];
 
