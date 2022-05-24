@@ -12,8 +12,8 @@
 
 ### sitestructureBreadcrumbsFacade
 
-• **sitestructureBreadcrumbsFacade**: `SitestructureBreadcrumbsFacade`
+• **sitestructureBreadcrumbsFacade**: [`SitestructureBreadcrumbsFacade`](../wiki/index.%3Cinternal%3E.SitestructureBreadcrumbsFacade)
 
 #### Defined in
 
-lib/api/api.types.ts:5
+public/lib/api/api.types.ts:5

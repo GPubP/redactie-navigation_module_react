@@ -14,4 +14,4 @@
 
 #### Defined in
 
-lib/api/store.ts:5
+public/lib/api/store.ts:5

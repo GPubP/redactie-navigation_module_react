@@ -30,7 +30,7 @@
 
 #### Defined in
 
-lib/navigation.types.ts:175
+public/lib/navigation.types.ts:175
 
 ___
 
@@ -40,7 +40,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:165
+public/lib/navigation.types.ts:165
 
 ___
 
@@ -50,7 +50,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:173
+public/lib/navigation.types.ts:173
 
 ___
 
@@ -60,7 +60,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:168
+public/lib/navigation.types.ts:168
 
 ___
 
@@ -70,7 +70,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:163
+public/lib/navigation.types.ts:163
 
 ___
 
@@ -80,7 +80,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:170
+public/lib/navigation.types.ts:170
 
 ___
 
@@ -90,7 +90,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:164
+public/lib/navigation.types.ts:164
 
 ___
 
@@ -100,7 +100,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:169
+public/lib/navigation.types.ts:169
 
 ___
 
@@ -110,7 +110,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:171
+public/lib/navigation.types.ts:171
 
 ___
 
@@ -120,7 +120,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:174
+public/lib/navigation.types.ts:174
 
 ___
 
@@ -132,11 +132,11 @@ ___
 
 | Name | Type |
 | :------ | :------ |
-| `type` | `NavItemType` |
+| `type` | [`NavItemType`](../wiki/index.%3Cinternal%3E.NavItemType) |
 
 #### Defined in
 
-lib/navigation.types.ts:176
+public/lib/navigation.types.ts:176
 
 ___
 
@@ -146,7 +146,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:166
+public/lib/navigation.types.ts:166
 
 ___
 
@@ -156,7 +156,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:167
+public/lib/navigation.types.ts:167
 
 ___
 
@@ -166,7 +166,7 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:179
+public/lib/navigation.types.ts:179
 
 ___
 
@@ -176,4 +176,4 @@ ___
 
 #### Defined in
 
-lib/navigation.types.ts:172
+public/lib/navigation.types.ts:172
