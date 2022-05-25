@@ -2,6 +2,10 @@
 
 ## Table of contents
 
+### Namespaces
+
+- [&lt;internal\&gt;](../wiki/index.%3Cinternal%3E)
+
 ### Interfaces
 
 - [NavItem](../wiki/index.NavItem)
@@ -21,7 +25,7 @@
 
 #### Defined in
 
-index.tsx:509
+public/index.tsx:510
 
 ___
 
@@ -31,4 +35,4 @@ ___
 
 #### Defined in
 
-index.tsx:494
+public/index.tsx:495

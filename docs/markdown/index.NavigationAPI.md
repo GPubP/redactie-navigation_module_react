@@ -16,4 +16,4 @@
 
 #### Defined in
 
-lib/api/api.types.ts:9
+public/lib/api/api.types.ts:9

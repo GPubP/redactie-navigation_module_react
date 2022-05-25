@@ -18,8 +18,8 @@
     "test": "jest ./public",
     "trans:extract": "./node_modules/.bin/i18next-scanner --config i18next-scanner.config.js",
     "docs": "npm run docs:html && npm run docs:markdown",
-    "docs:html": "typedoc --plugin none --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/api.ts --excludePrivate --out docs",
-    "docs:markdown": "typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/api.ts --excludePrivate --theme github-wiki --out docs/markdown"
+    "docs:html": "typedoc --plugin typedoc-plugin-missing-exports --excludeExternals true --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/api.ts --excludePrivate --out docs",
+    "docs:markdown": "typedoc --plugin typedoc-plugin-markdown --plugin typedoc-github-wiki-theme --plugin typedoc-plugin-missing-exports --excludeExternals true --entryPoints ./public/index.tsx --entryPoints ./public/lib/api/api.ts --excludePrivate --theme github-wiki --out docs/markdown"
   },
   "repository": {
     "type": "git",
@@ -104,6 +104,7 @@
     "typedoc": "^0.22.15",
     "typedoc-github-wiki-theme": "^1.0.0",
     "typedoc-plugin-markdown": "^3.11.14",
+    "typedoc-plugin-missing-exports": "^0.22.6",
     "typescript": "^4.6.3",
     "typescript-plugin-css-modules": "2.1.2",
     "uuid": "^8.3.2",
